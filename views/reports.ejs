@@ -1,0 +1,646 @@
+<%- include('partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200 bg-brand-lightBg dark:bg-brand-darkBg">
+  <!-- Header -->
+  <%- include('partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-y-auto p-8 space-y-8">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Reports & Analytics</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Conversion velocity from initial lead to final sale. Monthly revenue totals and channel aggregates.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Export Actions Dropdown/Group -->
+        <div class="relative inline-block text-left" id="exportGroup">
+          <button id="exportDropdownBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder transition-all cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4 text-brand-orange"></i>
+            <span>Export Report</span>
+          </button>
+          
+          <!-- Dropdown menu -->
+          <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-hidden transition-all duration-200">
+            <div class="py-1">
+              <button id="exportExcelBtn" class="w-full text-left px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800 flex items-center gap-2">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-500"></i>
+                <span>Export Excel (.xlsx)</span>
+              </button>
+              <button id="exportCsvBtn" class="w-full text-left px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800 flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                <span>Export CSV (.csv)</span>
+              </button>
+              <button id="exportPdfBtn" class="w-full text-left px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-zinc-800 flex items-center gap-2">
+                <i data-lucide="file-check" class="w-4 h-4 text-rose-500"></i>
+                <span>Export PDF (.pdf)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button id="toggleFilterBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder transition-all cursor-pointer">
+          <i data-lucide="filter" class="w-4 h-4 text-brand-orange"></i>
+          <span>Filter Pipeline</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Drawer/Panel -->
+    <div id="filterPanel" class="hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm space-y-4 transition-all duration-300">
+      <form method="GET" action="/reports" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Lead Source -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block font-sans">Lead Source</label>
+          <select name="source" class="w-full text-xs font-bold bg-slate-50 dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange transition-colors">
+            <option value="All" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'All' ? 'selected' : '' %>>All Sources</option>
+            <option value="WhatsApp" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'WhatsApp' ? 'selected' : '' %>>WhatsApp</option>
+            <option value="Facebook" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'Facebook' ? 'selected' : '' %>>Facebook</option>
+            <option value="Instagram" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'Instagram' ? 'selected' : '' %>>Instagram</option>
+            <option value="Website" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'Website' ? 'selected' : '' %>>Website</option>
+            <option value="Walk-in" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'Walk-in' ? 'selected' : '' %>>Walk-in</option>
+            <option value="Referral" <%= typeof activeFilters !== 'undefined' && activeFilters.source === 'Referral' ? 'selected' : '' %>>Referral</option>
+          </select>
+        </div>
+        
+        <!-- Bike Model -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block font-sans">Bike Model</label>
+          <input type="text" name="bikeModel" placeholder="e.g. Low Rider" value="<%= typeof activeFilters !== 'undefined' ? activeFilters.bikeModel : '' %>" class="w-full text-xs font-bold bg-slate-50 dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange transition-colors" />
+        </div>
+        
+        <!-- Start Date -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block font-sans">Start Date</label>
+          <input type="date" name="startDate" value="<%= typeof activeFilters !== 'undefined' ? activeFilters.startDate : '' %>" class="w-full text-xs font-bold bg-slate-50 dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange transition-colors" />
+        </div>
+        
+        <!-- End Date -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block font-sans">End Date</label>
+          <input type="date" name="endDate" value="<%= typeof activeFilters !== 'undefined' ? activeFilters.endDate : '' %>" class="w-full text-xs font-bold bg-slate-50 dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange transition-colors" />
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="md:col-span-4 flex items-center justify-end gap-3 pt-2">
+          <a href="/reports" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white text-xs font-bold transition-all">
+            Clear Filters
+          </a>
+          <button type="submit" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm">
+            Apply Filters
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 1. KPI Performance Metrics Grid -->
+    <%
+      const getReportBadgeClass = (changeStr, lowerIsBetter = false) => {
+        const valStr = changeStr || 'Stable —';
+        if (valStr.includes('Stable') || valStr.includes('—')) {
+          return 'bg-slate-50 text-slate-500 dark:bg-brand-darkBg dark:text-zinc-400 border border-slate-200 dark:border-brand-darkBorder';
+        }
+        const isDecrease = valStr.includes('-');
+        const isPositive = !isDecrease;
+        
+        if ((isPositive && !lowerIsBetter) || (isDecrease && lowerIsBetter)) {
+          return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-950/30';
+        } else {
+          return 'bg-rose-50 text-rose-600 dark:bg-rose-955/20 dark:text-rose-400 border border-rose-100 dark:border-rose-950/30';
+        }
+      };
+    %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Revenue MTD -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Total Revenue (MTD)</span>
+          <span class="text-2xl font-bold text-slate-900 dark:text-white mt-1 block"><%= stats.totalRevenue || '$0.00M' %></span>
+        </div>
+        <span class="px-2 py-0.5 text-xs font-bold rounded-full whitespace-nowrap <%= getReportBadgeClass(stats.revenueChange) %>"><%= stats.revenueChange || 'Stable —' %></span>
+      </div>
+
+      <!-- Lead Conversion -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Lead Conversion</span>
+          <span class="text-2xl font-bold text-slate-900 dark:text-white mt-1 block"><%= stats.leadConversion || '0.0%' %></span>
+        </div>
+        <span class="px-2 py-0.5 text-xs font-bold rounded-full whitespace-nowrap <%= getReportBadgeClass(stats.leadConversionChange || stats.conversionChange) %>"><%= stats.leadConversionChange || stats.conversionChange || 'Stable —' %></span>
+      </div>
+
+      <!-- Active Deals -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Active Deals</span>
+          <span class="text-2xl font-bold text-slate-900 dark:text-white mt-1 block"><%= stats.activeDeals || 0 %></span>
+        </div>
+        <span class="px-2 py-0.5 text-xs font-bold rounded-full whitespace-nowrap <%= getReportBadgeClass(stats.dealsChange) %>"><%= stats.dealsChange || 'Stable —' %></span>
+      </div>
+
+      <!-- Avg Days to Close -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Avg. Days to Close</span>
+          <span class="text-2xl font-bold text-slate-900 dark:text-white mt-1 block"><%= stats.avgDaysToClose || '0.0' %></span>
+        </div>
+        <span class="px-2 py-0.5 text-xs font-bold rounded-full whitespace-nowrap <%= getReportBadgeClass(stats.daysChange, true) %>"><%= stats.daysChange || 'Stable —' %></span>
+      </div>
+
+    </div>
+
+    <!-- 2. Sales Performance Funnel Section -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <div class="border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-6">
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white">Sales Performance Funnel</h3>
+        <p class="text-xs text-slate-400 dark:text-zinc-500 mt-0.5">Conversion velocity from initial lead to final sale.</p>
+      </div>
+
+      <!-- Funnel Horizontal Grid Bars -->
+      <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+        
+        <!-- Funnel Step 1: Leads -->
+        <div class="bg-gradient-to-br from-[#ff5c35] to-[#d43d18] text-white rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[140px] hover:scale-102 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-orange-100">Leads</span>
+            <i data-lucide="users" class="w-4.5 h-4.5 text-orange-100"></i>
+          </div>
+          <div class="mt-4">
+            <span class="text-2xl font-bold block"><%= funnel.leads %></span>
+            <span class="text-[9px] font-semibold text-orange-100 uppercase tracking-wider block mt-1">INITIAL ENQUIRY</span>
+          </div>
+        </div>
+
+        <!-- Funnel Step 2: Contacted -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[140px] hover:scale-102 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Contacted</span>
+            <i data-lucide="phone" class="w-4.5 h-4.5 text-brand-orange"></i>
+          </div>
+          <div class="mt-4">
+            <span class="text-2xl font-bold block text-slate-800 dark:text-zinc-200"><%= funnel.contacted %></span>
+            <span class="text-[9px] font-extrabold bg-orange-50 text-brand-orange dark:bg-orange-950/30 rounded-full px-2 py-0.5 inline-block text-[9px] mt-1"><%= funnel.contactedPct %></span>
+          </div>
+        </div>
+
+        <!-- Funnel Step 3: Test Ride -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[140px] hover:scale-102 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Test Ride</span>
+            <i data-lucide="bike" class="w-4.5 h-4.5 text-emerald-500"></i>
+          </div>
+          <div class="mt-4">
+            <span class="text-2xl font-bold block text-slate-800 dark:text-zinc-200"><%= funnel.testRide %></span>
+            <span class="text-[9px] font-extrabold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 rounded-full px-2 py-0.5 inline-block text-[9px] mt-1"><%= funnel.testRidePct %></span>
+          </div>
+        </div>
+
+        <!-- Funnel Step 4: Quote -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[140px] hover:scale-102 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Quote</span>
+            <i data-lucide="file-text" class="w-4.5 h-4.5 text-purple-500"></i>
+          </div>
+          <div class="mt-4">
+            <span class="text-2xl font-bold block text-slate-800 dark:text-zinc-200"><%= funnel.quote %></span>
+            <span class="text-[9px] font-extrabold bg-purple-50 text-purple-600 dark:bg-purple-950/30 rounded-full px-2 py-0.5 inline-block text-[9px] mt-1"><%= funnel.quotePct %></span>
+          </div>
+        </div>
+
+        <!-- Funnel Step 5: Sold -->
+        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[140px] hover:scale-102 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-100">Sold</span>
+            <i data-lucide="check" class="w-4.5 h-4.5 text-emerald-100"></i>
+          </div>
+          <div class="mt-4">
+            <span class="text-2xl font-bold block"><%= funnel.sold %></span>
+            <span class="text-[9px] font-bold bg-white/20 text-white rounded-full px-2 py-0.5 inline-block text-[9px] mt-1"><%= funnel.soldPct %></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. Revenue Line Chart & Lead Efficiency Progress Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Line Chart Container -->
+      <div class="lg:col-span-2 bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-brand-darkBorder pb-4">
+          <div>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Revenue Overview</h3>
+            <p class="text-xs text-slate-400 dark:text-zinc-500 mt-0.5">Monthly revenue trends grouped by category.</p>
+          </div>
+          
+          <!-- Legend indicators -->
+          <div class="flex items-center gap-4 text-xs font-semibold text-slate-500 dark:text-zinc-400">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange inline-block"></span>New Units</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-950 dark:bg-white inline-block"></span>Pre-Owned</span>
+          </div>
+        </div>
+        <div class="relative h-72 w-full mt-4">
+          <canvas id="revenueOverviewChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Lead Efficiency Progress Bars -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-base text-slate-900 dark:text-white border-b border-slate-100 dark:border-brand-darkBorder pb-3 mb-4">Lead Efficiency</h3>
+          
+          <!-- Progress List -->
+          <div class="space-y-4">
+            <% leadEfficiency.forEach(channel => { %>
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between text-xs font-semibold">
+                  <span class="text-slate-700 dark:text-zinc-300"><%= channel.channel %></span>
+                  <span class="text-brand-orange font-bold"><%= channel.convRate %>% conv.</span>
+                </div>
+                <!-- Track -->
+                <div class="h-2 w-full bg-slate-100 dark:bg-brand-darkBg rounded-full overflow-hidden">
+                  <!-- Fill -->
+                  <div class="h-full bg-brand-orange rounded-full" style="width: <%= channel.convRate %>%"></div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Suggestion callout box -->
+        <div class="bg-orange-50/40 dark:bg-orange-950/10 border border-orange-100/50 dark:border-brand-darkBorder rounded-2xl p-4 mt-6">
+          <p class="text-xs text-slate-600 dark:text-zinc-400 italic leading-relaxed font-medium">
+            "Referrals continue to outperform all other channels. Increasing referral bonuses is recommended for Q3."
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Delivery Performance Ledger Analytics Section -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <div class="border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-6 flex justify-between items-center">
+        <div>
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Delivery Performance Ledger</h3>
+          <p class="text-xs text-slate-400 dark:text-zinc-550 mt-0.5">Dealer vehicle delivery success metrics and fulfillment tracking.</p>
+        </div>
+        <div class="bg-emerald-50 text-emerald-600 dark:bg-emerald-955/20 dark:text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 dark:border-emerald-900/50">
+          Success Rate: <%= typeof deliveryStats !== 'undefined' ? deliveryStats.successRate : '100%' %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-6">
+        <div class="bg-slate-50 dark:bg-brand-darkBg border border-slate-150 dark:border-brand-darkBorder rounded-2xl p-4">
+          <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block">Total Deliveries</span>
+          <span class="text-xl font-bold text-slate-800 dark:text-white mt-1 block"><%= typeof deliveryStats !== 'undefined' ? deliveryStats.total : 0 %></span>
+        </div>
+        <div class="bg-slate-50 dark:bg-brand-darkBg border border-slate-150 dark:border-brand-darkBorder rounded-2xl p-4">
+          <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-emerald-500">Delivered Units</span>
+          <span class="text-xl font-bold text-slate-800 dark:text-white mt-1 block"><%= typeof deliveryStats !== 'undefined' ? deliveryStats.delivered : 0 %></span>
+        </div>
+        <div class="bg-slate-50 dark:bg-brand-darkBg border border-slate-150 dark:border-brand-darkBorder rounded-2xl p-4">
+          <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-indigo-500">Pending & Preparing</span>
+          <span class="text-xl font-bold text-slate-800 dark:text-white mt-1 block"><%= typeof deliveryStats !== 'undefined' ? deliveryStats.pending : 0 %></span>
+        </div>
+        <div class="bg-slate-50 dark:bg-brand-darkBg border border-slate-150 dark:border-brand-darkBorder rounded-2xl p-4">
+          <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-rose-500">Cancelled Units</span>
+          <span class="text-xl font-bold text-slate-800 dark:text-white mt-1 block"><%= typeof deliveryStats !== 'undefined' ? deliveryStats.cancelled : 0 %></span>
+        </div>
+      </div>
+
+      <!-- Trend details -->
+      <div class="border-t border-slate-100 dark:border-brand-darkBorder pt-4 text-xs font-semibold">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-2">Monthly Fulfillment Trend (Jan - Jun)</span>
+        <div class="flex items-center gap-4 flex-wrap">
+          <% if (typeof deliveryStats !== 'undefined' && deliveryStats.monthlyCounts) { %>
+            <% Object.entries(deliveryStats.monthlyCounts).forEach(([month, count]) => { %>
+              <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-brand-darkBg border border-slate-150 dark:border-brand-darkBorder rounded-xl px-3 py-1.5 shadow-sm">
+                <span class="font-bold text-slate-400 dark:text-zinc-500 text-[10px]"><%= month %>:</span>
+                <span class="font-extrabold text-slate-850 dark:text-white text-xs"><%= count %></span>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <span class="text-slate-400">No monthly trends recorded.</span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Bike Demand Heatmap Section -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <div class="border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-6">
+        <h3 class="font-bold text-lg text-slate-900 dark:text-white">Bike Demand Heatmap</h3>
+        <p class="text-xs text-slate-400 dark:text-zinc-500 mt-0.5">Real-time dealer demand mapping based on pipeline models interest.</p>
+      </div>
+
+      <!-- Horizontal Cards row layout -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        
+        <!-- Left flame icon widget card -->
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-brand-orange rounded-2xl flex items-center justify-center shrink-0 text-white shadow-sm">
+          <i data-lucide="flame" class="w-8 h-8 animate-pulse text-orange-200"></i>
+        </div>
+
+        <!-- Cards loop -->
+        <% bikeDemand.forEach(bike => { 
+          let cardBg = 'bg-slate-50 dark:bg-brand-darkBg border-slate-100 dark:border-brand-darkBorder text-slate-800 dark:text-zinc-100';
+          let badgeColor = 'bg-slate-200/60 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400';
+
+          if (bike.demandClass === 'high') {
+            cardBg = 'bg-brand-orange text-white shadow-md shadow-orange-500/10 border-transparent';
+            badgeColor = 'bg-white/20 text-white';
+          } else if (bike.demandClass === 'stable') {
+            cardBg = 'bg-gradient-to-br from-[#ff5c35]/80 to-[#d43d18]/80 text-white shadow-sm border-transparent';
+            badgeColor = 'bg-white/20 text-white';
+          }
+        %>
+          <div class="flex-1 border rounded-2xl p-5 <%= cardBg %> transition-all hover:scale-102 duration-150 flex flex-col justify-between min-h-[120px]">
+            <div class="flex justify-between items-start">
+              <h4 class="font-extrabold text-sm tracking-tight leading-snug"><%= bike.model %></h4>
+              <i data-lucide="trending-up" class="w-4 h-4 opacity-75 shrink-0"></i>
+            </div>
+            
+            <div class="mt-4">
+              <span class="text-xs font-medium block opacity-90"><%= bike.enquiries %> Enquiries</span>
+              <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full inline-block mt-2 tracking-wider <%= badgeColor %>">
+                <%= bike.status %>
+              </span>
+            </div>
+          </div>
+        <% }) %>
+
+      </div>
+    </div>
+
+<!-- Send backend values safely to client window context -->
+<script>
+  window.monthsLabels = <%- JSON.stringify(months) %>;
+  window.newUnitsRevenue = <%- JSON.stringify(newUnitsRevenue) %>;
+  window.preOwnedRevenue = <%- JSON.stringify(preOwnedRevenue) %>;
+</script>
+
+<!-- Load SheetJS, jsPDF, and jsPDF AutoTable from CDNs -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+(function() {
+  const initReports = () => {
+  const toggleFilterBtn = document.getElementById('toggleFilterBtn');
+  const filterPanel = document.getElementById('filterPanel');
+  const exportDropdownBtn = document.getElementById('exportDropdownBtn');
+  const exportMenu = document.getElementById('exportMenu');
+
+  // Toggle filter panel
+  if (toggleFilterBtn && filterPanel) {
+    toggleFilterBtn.addEventListener('click', () => {
+      filterPanel.classList.toggle('hidden');
+    });
+  }
+
+  // Toggle export dropdown
+  if (exportDropdownBtn && exportMenu) {
+    exportDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      exportMenu.classList.toggle('hidden');
+    });
+  }
+
+  // Close dropdown on clicking outside
+  document.addEventListener('click', () => {
+    if (exportMenu) {
+      exportMenu.classList.add('hidden');
+    }
+  });
+
+  // Export handlers
+  const exportExcelBtn = document.getElementById('exportExcelBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+  const exportPdfBtn = document.getElementById('exportPdfBtn');
+
+  // Helper to fetch report data matching active filters
+  async function fetchReportData() {
+    const params = new URLSearchParams(window.location.search);
+    const res = await fetch(`/reports/data?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch report data.');
+    return await res.json();
+  }
+
+  // EXPORT EXCEL
+  if (exportExcelBtn) {
+    exportExcelBtn.addEventListener('click', async () => {
+      try {
+        showToast('Preparing Excel export...', 'info');
+        const data = await fetchReportData();
+        
+        const wb = XLSX.utils.book_new();
+        
+        // Leads sheet
+        const leadsSheetData = data.leads.map(l => ({
+          Name: l.name,
+          Email: l.email || 'N/A',
+          Phone: l.phone,
+          'Bike Model': l.bikeModel,
+          Status: l.status,
+          Source: l.leadSource,
+          'Created At': new Date(l.createdAt).toLocaleDateString()
+        }));
+        const wsLeads = XLSX.utils.json_to_sheet(leadsSheetData);
+        XLSX.utils.book_append_sheet(wb, wsLeads, "Leads");
+        
+        // Pipeline sheet
+        const pipelineSheetData = Object.entries(data.pipeline).map(([status, count]) => ({
+          Stage: status.toUpperCase(),
+          Count: count
+        }));
+        const wsPipeline = XLSX.utils.json_to_sheet(pipelineSheetData);
+        XLSX.utils.book_append_sheet(wb, wsPipeline, "Pipeline Funnel");
+
+        // Followups sheet
+        const followupsSheetData = data.followups.map(t => ({
+          Title: t.title,
+          Customer: t.lead ? t.lead.name : 'Unknown',
+          Phone: t.lead ? t.lead.phone : 'N/A',
+          'Due Date': new Date(t.dueDate).toLocaleDateString(),
+          Priority: t.priority,
+          Status: t.status
+        }));
+        const wsFollowups = XLSX.utils.json_to_sheet(followupsSheetData);
+        XLSX.utils.book_append_sheet(wb, wsFollowups, "Follow Ups");
+
+        // Sales Summary sheet
+        const salesSheetData = [
+          { Metric: 'Total Revenue', Value: data.sales.totalRevenue },
+          { Metric: 'Lead Conversion Rate', Value: data.sales.leadConversion },
+          { Metric: 'Active Deals', Value: data.sales.activeDeals }
+        ];
+        const wsSales = XLSX.utils.json_to_sheet(salesSheetData);
+        XLSX.utils.book_append_sheet(wb, wsSales, "Sales Summary");
+
+        // Deliveries sheet
+        const deliveriesSheetData = data.deliveries.map(d => ({
+          Customer: d.customerName,
+          Email: d.customerEmail || 'N/A',
+          Phone: d.customerPhone,
+          'Bike Model': d.bikeModel,
+          'Delivery Date': new Date(d.deliveryDate).toLocaleDateString(),
+          Status: d.status,
+          'RC Status': d.rcStatus,
+          'Insurance Status': d.insuranceStatus,
+          Notes: d.deliveryNotes || 'N/A'
+        }));
+        const wsDeliveries = XLSX.utils.json_to_sheet(deliveriesSheetData);
+        XLSX.utils.book_append_sheet(wb, wsDeliveries, "Vehicle Deliveries");
+
+        XLSX.writeFile(wb, "MotoCRM_Report.xlsx");
+        showToast('Excel report downloaded successfully!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Export failed. Please try again.', 'error');
+      }
+    });
+  }
+
+  // EXPORT CSV
+  if (exportCsvBtn) {
+    exportCsvBtn.addEventListener('click', async () => {
+      try {
+        showToast('Preparing CSV export...', 'info');
+        const data = await fetchReportData();
+        
+        let csvContent = "Name,Email,Phone,Bike Model,Status,Source,Delivery Status,Delivery Date,RC Status,Insurance Status,Created Date\r\n";
+        data.leads.forEach(l => {
+          const d = data.deliveries.find(x => x.lead && x.lead._id === l._id);
+          const delStatus = d ? d.status : 'N/A';
+          const delDate = d ? new Date(d.deliveryDate).toLocaleDateString() : 'N/A';
+          const rcStatus = d ? d.rcStatus : 'N/A';
+          const insStatus = d ? d.insuranceStatus : 'N/A';
+          csvContent += `"${l.name}","${l.email || ''}","${l.phone}","${l.bikeModel}","${l.status}","${l.leadSource}","${delStatus}","${delDate}","${rcStatus}","${insStatus}","${new Date(l.createdAt).toLocaleDateString()}"\r\n`;
+        });
+        data.deliveries.forEach(d => {
+          if (!d.lead || !data.leads.some(l => l._id === d.lead._id)) {
+            csvContent += `"${d.customerName}","${d.customerEmail || ''}","${d.customerPhone}","${d.bikeModel}","Direct Delivery","System","${d.status}","${new Date(d.deliveryDate).toLocaleDateString()}","${d.rcStatus}","${d.insuranceStatus}","${new Date(d.createdAt).toLocaleDateString()}"\r\n`;
+          }
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "MotoCRM_Report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast('CSV report downloaded successfully!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Export failed. Please try again.', 'error');
+      }
+    });
+  }
+
+  // EXPORT PDF
+  if (exportPdfBtn) {
+    exportPdfBtn.addEventListener('click', async () => {
+      try {
+        showToast('Generating PDF report...', 'info');
+        const data = await fetchReportData();
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Title
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(20);
+        doc.text("MotoCRM Pro - Reports & Analytics", 14, 20);
+        
+        // Subtitle
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Generated on ${new Date().toLocaleString()} | Filters: Source: ${data.filters.source}, Model: ${data.filters.bikeModel || 'All'}`, 14, 27);
+        
+        // Sales Summary Table
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("Sales Summary Metrics", 14, 40);
+        
+        const summaryRows = [
+          ["Total Revenue", data.sales.totalRevenue],
+          ["Lead Conversion Rate", data.sales.leadConversion],
+          ["Active Deals", data.sales.activeDeals.toString()]
+        ];
+        
+        doc.autoTable({
+          startY: 44,
+          head: [["Metric", "Value"]],
+          body: summaryRows,
+          theme: 'striped',
+          headStyles: { fillColor: [255, 92, 53] }
+        });
+        
+        // Leads Table
+        const leadsHeaders = [["Name", "Phone", "Bike Model", "Status", "Source"]];
+        const leadsRows = data.leads.slice(0, 15).map(l => [
+          l.name, l.phone, l.bikeModel, l.status, l.leadSource
+        ]);
+        
+        doc.text(`Leads Overview (Showing top ${leadsRows.length} of ${data.leads.length})`, 14, doc.lastAutoTable.finalY + 15);
+        
+        doc.autoTable({
+          startY: doc.lastAutoTable.finalY + 20,
+          head: leadsHeaders,
+          body: leadsRows,
+          theme: 'striped',
+          headStyles: { fillColor: [71, 85, 105] }
+        });
+
+        // Deliveries Table
+        if (data.deliveries && data.deliveries.length > 0) {
+          const deliveriesHeaders = [["Customer", "Bike Model", "Delivery Date", "Status", "RC / Insurance"]];
+          const deliveriesRows = data.deliveries.slice(0, 10).map(d => [
+            d.customerName, d.bikeModel, new Date(d.deliveryDate).toLocaleDateString(), d.status, `RC: ${d.rcStatus} | Ins: ${d.insuranceStatus}`
+          ]);
+          
+          doc.text(`Deliveries Overview (Showing top ${deliveriesRows.length} of ${data.deliveries.length})`, 14, doc.lastAutoTable.finalY + 15);
+          
+          doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 20,
+            head: deliveriesHeaders,
+            body: deliveriesRows,
+            theme: 'striped',
+            headStyles: { fillColor: [14, 165, 233] }
+          });
+        }
+
+        doc.save("MotoCRM_Report.pdf");
+        showToast('PDF report downloaded successfully!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Export failed. Please try again.', 'error');
+      }
+    });
+  }
+};
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReports);
+  } else {
+    initReports();
+  }
+})();
+</script>
+
+  </main>
+</div>
+
+<%- include('partials/footer') %>

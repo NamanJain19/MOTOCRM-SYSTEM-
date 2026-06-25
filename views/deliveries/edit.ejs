@@ -1,0 +1,339 @@
+<%- include('../partials/head') %>
+
+<!-- Collapsible Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header -->
+  <%- include('../partials/header') %>
+
+  <!-- Form Wrapper -->
+  <main class="flex-1 overflow-y-auto bg-brand-lightBg dark:bg-brand-darkBg">
+    <form action="/deliveries/edit/<%= delivery._id %>" method="POST" class="p-8 space-y-6">
+    
+    <!-- Page Header & Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Manage Delivery</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Review pre-delivery inspections (PDI), update documentation approvals, check accessories checklist, and capture signature.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <a href="/deliveries" class="px-5 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all">
+          Cancel
+        </a>
+        <button type="submit" class="px-5 py-2.5 rounded-2xl text-sm font-bold bg-brand-orange hover:bg-orange-600 text-white transition-all shadow-sm cursor-pointer">
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Two-Column Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column (Overview, Checklist & Signature) - Spans 2/3 -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Delivery Summary Card (Read-Only) -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="info" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Delivery Summary</h3>
+          </div>
+          
+          <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Customer Name</span>
+              <span class="font-bold text-slate-800 dark:text-zinc-200"><%= delivery.customerName %></span>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Allocated Motorcycle</span>
+              <span class="font-bold text-slate-800 dark:text-zinc-200"><%= delivery.bikeModel %></span>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Phone Number</span>
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-slate-700 dark:text-zinc-350"><%= delivery.customerPhone %></span>
+                <button type="button" onclick="openSMSModal('<%= delivery.customerPhone %>', '<%= delivery._id %>', 'Delivery')" class="text-[10px] bg-orange-50 text-brand-orange dark:bg-orange-950/20 dark:text-orange-400 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 cursor-pointer transition-all hover:bg-brand-orange hover:text-white border border-transparent dark:border-brand-darkBorder uppercase">
+                  <i data-lucide="message-circle" class="w-3 h-3"></i>
+                  <span>SMS</span>
+                </button>
+                <a href="https://wa.me/<%= delivery.customerPhone.replace(/[^0-9]/g, '') %>" target="_blank" title="WhatsApp Chat" class="text-[10px] bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 px-2 py-0.5 rounded-lg font-extrabold flex items-center gap-1 cursor-pointer transition-all hover:bg-emerald-600 hover:text-white border border-transparent dark:border-brand-darkBorder uppercase">
+                  <i data-lucide="message-square" class="w-3 h-3"></i>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Email Address</span>
+              <span class="font-semibold text-slate-700 dark:text-zinc-350"><%= delivery.customerEmail || 'N/A' %></span>
+            </div>
+            <div class="sm:col-span-2 border-t border-slate-100 dark:border-brand-darkBorder pt-4">
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Scheduled Date</span>
+              <span class="font-bold text-brand-orange text-base">
+                <%= new Date(delivery.deliveryDate).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accessories Checklist Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="check-square" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Accessories Handover Checklist</h3>
+          </div>
+          
+          <div class="p-6">
+            <p class="text-xs text-slate-500 dark:text-zinc-400 mb-6">Verify and check the items that are present and handed over to the customer before finalizing delivery.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <% delivery.accessoriesChecklist.forEach((chk, idx) => { %>
+                <label class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-brand-darkBg hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder rounded-2xl cursor-pointer transition-all">
+                  <input 
+                    type="checkbox" 
+                    name="checklist" 
+                    value="<%= chk.item %>" 
+                    <%= chk.checked ? 'checked' : '' %>
+                    class="w-5 h-5 rounded-lg border-slate-300 text-brand-orange focus:ring-brand-orange"
+                  />
+                  <div>
+                    <span class="text-sm font-bold text-slate-800 dark:text-zinc-200"><%= chk.item %></span>
+                  </div>
+                </label>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Digital Signature Pad -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="signature" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Customer Digital Signature</h3>
+          </div>
+          
+          <div class="p-6 space-y-4">
+            <div class="border border-slate-200 dark:border-brand-darkBorder rounded-2xl overflow-hidden bg-slate-100 dark:bg-brand-darkBg p-1">
+              <div class="relative w-full h-48 bg-white dark:bg-brand-darkCard border border-slate-250 dark:border-brand-darkBorder rounded-xl overflow-hidden shadow-inner">
+                <canvas id="signature-canvas" class="w-full h-full cursor-crosshair block touch-none"></canvas>
+                <% if (delivery.customerSignature) { %>
+                  <div id="existing-signature-overlay" class="absolute inset-0 bg-white/90 dark:bg-brand-darkCard/95 flex flex-col items-center justify-center p-2">
+                    <p class="text-[10px] text-slate-400 uppercase font-extrabold mb-2 tracking-widest">Existing Saved Signature</p>
+                    <img src="<%= delivery.customerSignature %>" alt="Customer Signature" class="max-h-28 object-contain border border-slate-200/80 bg-slate-50 rounded-xl p-2" />
+                    <button type="button" onclick="clearExistingSignature()" class="mt-3 text-xs font-bold text-rose-500 hover:text-rose-600 transition-all flex items-center gap-1">
+                      <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                      <span>Reset Signature / Re-draw</span>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            
+            <input type="hidden" name="signature" id="signature-data-input" value="<%= delivery.customerSignature || '' %>" />
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+              <span class="text-xs text-slate-400 dark:text-zinc-500">Sign with mouse, trackpad, or finger on touch screens.</span>
+              <button 
+                type="button" 
+                id="clear-signature-btn" 
+                class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-xs font-bold text-slate-700 dark:text-zinc-300 rounded-xl border border-slate-250 dark:border-brand-darkBorder transition-all cursor-pointer"
+              >
+                Clear Signature Pad
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (Document Verification & Operations) - Spans 1/3 -->
+      <div class="space-y-8">
+        
+        <!-- Document Checklists -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="file-check" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Document Status</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- RC Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">RC Document Status</label>
+              <select 
+                name="rcStatus"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <% ['Pending', 'Submitted', 'Approved', 'Received'].forEach(st => { %>
+                  <option value="<%= st %>" <%= delivery.rcStatus === st ? 'selected' : '' %>><%= st %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Insurance Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Insurance Status</label>
+              <select 
+                name="insuranceStatus"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <% ['Pending', 'Active', 'Expired'].forEach(st => { %>
+                  <option value="<%= st %>" <%= delivery.insuranceStatus === st ? 'selected' : '' %>><%= st %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operations Settings Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="settings" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Delivery Operations</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Delivery Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Delivery Ledger Status</label>
+              <select 
+                name="status"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <% ['Pending', 'Preparing', 'Ready for Delivery', 'Delivered', 'Cancelled'].forEach(st => { %>
+                  <option value="<%= st %>" <%= delivery.status === st ? 'selected' : '' %>><%= st %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Delivery Ledger Notes</label>
+              <textarea 
+                name="notes" 
+                rows="4" 
+                placeholder="Remarks, handover timings..."
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+              ><%= delivery.deliveryNotes %></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    </form>
+
+    <!-- Digital Signature drawing code -->
+    <script>
+      (function() {
+        function initSignature() {
+          const canvas = document.getElementById('signature-canvas');
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          const signatureInput = document.getElementById('signature-data-input');
+          const clearBtn = document.getElementById('clear-signature-btn');
+          
+          // Set canvas dimensions based on client bounding box
+          function resizeCanvas() {
+            if (!document.getElementById('signature-canvas')) {
+              window.removeEventListener('resize', resizeCanvas);
+              return;
+            }
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx.strokeStyle = '#f97316'; // Brand orange color
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+          }
+          
+          // Initialize canvas
+          resizeCanvas();
+          // Re-adjust size on window resize
+          window.addEventListener('resize', resizeCanvas);
+          
+          let drawing = false;
+          let lastPos = { x: 0, y: 0 };
+          
+          function getMousePos(canvasDom, touchOrMouseEvent) {
+            const rect = canvasDom.getBoundingClientRect();
+            const clientX = touchOrMouseEvent.touches ? touchOrMouseEvent.touches[0].clientX : touchOrMouseEvent.clientX;
+            const clientY = touchOrMouseEvent.touches ? touchOrMouseEvent.touches[0].clientY : touchOrMouseEvent.clientY;
+            return {
+              x: clientX - rect.left,
+              y: clientY - rect.top
+            };
+          }
+          
+          function startDrawing(e) {
+            drawing = true;
+            lastPos = getMousePos(canvas, e);
+          }
+          
+          function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const mousePos = getMousePos(canvas, e);
+            ctx.beginPath();
+            ctx.moveTo(lastPos.x, lastPos.y);
+            ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.stroke();
+            lastPos = mousePos;
+          }
+          
+          function stopDrawing() {
+            if (drawing) {
+              drawing = false;
+              signatureInput.value = canvas.toDataURL();
+            }
+          }
+          
+          // Desktop Mouse Events
+          canvas.addEventListener('mousedown', startDrawing);
+          canvas.addEventListener('mousemove', draw);
+          canvas.addEventListener('mouseup', stopDrawing);
+          canvas.addEventListener('mouseleave', stopDrawing);
+          
+          // Mobile Touch Events
+          canvas.addEventListener('touchstart', startDrawing);
+          canvas.addEventListener('touchmove', draw);
+          canvas.addEventListener('touchend', stopDrawing);
+          
+          // Clear button functionality
+          clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            signatureInput.value = '';
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initSignature);
+        } else {
+          initSignature();
+        }
+      })();
+
+      // Re-sign logic helper (needs to be global or exposed)
+      window.clearExistingSignature = function() {
+        const overlay = document.getElementById('existing-signature-overlay');
+        if (overlay) overlay.remove();
+        const input = document.getElementById('signature-data-input');
+        if (input) input.value = '';
+        
+        // Clear canvas as well
+        const canvas = document.getElementById('signature-canvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+    </script>
+  </main>
+</div>
+
+<%- include('../partials/footer') %>

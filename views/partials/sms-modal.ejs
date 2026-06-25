@@ -1,0 +1,232 @@
+<!-- SMS Modal (Overlay) -->
+<div id="smsModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+  <!-- Backdrop -->
+  <div id="smsModalBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+  
+  <!-- Modal Content Container -->
+  <div id="smsModalContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]">
+    <!-- Modal Header -->
+    <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-orange-50 dark:bg-orange-950/20 text-brand-orange">
+          <i data-lucide="message-square" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">Send SMS Notification</h3>
+          <p class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Send a quick Twilio text update to the customer.</p>
+        </div>
+      </div>
+      <button id="closeSMSModalBtn" onclick="closeSMSModal()" class="p-2 text-slate-400 hover:text-slate-655 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-6 space-y-6 overflow-y-auto flex-1 text-xs font-semibold text-slate-700 dark:text-zinc-350">
+      
+      <!-- Input fields -->
+      <div class="space-y-4">
+        <!-- Recipient Phone -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-2">Recipient Phone</label>
+          <input type="text" id="smsRecipientPhone" disabled class="w-full bg-slate-50 dark:bg-brand-darkBg/60 text-slate-500 dark:text-zinc-450 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none font-bold text-xs" />
+        </div>
+        
+        <!-- SMS Message Text -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-2">Message</label>
+          <textarea id="smsMessageText" rows="4" placeholder="Type message here..." class="w-full bg-white dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-2xl px-4 py-3 outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-medium text-xs"></textarea>
+        </div>
+      </div>
+
+      <!-- SMS History Section -->
+      <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-brand-darkBorder">
+        <div class="flex items-center justify-between">
+          <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            <span>SMS Dispatch History</span>
+          </h4>
+          <span id="smsHistoryCount" class="text-[10px] text-slate-400 dark:text-zinc-500 font-bold">0 messages</span>
+        </div>
+        
+        <!-- History List container -->
+        <div id="smsHistoryList" class="space-y-2.5 max-h-40 overflow-y-auto pr-1">
+          <!-- Populated via AJAX -->
+          <div class="text-center text-slate-400 py-6 font-medium">No SMS history available.</div>
+        </div>
+      </div>
+
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex items-center justify-end gap-3">
+      <button onclick="closeSMSModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 dark:text-zinc-350 text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer font-sans">
+        Cancel
+      </button>
+      <button id="sendSMSModalBtn" onclick="submitSendSMS()" class="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5 font-sans">
+        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+        <span>Send SMS</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SMS Client Scripts -->
+<script>
+  let activeSMSPhone = '';
+  let activeSMSEntityId = '';
+  let activeSMSEntityType = ''; // 'Lead' or 'Delivery'
+
+  function openSMSModal(phone, entityId, entityType) {
+    if (!phone || phone === 'N/A') {
+      alert('Recipient phone number is invalid or not provided.');
+      return;
+    }
+    
+    activeSMSPhone = phone;
+    activeSMSEntityId = entityId;
+    activeSMSEntityType = entityType;
+
+    // Prefill recipient
+    document.getElementById('smsRecipientPhone').value = phone;
+    
+    // Preset default/custom message template based on type
+    const messageTextarea = document.getElementById('smsMessageText');
+    if (entityType === 'Delivery') {
+      messageTextarea.value = "Hello, your motorcycle delivery status update is scheduled. Contact us for any details.";
+    } else if (entityType === 'Lead') {
+      messageTextarea.value = "Hello, this is a follow-up reminder from MotoCRM. Let us know if you have any questions.";
+    } else {
+      messageTextarea.value = "";
+    }
+
+    // Reset Send Button
+    const sendBtn = document.getElementById('sendSMSModalBtn');
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span>Send SMS</span>';
+    if (window.lucide) window.lucide.createIcons();
+
+    // Fetch history
+    fetchSMSHistory(entityId, entityType);
+
+    // Open modal animation
+    const modal = document.getElementById('smsModal');
+    const backdrop = document.getElementById('smsModalBackdrop');
+    const content = document.getElementById('smsModalContent');
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      backdrop.classList.remove('opacity-0');
+      content.classList.remove('scale-95', 'opacity-0');
+    }, 10);
+  }
+
+  function closeSMSModal() {
+    const modal = document.getElementById('smsModal');
+    const backdrop = document.getElementById('smsModalBackdrop');
+    const content = document.getElementById('smsModalContent');
+
+    backdrop.classList.add('opacity-0');
+    content.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  async function fetchSMSHistory(entityId, entityType) {
+    const historyList = document.getElementById('smsHistoryList');
+    const historyCount = document.getElementById('smsHistoryCount');
+    historyList.innerHTML = '<div class="text-center py-6 text-slate-400 font-medium animate-pulse">Loading history...</div>';
+
+    try {
+      const paramName = entityType === 'Lead' ? 'leadId' : 'deliveryId';
+      const res = await fetch(`/api/sms/history?${paramName}=${entityId}`);
+      const data = await res.json();
+
+      if (data.success && data.history && data.history.length > 0) {
+        historyCount.textContent = `${data.history.length} message${data.history.length > 1 ? 's' : ''}`;
+        let html = '';
+        data.history.forEach(item => {
+          let badgeClass = 'bg-sky-50 text-sky-600 dark:bg-sky-955/20 dark:text-sky-400 border-sky-200';
+          if (item.status === 'Sent') {
+            badgeClass = 'bg-emerald-50 text-emerald-600 dark:bg-emerald-955/20 dark:text-emerald-400 border-emerald-250';
+          } else if (item.status === 'Failed') {
+            badgeClass = 'bg-rose-50 text-rose-600 dark:bg-rose-955/20 dark:text-rose-400 border-rose-200';
+          }
+
+          const dateStr = new Date(item.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+          html += `
+            <div class="p-3 bg-slate-50 dark:bg-brand-darkBg/40 border border-slate-200 dark:border-brand-darkBorder rounded-2xl space-y-1.5">
+              <div class="flex justify-between items-center text-[10px]">
+                <span class="font-extrabold text-slate-400">${dateStr}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border ${badgeClass}">${item.status}</span>
+              </div>
+              <p class="text-slate-750 dark:text-zinc-300 font-medium leading-relaxed break-words whitespace-normal font-sans text-left">${item.message}</p>
+              ${item.error ? `<p class="text-[9px] text-rose-500 font-bold font-sans text-left">Error: ${item.error}</p>` : ''}
+            </div>
+          `;
+        });
+        historyList.innerHTML = html;
+      } else {
+        historyCount.textContent = '0 messages';
+        historyList.innerHTML = '<div class="text-center text-slate-400 py-6 font-medium">No SMS history available.</div>';
+      }
+    } catch (err) {
+      console.error(err);
+      historyList.innerHTML = '<div class="text-center text-rose-500 py-6 font-bold">Error loading SMS history.</div>';
+    }
+  }
+
+  async function submitSendSMS() {
+    const message = document.getElementById('smsMessageText').value.trim();
+    if (!message) {
+      alert('Message content cannot be empty.');
+      return;
+    }
+
+    const sendBtn = document.getElementById('sendSMSModalBtn');
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span><span>Sending...</span>';
+
+    try {
+      const payload = {
+        to: activeSMSPhone,
+        message: message
+      };
+      if (activeSMSEntityType === 'Lead') {
+        payload.leadId = activeSMSEntityId;
+      } else if (activeSMSEntityType === 'Delivery') {
+        payload.deliveryId = activeSMSEntityId;
+      }
+
+      const res = await fetch('/api/sms/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (typeof showToast === 'function') {
+          showToast('SMS dispatched successfully.', 'success');
+        } else {
+          alert('SMS dispatched successfully.');
+        }
+        closeSMSModal();
+      } else {
+        alert(data.message || 'Failed to send SMS.');
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span>Send SMS</span>';
+        if (window.lucide) window.lucide.createIcons();
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error sending SMS.');
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span>Send SMS</span>';
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+</script>

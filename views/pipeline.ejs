@@ -1,0 +1,509 @@
+<%- include('partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200 bg-brand-lightBg dark:bg-brand-darkBg">
+  <!-- Header -->
+  <%- include('partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-hidden p-8 flex flex-col space-y-6">
+    
+    <!-- Page Header & Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5 shrink-0">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Lead Pipeline</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Drag and drop leads to update their sales funnel status dynamically. Click cards to view full profiles.</p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="/leads/add" class="flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-5 py-2.5 rounded-2xl transition-all shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add New Lead</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Kanban columns list container -->
+    <div class="flex-1 flex gap-6 overflow-x-auto pb-4 items-start select-none">
+      
+      <% 
+        // Define stages key matching Lead schema enums with their visual dots colors
+        const stageConfigs = [
+          { key: 'New', label: 'New Lead', dot: 'bg-sky-500' },
+          { key: 'Contacted', label: 'Contacted', dot: 'bg-indigo-500' },
+          { key: 'Interested', label: 'Interested', dot: 'bg-rose-500' },
+          { key: 'Test Ride Booked', label: 'Test Ride', dot: 'bg-yellow-500' },
+          { key: 'Negotiation', label: 'Negotiating', dot: 'bg-orange-500' },
+          { key: 'Sold', label: 'Sold (Closed)', dot: 'bg-emerald-500' },
+          { key: 'Delivered', label: 'Delivered', dot: 'bg-emerald-600' },
+          { key: 'Lost', label: 'Lost', dot: 'bg-slate-400' }
+        ];
+      %>
+
+      <% stageConfigs.forEach(stage => { 
+        const stageLeads = stages[stage.key] || [];
+      %>
+        <!-- Pipeline Column -->
+        <div class="w-72 shrink-0 bg-white/70 dark:bg-brand-darkCard/50 border border-slate-200/50 dark:border-brand-darkBorder/50 rounded-3xl p-4 flex flex-col max-h-[calc(100vh-210px)] shadow-sm">
+          
+          <!-- Column Header -->
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-brand-darkBorder mb-3 shrink-0">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full <%= stage.dot %>"></span>
+              <h3 class="font-extrabold text-sm text-slate-800 dark:text-zinc-200"><%= stage.label %></h3>
+            </div>
+            <span id="count-<%= stage.key %>" class="text-[10px] font-extrabold bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400 px-2 py-0.5 rounded-full">
+              <%= stageLeads.length %>
+            </span>
+          </div>
+
+          <!-- Draggable Lane -->
+          <div 
+            class="flex-1 overflow-y-auto space-y-3 pr-1 py-1 min-h-[150px] rounded-2xl transition-all duration-200 border-2 border-dashed border-transparent"
+            data-status="<%= stage.key %>"
+            ondragover="allowDrop(event)"
+            ondragleave="dragLeave(event)"
+            ondrop="drop(event)"
+          >
+            <% if (stageLeads.length === 0) { %>
+              <!-- Empty spacer to drop leads when lane is empty -->
+              <div class="empty-lane-placeholder pointer-events-none py-8 text-center text-[11px] text-slate-400 dark:text-zinc-650 font-medium">
+                Empty Lane
+              </div>
+            <% } %>
+
+            <% stageLeads.forEach(lead => { %>
+              <!-- Lead Kanban Card -->
+              <div 
+                id="card-<%= lead._id %>"
+                class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-2xl p-4 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all duration-150 flex flex-col gap-2.5"
+                draggable="true"
+                ondragstart="drag(event)"
+                data-lead-id="<%= lead._id %>"
+              >
+                <!-- Card Header -->
+                <div class="flex items-start justify-between gap-2">
+                  <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-md bg-slate-50 text-slate-700 dark:bg-brand-darkBg dark:text-zinc-400 truncate max-w-[150px]" title="<%= lead.bikeModel %>">
+                    <%= lead.bikeModel %>
+                  </span>
+                  
+                  <span class="text-[10px] text-slate-400 dark:text-zinc-500 flex items-center gap-0.5 font-bold shrink-0">
+                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
+                    <%= lead.city %>
+                  </span>
+                </div>
+
+                <!-- Customer Info -->
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-800 dark:text-zinc-200 leading-snug"><%= lead.name %></h4>
+                  <p class="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1.5 mt-2">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                    <span class="font-medium"><%= lead.phone %></span>
+                  </p>
+                  
+                  <!-- Follow Up Date -->
+                  <% 
+                    const followDate = new Date(lead.followUpDate);
+                    const isToday = followDate.toDateString() === new Date().toDateString();
+                  %>
+                  <p class="text-[10px] font-bold flex items-center gap-1.5 mt-1.5 <%= isToday ? 'text-brand-orange' : 'text-slate-400 dark:text-zinc-500' %>">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0 opacity-75"></i>
+                    <span>Follow Up: <%= followDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) %></span>
+                  </p>
+                </div>
+
+                <!-- Card Actions Divider -->
+                <div class="border-t border-slate-100 dark:border-brand-darkBorder pt-2 mt-1">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <!-- WhatsApp Action -->
+                    <a 
+                      href="https://wa.me/<%= lead.phone.replace(/[^0-9]/g, '') %>" 
+                      target="_blank" 
+                      title="WhatsApp Chat" 
+                      class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all"
+                    >
+                      <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                    </a>
+
+                    <!-- Edit Action -->
+                    <a 
+                      href="/leads/edit/<%= lead._id %>" 
+                      title="Edit Lead" 
+                      class="w-7 h-7 rounded-lg bg-slate-50 text-slate-550 hover:bg-slate-200 dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center border border-slate-100 dark:border-brand-darkBorder transition-all"
+                    >
+                      <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                    </a>
+
+                    <!-- View Action Modal Trigger -->
+                    <button 
+                      onclick="openDetailModal('<%= lead._id %>')"
+                      title="View Profile Details" 
+                      class="w-7 h-7 rounded-lg bg-blue-50 text-brand-orange hover:bg-brand-orange hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center cursor-pointer transition-all"
+                    >
+                      <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+
+          </div>
+        </div>
+      <% }) %>
+
+    </div>
+
+<!-- Dynamic Overlay Modal (Lead View) -->
+<div id="detail-modal" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-200">
+  <div class="bg-white dark:bg-brand-darkCard rounded-3xl border border-slate-200 dark:border-brand-darkBorder max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-6 relative max-h-[90vh] overflow-y-auto">
+    
+    <!-- Modal Close Icon -->
+    <button onclick="closeDetailModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-650 dark:hover:text-white cursor-pointer transition-colors">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+
+    <!-- Modal Header -->
+    <div class="flex items-center gap-3.5 border-b border-slate-100 dark:border-brand-darkBorder pb-4">
+      <div class="w-10 h-10 rounded-2xl bg-orange-100 text-brand-orange flex items-center justify-center shrink-0">
+        <i data-lucide="user" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white leading-snug" id="modal-lead-name">Customer details</h3>
+        <p class="text-xs text-slate-400 dark:text-zinc-500">Read-only profile datasheet & purchase settings.</p>
+      </div>
+    </div>
+
+    <!-- Modal Two-Column Fields Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+      
+      <!-- Col 1: Customer Contact details -->
+      <div class="space-y-4">
+        <h4 class="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] border-l-2 border-brand-orange pl-2">Customer Profile</h4>
+        
+        <div class="space-y-2.5">
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Email Address</span>
+            <div id="modal-lead-email" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold truncate"></div>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Phone Number</span>
+            <div id="modal-lead-phone" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-bold"></div>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Alternative Contact</span>
+            <div id="modal-lead-alt-contact" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Address</span>
+            <div id="modal-lead-address" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">City</span>
+            <div id="modal-lead-city" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: Deal Preference settings -->
+      <div class="space-y-4">
+        <h4 class="font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-[10px] border-l-2 border-brand-orange pl-2">Deal Settings</h4>
+        
+        <div class="space-y-2.5">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Model Interest</span>
+              <div id="modal-lead-bike-model" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-bold truncate"></div>
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Preferred Color</span>
+              <div id="modal-lead-color" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Condition</span>
+              <div id="modal-lead-condition" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Budget</span>
+              <div id="modal-lead-budget" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-bold"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Lead Source</span>
+              <div id="modal-lead-source" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Financing Interest</span>
+              <div id="modal-lead-financing" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Channel Preference</span>
+              <div id="modal-lead-contact-method" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-semibold"></div>
+            </div>
+            <div>
+              <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Follow-Up Date</span>
+              <div id="modal-lead-follow-up" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2 mt-1 text-slate-800 dark:text-zinc-300 font-bold"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+      <!-- Delivery Details Section -->
+      <div id="modal-lead-delivery-section" class="space-y-3 border-t border-slate-100 dark:border-brand-darkBorder pt-4 hidden">
+        <div class="flex items-center gap-2 mb-2 text-brand-orange">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span class="font-bold text-xs uppercase tracking-wider">Delivery Ledger Details</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Delivery Status</span>
+            <span id="modal-lead-delivery-status" class="font-bold"></span>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Delivery Date</span>
+            <span id="modal-lead-delivery-date" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">RC / Insurance Status</span>
+            <span id="modal-lead-delivery-docs" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+          </div>
+          <div>
+            <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Accessories Checklist</span>
+            <span id="modal-lead-delivery-checklist" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes full span -->
+    <div class="text-xs">
+      <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase">Interaction Notes</span>
+      <div id="modal-lead-notes" class="bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl px-3.5 py-2.5 mt-1 text-slate-800 dark:text-zinc-300 font-medium leading-relaxed min-h-[60px]"></div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-brand-darkBorder pt-4 shrink-0">
+      <button onclick="closeDetailModal()" class="px-5 py-2 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 hover:text-slate-850 dark:text-zinc-400 dark:hover:text-white text-xs font-semibold cursor-pointer transition-all">
+        Close
+      </button>
+      <a id="modal-whatsapp-link" href="#" target="_blank" class="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5">
+        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+        <span>WhatsApp Chat</span>
+      </a>
+      <a id="modal-edit-link" href="#" class="px-5 py-2 rounded-xl bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold transition-all flex items-center gap-1.5">
+        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+        <span>Edit Profile</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Map leads list flat details globally on the client window -->
+<script>
+  window.leadsMap = {};
+  <% Object.values(stages).forEach(stageLeads => { %>
+    <% stageLeads.forEach(lead => { %>
+      window.leadsMap['<%= lead._id %>'] = <%- JSON.stringify(lead) %>;
+    <% }) %>
+  <% }) %>
+</script>
+
+<!-- Drag and Drop Kanban Controller -->
+<script>
+  function allowDrop(ev) {
+    ev.preventDefault();
+    const lane = ev.currentTarget;
+    lane.classList.add('bg-orange-50/20', 'dark:bg-orange-950/5', 'border-brand-orange/40');
+    
+    // Hide visual placeholder "Empty Lane" when hovering
+    const placeholder = lane.querySelector('.empty-lane-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+  }
+
+  function dragLeave(ev) {
+    const lane = ev.currentTarget;
+    lane.classList.remove('bg-orange-50/20', 'dark:bg-orange-950/5', 'border-brand-orange/40');
+    
+    // Show placeholder if empty after leave
+    const placeholder = lane.querySelector('.empty-lane-placeholder');
+    if (placeholder && lane.querySelectorAll('[id^="card-"]').length === 0) {
+      placeholder.style.display = 'block';
+    }
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("text/plain", ev.target.id);
+    ev.target.classList.add('opacity-45', 'scale-95');
+  }
+
+  async function drop(ev) {
+    ev.preventDefault();
+    const lane = ev.currentTarget;
+    lane.classList.remove('bg-orange-50/20', 'dark:bg-orange-950/5', 'border-brand-orange/40');
+    
+    const cardId = ev.dataTransfer.getData("text/plain");
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    
+    card.classList.remove('opacity-45', 'scale-95');
+    
+    const leadId = card.getAttribute('data-lead-id');
+    const newStatus = lane.getAttribute('data-status');
+    const oldStatus = card.parentElement.getAttribute('data-status');
+    
+    if (oldStatus === newStatus) return; // Dropped in the same column
+
+    // Remove any placeholder
+    const placeholder = lane.querySelector('.empty-lane-placeholder');
+    if (placeholder) {
+      placeholder.remove();
+    }
+    
+    // Append card visually
+    lane.appendChild(card);
+    
+    // Check if the old column is now empty and needs a placeholder
+    const oldLane = document.querySelector(`[data-status="${oldStatus}"]`);
+    if (oldLane && oldLane.querySelectorAll('[id^="card-"]').length === 0) {
+      const placeholderHtml = document.createElement('div');
+      placeholderHtml.className = "empty-lane-placeholder pointer-events-none py-8 text-center text-[11px] text-slate-400 dark:text-zinc-650 font-medium";
+      placeholderHtml.innerText = "Empty Lane";
+      oldLane.appendChild(placeholderHtml);
+    }
+    
+    // Update column counters and status badges
+    updateColumnCounters();
+    
+    // Send AJAX request
+    try {
+      const response = await fetch('/pipeline/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ leadId, newStatus })
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        // Revert on failure
+        alert('Failed to update lead status: ' + (data.message || 'Server error.'));
+        location.reload();
+      } else {
+        // Update local object map state status value
+        if (window.leadsMap[leadId]) {
+          window.leadsMap[leadId].status = newStatus;
+        }
+      }
+    } catch (err) {
+      console.error('AJAX Error:', err);
+      alert('Connection error. Failed to update status.');
+      location.reload();
+    }
+  }
+
+  function updateColumnCounters() {
+    const columns = document.querySelectorAll('[data-status]');
+    columns.forEach(col => {
+      const status = col.getAttribute('data-status');
+      // Count items that have IDs starting with card-
+      const count = col.querySelectorAll('[id^="card-"]').length;
+      const countPill = document.getElementById(`count-${status}`);
+      if (countPill) {
+        countPill.innerText = count;
+      }
+    });
+  }
+
+  // Lead View Modal Controls
+  function openDetailModal(leadId) {
+    const lead = window.leadsMap[leadId];
+    if (!lead) return;
+
+    document.getElementById('modal-lead-name').innerText = lead.name;
+    document.getElementById('modal-lead-email').innerText = lead.email || 'None';
+    document.getElementById('modal-lead-phone').innerText = lead.phone;
+    document.getElementById('modal-lead-alt-contact').innerText = lead.alternativeContact || 'None';
+    document.getElementById('modal-lead-address').innerText = lead.homeAddress || 'None';
+    document.getElementById('modal-lead-city').innerText = lead.city;
+    document.getElementById('modal-lead-bike-model').innerText = lead.bikeModel;
+    document.getElementById('modal-lead-color').innerText = lead.preferredColor || 'None';
+    document.getElementById('modal-lead-condition').innerText = lead.conditionPreference || 'New';
+    document.getElementById('modal-lead-budget').innerText = lead.targetBudget ? '$' + Number(lead.targetBudget).toLocaleString() : '$0';
+    document.getElementById('modal-lead-source').innerText = lead.leadSource;
+    document.getElementById('modal-lead-financing').innerText = lead.financingInterest === 'Yes' ? 'Yes (Requires Quote)' : 'No (Outright)';
+    document.getElementById('modal-lead-contact-method').innerText = lead.preferredContactMethod || 'Email';
+    document.getElementById('modal-lead-notes').innerText = lead.notes || 'No conversation notes recorded.';
+    
+    // Render delivery details if present
+    const delivery = lead.delivery;
+    const delSection = document.getElementById('modal-lead-delivery-section');
+    if (delivery) {
+      const statusEl = document.getElementById('modal-lead-delivery-status');
+      statusEl.innerText = delivery.status;
+      statusEl.className = 'font-bold';
+      if (delivery.status === 'Delivered') statusEl.classList.add('text-emerald-500');
+      else if (delivery.status === 'Ready for Delivery') statusEl.classList.add('text-indigo-500');
+      else if (delivery.status === 'Preparing') statusEl.classList.add('text-amber-500');
+      else if (delivery.status === 'Pending') statusEl.classList.add('text-sky-500');
+
+      const dDate = new Date(delivery.deliveryDate);
+      document.getElementById('modal-lead-delivery-date').innerText = dDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('modal-lead-delivery-docs').innerText = `RC: ${delivery.rcStatus} | Ins: ${delivery.insuranceStatus}`;
+      
+      const checkedCount = delivery.accessoriesChecklist ? delivery.accessoriesChecklist.filter(i => i.checked).length : 0;
+      const totalCount = delivery.accessoriesChecklist ? delivery.accessoriesChecklist.length : 0;
+      document.getElementById('modal-lead-delivery-checklist').innerText = `${checkedCount} / ${totalCount} Checked`;
+      
+      delSection.classList.remove('hidden');
+    } else {
+      delSection.classList.add('hidden');
+    }
+    
+    // Format follow up date
+    const d = new Date(lead.followUpDate);
+    document.getElementById('modal-lead-follow-up').innerText = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // Buttons
+    document.getElementById('modal-whatsapp-link').href = 'https://wa.me/' + lead.phone.replace(/[^0-9]/g, '');
+    document.getElementById('modal-edit-link').href = '/leads/edit/' + lead._id;
+
+    // Display modal
+    const modal = document.getElementById('detail-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeDetailModal() {
+    const modal = document.getElementById('detail-modal');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  }
+
+  // Close modal when clicking outside contents
+  document.getElementById('detail-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeDetailModal();
+    }
+  });
+</script>
+
+  </main>
+</div>
+
+<%- include('partials/footer') %>

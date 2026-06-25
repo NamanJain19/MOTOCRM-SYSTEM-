@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotoCRM Pro - <%= title %></title>
+  
+  <!-- Plus Jakarta Sans Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              blue: '#0b57d0',
+              hoverBlue: '#0a4eb8',
+              orange: '#ff5c35',
+              lightBg: '#f4f6fa',
+              darkBg: '#0e0e10',
+              darkCard: '#161619',
+              darkBorder: '#242427',
+              accentBlue: '#0052cc',
+              accentYellow: '#f5a623',
+              accentGreen: '#10b981',
+              accentRed: '#ef4444'
+            }
+          },
+          borderRadius: {
+            '3xl': '24px',
+            '4xl': '32px'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom CSS for charts and details -->
+  <link rel="stylesheet" href="/css/custom.css">
+  
+  <style>
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+      visibility: hidden;
+    }
+    
+    /* Prevent FOUC (Flash of Unstyled Content) on theme load */
+    html.theme-loaded {
+      visibility: visible;
+    }
+    
+    /* Smooth page transitions */
+    body {
+      transition: opacity 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    }
+    
+    /* Smooth content transitions */
+    main {
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+    
+    /* Collapsible Sidebar CSS Transitions */
+    .sidebar-container {
+      width: 16rem; /* w-64 */
+      transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    html.sidebar-collapsed .sidebar-container {
+      width: 5rem; /* w-20 */
+    }
+    .sidebar-label {
+      opacity: 1;
+      max-width: 200px;
+      transition: opacity 250ms ease, max-width 250ms ease;
+    }
+    html.sidebar-collapsed .sidebar-label {
+      opacity: 0;
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .logo-label {
+      opacity: 1;
+      transition: opacity 250ms ease;
+    }
+    html.sidebar-collapsed .logo-label {
+      opacity: 0;
+      display: none;
+    }
+    
+    /* Sidebar tooltips on hover when collapsed */
+    html.sidebar-collapsed .sidebar-container a:hover::after,
+    html.sidebar-collapsed .sidebar-container button:hover::after {
+      content: attr(title);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 12px;
+      padding: 6px 12px;
+      background: #1e293b;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 0.2s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+    
+    html.sidebar-collapsed .sidebar-container a,
+    html.sidebar-collapsed .sidebar-container button {
+      position: relative;
+    }
+    
+    /* Instant theme transition - no delay */
+    html, body {
+      transition: none;
+    }
+    
+    /* Smooth button transitions */
+    button, a {
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+  
+  <!-- Initialize theme immediately to prevent flash -->
+  <script>
+    (function() {
+      const theme = localStorage.getItem('motocrm-theme') || 'dark';
+      const collapsed = localStorage.getItem('motocrm-sidebar-collapsed') === 'true';
+      const root = document.documentElement;
+      
+      if (theme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+      
+      if (collapsed) {
+        root.classList.add('sidebar-collapsed');
+      } else {
+        root.classList.remove('sidebar-collapsed');
+      }
+      
+      root.classList.add('theme-loaded');
+    })();
+  </script>
+</head>
+<body class="bg-brand-lightBg text-slate-800 dark:bg-brand-darkBg dark:text-zinc-100 min-h-screen font-sans flex transition-colors duration-200">
+  <!-- Load globals.js for all interactive features -->
+  <script src="/js/globals.js" defer></script>
+  <!-- Load Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>

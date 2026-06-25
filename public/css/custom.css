@@ -1,0 +1,211 @@
+/* MotoCRM Finexy Custom Styles */
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #242427;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Credit Card Styling Widgets */
+.credit-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 20px;
+  height: 140px;
+  display: flex;
+  flex-col: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.credit-card-dark {
+  background: linear-gradient(135deg, #18181b 0%, #000000 100%);
+  color: #ffffff;
+}
+
+.credit-card-orange {
+  background: linear-gradient(135deg, #ff5c35 0%, #d43d18 100%);
+  color: #ffffff;
+}
+
+.credit-card::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+/* Timeline components adjustments */
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 15px;
+  width: 2px;
+  background-color: #cbd5e1;
+}
+
+.dark .timeline-line::before {
+  background-color: #242427;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Ensure the calendar icon is visible and high contrast across all themes */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  display: block;
+  opacity: 1;
+  padding: 4px;
+  background-size: contain;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+/* Light mode icon styling: high-contrast brand orange (#ff5c35) */
+html:not(.dark) input[type="date"]::-webkit-calendar-picker-indicator,
+html:not(.dark) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(46%) sepia(85%) saturate(1450%) hue-rotate(345deg) brightness(100%) contrast(100%);
+}
+
+html:not(.dark) input[type="date"]::-webkit-calendar-picker-indicator:hover,
+html:not(.dark) input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(36%) sepia(85%) saturate(2200%) hue-rotate(345deg) brightness(90%) contrast(100%);
+  transform: scale(1.1);
+}
+
+/* Dark mode icon styling: bright orange matching the dark mode accents */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(65%) sepia(70%) saturate(1800%) hue-rotate(345deg) brightness(110%) contrast(100%);
+}
+
+html.dark input[type="date"]::-webkit-calendar-picker-indicator:hover,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(75%) sepia(80%) saturate(2500%) hue-rotate(345deg) brightness(120%) contrast(100%);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   PERFORMANCE & UX OPTIMIZATION UPGRADES
+   ========================================================================== */
+
+/* Enable Smooth Scrolling Globally */
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Page containers & overflows */
+main {
+  scroll-behavior: smooth;
+  will-change: transform, opacity;
+}
+
+/* Premium Card Zoom & Hover Effects */
+.bg-white.dark\:bg-brand-darkCard,
+.task-card,
+.activity-row,
+.bg-slate-50\/20 {
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.22s ease,
+              border-color 0.22s ease;
+}
+
+/* Card hover animation */
+.bg-white.dark\:bg-brand-darkCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .bg-white.dark\:bg-brand-darkCard:hover {
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* Subtle Zoom for Task/Activity Cards */
+.task-card:hover {
+  transform: translateY(-2px) scale(1.005);
+}
+
+/* Active Link States Transitions */
+aside a, 
+.sidebar-container a {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.15s ease;
+}
+
+/* Micro-interaction on Sidebar Link Hover */
+aside a:hover, 
+.sidebar-container a:hover {
+  transform: translateX(4px);
+}
+
+/* Hardware-accelerated Transitions for interactive inputs */
+input, select, textarea, button {
+  transition: border-color 0.18s ease, 
+              background-color 0.18s ease, 
+              color 0.18s ease, 
+              box-shadow 0.18s ease, 
+              transform 0.1s ease;
+}
+
+button:active, 
+a.bg-brand-orange:active {
+  transform: scale(0.97);
+}
+
+/* Premium micro-shadow animation on main orange buttons */
+.bg-brand-orange {
+  transition: background-color 0.2s ease, 
+              transform 0.15s ease, 
+              box-shadow 0.2s ease !important;
+}
+
+.bg-brand-orange:hover {
+  box-shadow: 0 10px 15px -3px rgba(255, 92, 53, 0.3), 
+              0 4px 6px -4px rgba(255, 92, 53, 0.3) !important;
+}

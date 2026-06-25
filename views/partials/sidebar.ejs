@@ -1,0 +1,84 @@
+<!-- Collapsible Left Sidebar Navigation -->
+<aside class="sidebar-container bg-white border-r border-slate-200/60 dark:bg-brand-darkCard dark:border-brand-darkBorder h-screen flex flex-col justify-between items-start py-6 px-4 shrink-0 z-30 select-none">
+  
+  <div class="w-full flex flex-col gap-6">
+    <!-- Top Section: Brand Logo -->
+    <div class="sidebar-header flex items-center gap-3 px-3 mb-2 w-full shrink-0">
+      <div class="w-9 h-9 rounded-xl bg-brand-orange flex items-center justify-center text-white shadow-md shadow-orange-500/10 shrink-0">
+        <i data-lucide="bike" class="w-5 h-5"></i>
+      </div>
+      <span class="logo-label text-base font-extrabold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+        Moto<span class="text-brand-orange">CRM</span><span class="text-[10px] font-bold text-slate-455 bg-slate-100 dark:bg-brand-darkBg dark:text-zinc-500 ml-1.5 px-1.5 py-0.5 rounded-md uppercase">Pro</span>
+      </span>
+    </div>
+
+    <!-- Middle Section: Menu List -->
+    <nav class="flex flex-col gap-2 w-full">
+      <% 
+        const navItems = [
+          { label: 'Dashboard', path: '/', icon: 'layout-dashboard' },
+          { label: 'Pipeline', path: '/pipeline', icon: 'columns' },
+          { label: 'Leads', path: '/leads', icon: 'users' },
+          { label: 'Add New Lead', path: '/leads/add', icon: 'user-plus' },
+          { label: 'Follow Ups', path: '/follow-ups', icon: 'clock' },
+          { label: 'Test Rides', path: '/test-rides', icon: 'calendar-clock' },
+          { label: 'Deliveries', path: '/deliveries', icon: 'truck' },
+          { label: 'Inventory', path: '/inventory', icon: 'package' },
+          { label: 'Reports & Analytics', path: '/reports', icon: 'bar-chart-3' },
+          { label: 'Settings', path: '/settings', icon: 'settings' }
+        ];
+
+        // Find the sidebar item that represents the longest match for the current path
+        let activeItem = null;
+        let longestMatchLen = -1;
+        navItems.forEach(item => {
+          if (item.path === '/' && path === '/') {
+            activeItem = item;
+            longestMatchLen = 1;
+          } else if (item.path !== '/' && (path === item.path || path.startsWith(item.path + '/'))) {
+            if (item.path.length > longestMatchLen) {
+              activeItem = item;
+              longestMatchLen = item.path.length;
+            }
+          }
+        });
+
+        navItems.forEach(item => {
+          const isActive = (activeItem && activeItem.path === item.path);
+      %>
+        <a 
+          href="<%= item.path %>" 
+          title="<%= item.label %>"
+          class="w-full h-11 px-3 rounded-2xl flex items-center gap-4 transition-all duration-200 shrink-0 <%= isActive ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-md font-bold' : 'text-slate-500 hover:bg-slate-50 dark:text-zinc-500 dark:hover:bg-brand-darkBg dark:hover:text-zinc-200 font-semibold' %>"
+        >
+          <i data-lucide="<%= item.icon %>" class="w-5 h-5 shrink-0"></i>
+          <span class="sidebar-label text-xs whitespace-nowrap"><%= item.label %></span>
+        </a>
+      <% }) %>
+    </nav>
+  </div>
+
+  <!-- Bottom Section: Help, Toggle and Logout -->
+  <div class="flex flex-col items-start gap-2 w-full mt-auto">
+    <!-- Help Link -->
+    <a 
+      href="/settings" 
+      title="Help Center"
+      class="w-full h-11 px-3 rounded-2xl flex items-center gap-4 text-slate-500 hover:bg-slate-50 dark:text-zinc-500 dark:hover:bg-brand-darkBg transition-all shrink-0 font-semibold"
+    >
+      <i data-lucide="help-circle" class="w-5 h-5 shrink-0"></i>
+      <span class="sidebar-label text-xs whitespace-nowrap">Help Center</span>
+    </a>
+    
+    <!-- Collapse/Expand Toggle Button -->
+    <button 
+      id="sidebar-toggle-btn"
+      class="w-full h-11 px-3 rounded-2xl flex items-center gap-4 text-slate-500 hover:bg-slate-50 dark:text-zinc-500 dark:hover:bg-brand-darkBg transition-all shrink-0 cursor-pointer font-semibold"
+      title="Toggle Sidebar"
+    >
+      <i data-lucide="chevron-left" class="w-5 h-5 shrink-0 transition-transform duration-300"></i>
+      <span class="sidebar-label text-xs whitespace-nowrap">Collapse Menu</span>
+    </button>
+  </div>
+
+</aside>

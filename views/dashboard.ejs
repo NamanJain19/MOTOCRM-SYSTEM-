@@ -1,0 +1,808 @@
+<%- include('partials/head') %>
+
+<!-- Collapsible Left Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200 bg-brand-lightBg dark:bg-brand-darkBg">
+  <!-- Header / Top Navbar -->
+  <%- include('partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-y-auto p-8 space-y-8">
+    
+    <!-- 1. Header Title & Stats Row -->
+    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+      <div class="shrink-0">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight select-none">
+          Sales Lead Overview
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">Real-time dealer acquisition pipeline activity logs.</p>
+      </div>
+
+      <!-- Stats on the right (horizontal row) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 xl:max-w-3xl w-full">
+        <!-- Stat Card 1: Total Leads -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex items-center justify-between">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-brand-darkBg flex items-center justify-center">
+              <i data-lucide="users" class="w-5 h-5 text-brand-orange"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-450 dark:text-zinc-550 uppercase tracking-wider block">Total Leads</span>
+              <span class="text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5 block"><%= stats.totalLeads.toLocaleString() %></span>
+            </div>
+          </div>
+          <%
+            let totalLeadsChange = (stats && stats.totalLeadsChange) ? stats.totalLeadsChange : 'Stable —';
+            let totalLeadsColor = 'text-slate-500 bg-slate-50 dark:bg-zinc-800 dark:text-zinc-400';
+            let totalLeadsIcon = 'trending-up';
+            if (totalLeadsChange.includes('+')) {
+              totalLeadsColor = 'text-emerald-600 bg-emerald-50 dark:bg-emerald-955/20 dark:text-emerald-400';
+              totalLeadsIcon = 'trending-up';
+            } else if (totalLeadsChange.includes('-')) {
+              totalLeadsColor = 'text-rose-600 bg-rose-50 dark:bg-rose-955/20 dark:text-rose-400';
+              totalLeadsIcon = 'trending-down';
+            } else {
+              totalLeadsIcon = 'minus';
+            }
+          %>
+          <span class="text-[10px] font-bold <%= totalLeadsColor %> px-2 py-0.5 rounded-full flex items-center gap-0.5">
+            <%= totalLeadsChange %> <i data-lucide="<%= totalLeadsIcon %>" class="w-3 h-3"></i>
+          </span>
+        </div>
+
+        <!-- Stat Card 2: New Leads -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex items-center justify-between">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-brand-darkBg flex items-center justify-center">
+              <i data-lucide="user-plus" class="w-5 h-5 text-brand-orange"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-450 dark:text-zinc-550 uppercase tracking-wider block">New Leads</span>
+              <span class="text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5 block"><%= stats.newLeads.toLocaleString() %></span>
+            </div>
+          </div>
+          <%
+            let newLeadsChange = (stats && stats.newLeadsChange) ? stats.newLeadsChange : 'Stable —';
+            let newLeadsColor = 'text-slate-500 bg-slate-50 dark:bg-zinc-800 dark:text-zinc-400';
+            let newLeadsIcon = 'trending-up';
+            if (newLeadsChange.includes('+')) {
+              newLeadsColor = 'text-emerald-600 bg-emerald-50 dark:bg-emerald-955/20 dark:text-emerald-400';
+              newLeadsIcon = 'trending-up';
+            } else if (newLeadsChange.includes('-')) {
+              newLeadsColor = 'text-rose-600 bg-rose-50 dark:bg-rose-955/20 dark:text-rose-400';
+              newLeadsIcon = 'trending-down';
+            } else {
+              newLeadsIcon = 'minus';
+            }
+          %>
+          <span class="text-[10px] font-bold <%= newLeadsColor %> px-2 py-0.5 rounded-full flex items-center gap-0.5">
+            <%= newLeadsChange %> <i data-lucide="<%= newLeadsIcon %>" class="w-3 h-3"></i>
+          </span>
+        </div>
+
+        <!-- Stat Card 3: Sold Bikes -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex items-center justify-between">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-brand-darkBg flex items-center justify-center">
+              <i data-lucide="bike" class="w-5 h-5 text-brand-orange"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold text-slate-450 dark:text-zinc-550 uppercase tracking-wider block">Sold Bikes</span>
+              <span class="text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5 block"><%= stats.soldBikes.toLocaleString() %></span>
+            </div>
+          </div>
+          <%
+            let soldBikesChange = (stats && stats.soldBikesChange) ? stats.soldBikesChange : 'Stable —';
+            let soldBikesColor = 'text-slate-500 bg-slate-50 dark:bg-zinc-800 dark:text-zinc-400';
+            let soldBikesIcon = 'trending-up';
+            if (soldBikesChange.includes('+')) {
+              soldBikesColor = 'text-emerald-600 bg-emerald-50 dark:bg-emerald-955/20 dark:text-emerald-400';
+              soldBikesIcon = 'trending-up';
+            } else if (soldBikesChange.includes('-')) {
+              soldBikesColor = 'text-rose-600 bg-rose-50 dark:bg-rose-955/20 dark:text-rose-400';
+              soldBikesIcon = 'trending-down';
+            } else {
+              soldBikesIcon = 'minus';
+            }
+          %>
+          <span class="text-[10px] font-bold <%= soldBikesColor %> px-2 py-0.5 rounded-full flex items-center gap-0.5">
+            <%= soldBikesChange %> <i data-lucide="<%= soldBikesIcon %>" class="w-3 h-3"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Interactive Status Alert & Actions Sub-bar -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-2 px-2">
+        <div class="w-7 h-7 rounded-full bg-slate-100 dark:bg-brand-darkBg flex items-center justify-center text-slate-500 dark:text-zinc-400">
+          <i data-lucide="database" class="w-4 h-4"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800 dark:text-zinc-200 select-none">
+          Lead Database <span class="text-slate-400 font-medium ml-2 text-[11px]">Sync completed today</span>
+        </span>
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="/reports" class="px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-brand-darkBorder hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-all text-center">
+          Download report
+        </a>
+        <a href="/leads/add" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white shadow-md shadow-orange-500/10 transition-all text-center">
+          Create lead
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. Redesigned Analytics Section (Monthly Lead Growth & Lead Conversion Trends) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Card A: Monthly Lead Growth (Line Chart - 2/3 width) -->
+      <div class="lg:col-span-2 bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Monthly Lead Growth</h3>
+              <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Historical lead counts logged over time</p>
+            </div>
+            <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange"></span>Leads</span>
+          </div>
+
+          <div class="relative h-64 w-full mt-4">
+            <canvas id="monthlyGrowthChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card B: Lead Conversion Trends (Area Chart - 1/3 width) -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Conversion Trends</h3>
+              <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Deal closure rates percentage trajectory</p>
+            </div>
+            <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange/40 border border-brand-orange"></span>Conversion %</span>
+          </div>
+
+          <div class="relative h-64 w-full mt-4">
+            <canvas id="leadConversionChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4. Sales Performance (Bar Chart) & Test Rides & Inventory -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      
+      <!-- Sales Performance (Bar Chart) -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Sales Performance</h3>
+              <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Lead count breakdown per pipeline stage</p>
+            </div>
+          </div>
+          
+          <div class="relative h-44 w-full mt-4">
+            <canvas id="salesPerformanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Test Rides (Timeline style) -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Upcoming Test Rides</h3>
+              <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Next scheduled client bike testings</p>
+            </div>
+            <span class="px-2 py-0.5 bg-orange-50 text-brand-orange dark:bg-orange-950/20 dark:text-orange-400 rounded-full font-bold text-[9px] uppercase tracking-wider">
+              <%= completedTestRidesCount %> Done
+            </span>
+          </div>
+
+          <!-- Vertical Timeline list -->
+          <div class="space-y-4 relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-150 dark:before:bg-brand-darkBorder">
+            <% if (upcomingTestRides.length === 0) { %>
+              <div class="py-10 text-center text-slate-400 dark:text-zinc-500 text-xs">
+                <i data-lucide="check-circle" class="w-6 h-6 text-emerald-500 mx-auto mb-1.5"></i>
+                No upcoming test rides scheduled.
+              </div>
+            <% } else { %>
+              <% upcomingTestRides.forEach((ride, index) => { %>
+                <div class="relative">
+                  <!-- Bullet dot -->
+                  <div class="absolute -left-6.5 top-1 w-3 h-3 rounded-full border-2 border-white dark:border-brand-darkCard <%= index === 0 ? 'bg-brand-orange animate-ping' : 'bg-slate-400 dark:bg-zinc-650' %>"></div>
+                  <div class="absolute -left-6.5 top-1 w-3 h-3 rounded-full border-2 border-white dark:border-brand-darkCard <%= index === 0 ? 'bg-brand-orange' : 'bg-slate-400 dark:bg-zinc-650' %>"></div>
+                  
+                  <div>
+                    <h4 class="text-xs font-extrabold text-slate-800 dark:text-zinc-200">
+                      <%= ride.lead ? ride.lead.name : 'Customer' %>
+                    </h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5 leading-snug">
+                      <%= ride.lead ? ride.lead.bikeModel : '-' %> • Rep: <%= ride.salesperson %>
+                    </p>
+                    <span class="text-[9px] font-semibold text-brand-orange mt-0.5 block">
+                      <%= new Date(ride.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) %> at <%= new Date(ride.date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) %>
+                    </span>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+        <a href="/test-rides" class="w-full mt-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-950 py-2.5 rounded-2xl text-xs font-bold transition-all text-center">
+          Schedule Test Rides
+        </a>
+      </div>
+
+      <!-- Inventory Summary & Alerts -->
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Inventory Alerts</h3>
+              <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Critical low stock tracking</p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <% if (lowStockAlerts.length > 0) { %>
+              <div class="bg-rose-50 dark:bg-rose-950/20 border border-rose-250 dark:border-rose-900/50 p-4 rounded-2xl flex items-center justify-center text-center">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-500 mr-2"></i>
+                <span class="text-xs font-bold text-rose-700 dark:text-rose-400">Stock is low</span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <a href="/inventory" class="w-full mt-4 bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-brand-darkBorder py-2.5 rounded-2xl text-xs font-bold transition-all text-center">
+          Go to Inventory
+        </a>
+      </div>
+
+    </div>
+
+    <!-- 5. Recent Activities logs table -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      
+      <!-- Table Header & Filter Row -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-5">
+        <div>
+          <h3 class="font-bold text-base text-slate-900 dark:text-white">Recent Activities</h3>
+          <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-0.5">Live showroom deal logs feed</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div id="activity-filters" class="flex bg-slate-100 dark:bg-brand-darkBg border border-slate-200/60 dark:border-brand-darkBorder rounded-full p-1 text-[10px] font-bold text-slate-500">
+            <button type="button" data-filter="all" class="filter-btn px-3 py-1.5 bg-white dark:bg-zinc-800 text-brand-orange dark:text-white rounded-full shadow-sm select-none cursor-pointer focus:outline-none transition-all">All</button>
+            <button type="button" data-filter="in-transit" class="filter-btn px-3 py-1.5 text-slate-400 cursor-pointer select-none focus:outline-none transition-all">In transit</button>
+            <button type="button" data-filter="processing" class="filter-btn px-3 py-1.5 text-slate-400 cursor-pointer select-none focus:outline-none transition-all">Pending</button>
+          </div>
+          
+          <button id="refresh-activity-btn" class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-150 border border-slate-200 dark:bg-brand-darkBg dark:border-brand-darkBorder dark:hover:bg-zinc-800 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-slate-600 dark:text-zinc-400 cursor-pointer transition-all">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder">
+        <button id="select-activities-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-brand-darkBorder hover:bg-slate-50 dark:hover:bg-brand-darkBg text-slate-700 dark:text-zinc-300 transition-all cursor-pointer">
+          <i data-lucide="check-square" class="w-4 h-4"></i>
+          <span>Select Activities</span>
+        </button>
+        <div id="bulk-actions-container" class="hidden flex items-center gap-2">
+          <button id="cancel-selection-btn" class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-brand-darkBg dark:border-brand-darkBorder dark:hover:bg-zinc-800 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-slate-600 dark:text-zinc-400 cursor-pointer transition-all">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span>Cancel</span>
+          </button>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="select-all-activities" class="w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" />
+            <label for="select-all-activities" class="text-xs font-bold text-slate-500 dark:text-zinc-400 cursor-pointer">Select All</label>
+          </div>
+          <button id="bulk-delete-activities-btn" class="hidden flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 dark:bg-rose-955/20 dark:border-rose-900/50 dark:hover:bg-rose-950/30 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 cursor-pointer transition-all">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete Selected</span>
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto font-sans">
+        <table class="w-full border-collapse text-left text-xs">
+          <thead>
+            <tr class="border-b border-slate-200 dark:border-brand-darkBorder text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest pb-3">
+              <th class="py-3 px-4">Customer</th>
+              <th class="py-3 px-4">Activity Log</th>
+              <th class="py-3 px-4">Type</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4">Date Logged</th>
+              <th class="py-3 px-4 text-right w-24">Action</th>
+            </tr>
+          </thead>
+          <tbody id="activities-table-body" class="divide-y divide-slate-50 dark:divide-brand-darkBorder text-slate-700 dark:text-zinc-350 font-medium">
+            <% if (recentActivities.length === 0) { %>
+              <tr id="no-activities-row">
+                <td colspan="6" class="py-8 text-center text-slate-400 dark:text-zinc-500">
+                  <i data-lucide="info" class="w-6 h-6 mx-auto mb-2 opacity-50"></i>
+                  No recent activities recorded.
+                </td>
+              </tr>
+            <% } else { %>
+              <!-- Keep this hidden inside the EJS structure as the fallback if filter has zero elements -->
+              <tr id="no-activities-row" style="display: none;">
+                <td colspan="6" class="py-8 text-center text-slate-400 dark:text-zinc-500">
+                  <i data-lucide="info" class="w-6 h-6 mx-auto mb-2 opacity-50"></i>
+                  No matching activities found.
+                </td>
+              </tr>
+              <% recentActivities.forEach(act => { 
+                let statusVal = 'processing';
+                if (act.type === 'bike_sold' || act.status === 'Delivered') {
+                  statusVal = 'delivered';
+                } else if (act.type === 'test_ride' || act.status === 'Preparing' || act.status === 'Ready for Delivery') {
+                  statusVal = 'in-transit';
+                }
+              %>
+                <tr class="activity-row hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20 border-b border-slate-100 dark:border-brand-darkBorder/40" data-activity-id="<%= act._id %>" data-activity-status="<%= statusVal %>">
+                  <td class="py-3.5 px-4">
+                    <div class="font-bold text-slate-800 dark:text-zinc-200">
+                      <% 
+                        let customerName = act.customerName;
+                        if (!customerName) {
+                          customerName = 'Showroom';
+                          if (act.title.includes(':')) {
+                            customerName = act.title.split(':').slice(1).join(':').trim();
+                          } else if (act.description.toLowerCase().includes('client:')) {
+                            customerName = act.description.split(/client:/i)[1].replace('.', '').trim();
+                          } else if (act.description.toLowerCase().includes('customer:')) {
+                            customerName = act.description.split(/customer:/i)[1].split('•')[0].trim();
+                          } else if (act.description.includes('for')) {
+                            customerName = act.description.split('for')[1].split('on')[0].trim();
+                          }
+                        }
+                      %>
+                      <%= customerName %>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 text-slate-550 dark:text-zinc-400 font-normal">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-lg bg-orange-100 text-brand-orange dark:bg-orange-950/20 dark:text-orange-400 flex items-center justify-center shrink-0">
+                        <% if (act.type === 'test_ride') { %>
+                          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                        <% } else if (act.type === 'bike_sold') { %>
+                          <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                        <% } else if (act.type === 'lead_added') { %>
+                          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                        <% } else if (act.type === 'call_logged') { %>
+                          <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                        <% } else if (act.type === 'delivery') { %>
+                          <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                        <% } else if (act.type === 'sms_sent') { %>
+                          <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                        <% } else { %>
+                          <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                        <% } %>
+                      </div>
+                      <span class="activity-desc"><%= act.description %></span>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 text-[10px] font-bold uppercase tracking-wider text-slate-450 dark:text-zinc-550">
+                    <%= act.type ? act.type.replace('_', ' ') : 'System' %>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <% if (act.type === 'bike_sold' || act.status === 'Delivered') { %>
+                      <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-955/20 dark:text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-emerald-250 dark:border-emerald-900/50">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Delivered
+                      </span>
+                    <% } else if (act.type === 'test_ride' || act.status === 'Preparing' || act.status === 'Ready for Delivery') { %>
+                      <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 dark:bg-amber-955/20 dark:text-amber-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-amber-250 dark:border-amber-900/50">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>In transit
+                      </span>
+                    <% } else { %>
+                      <span class="inline-flex items-center gap-1 bg-slate-50 text-slate-550 dark:bg-zinc-800 dark:text-zinc-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-slate-200 dark:border-brand-darkBorder">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-zinc-500"></span><%= act.status || 'Pending' %>
+                      </span>
+                    <% } %>
+                  </td>
+                  <td class="py-3.5 px-4 text-slate-400">
+                    <%= new Date(act.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) %>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <!-- View Button -->
+                      <button 
+                        type="button" 
+                        class="view-activity-btn p-1.5 rounded-lg text-slate-405 hover:text-slate-900 hover:bg-slate-100 dark:text-zinc-450 dark:hover:text-white dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                        title="View Details"
+                        data-title="<%= act.title %>"
+                        data-desc="<%= act.description %>"
+                        data-type="<%= act.type ? act.type.replace('_', ' ').toUpperCase() : 'SYSTEM' %>"
+                        data-date="<%= new Date(act.createdAt).toLocaleString() %>"
+                      >
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                      </button>
+                      
+                      <!-- Delete Button -->
+                      <button 
+                        type="button" 
+                        class="delete-activity-btn p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
+                        title="Delete Activity Log"
+                        data-id="<%= act._id %>"
+                      >
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Activity Details Modal (Overlay) -->
+    <div id="activityDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Backdrop -->
+      <div id="activityModalBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+      
+      <!-- Modal Content Container -->
+      <div id="activityModalContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-md mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-orange-50 dark:bg-orange-950/20 text-brand-orange">
+              <i data-lucide="activity" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-base text-slate-900 dark:text-white leading-tight">Activity details</h3>
+              <p id="activityModalType" class="text-[10px] font-bold text-slate-400 dark:text-zinc-550 uppercase tracking-widest mt-0.5">TYPE</p>
+            </div>
+          </div>
+          <button id="closeActivityModalBtn" class="p-2 text-slate-400 hover:text-slate-655 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6 space-y-4 text-xs font-semibold text-slate-700 dark:text-zinc-350 leading-relaxed break-words whitespace-normal">
+          <div>
+            <span class="text-[9px] text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-1">Subject</span>
+            <p id="activityModalTitle" class="text-xs font-extrabold text-slate-800 dark:text-zinc-200">Activity Title</p>
+          </div>
+          
+          <div>
+            <span class="text-[9px] text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-1">Description</span>
+            <p id="activityModalDesc" class="text-xs text-slate-700 dark:text-zinc-350 font-medium bg-slate-50 dark:bg-brand-darkBg/60 p-4 border border-slate-100 dark:border-brand-darkBorder rounded-2xl">Activity Description</p>
+          </div>
+          
+          <div>
+            <span class="text-[9px] text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-1">Date Logged</span>
+            <p id="activityModalDate" class="text-xs text-slate-800 dark:text-zinc-200">Date Logged</p>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex items-center justify-end">
+          <button id="closeActivityModalFooterBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 dark:text-zinc-350 text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+<!-- Send backend values safely to client window context -->
+<script>
+  window.monthlyLeadsData = <%- JSON.stringify(monthlyLeads) %>;
+  window.salesPerformanceData = <%- JSON.stringify(salesPerformance) %>;
+  window.donutData = <%- JSON.stringify(donutData) %>;
+</script>
+
+<script>
+(function() {
+  const initDashboard = () => {
+  // 1. Activity Filters Logic
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const activityRows = document.querySelectorAll('.activity-row');
+  const noActivitiesRow = document.getElementById('no-activities-row');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active states, apply default slate colors
+      filterBtns.forEach(b => {
+        b.classList.remove('bg-white', 'dark:bg-zinc-800', 'text-brand-orange', 'dark:text-white', 'shadow-sm');
+        b.classList.add('text-slate-400');
+      });
+      // Add active state to clicked button
+      btn.classList.add('bg-white', 'dark:bg-zinc-800', 'text-brand-orange', 'dark:text-white', 'shadow-sm');
+      btn.classList.remove('text-slate-400');
+
+      const filterValue = btn.getAttribute('data-filter');
+      let visibleCount = 0;
+
+      activityRows.forEach(row => {
+        const rowStatus = row.getAttribute('data-activity-status');
+        if (filterValue === 'all' || rowStatus === filterValue) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Show/hide empty state row if zero matching activities
+      if (noActivitiesRow) {
+        noActivitiesRow.style.display = visibleCount === 0 ? '' : 'none';
+      }
+    });
+  });
+
+  // 2. Activity Details Modal Logic
+  const activityDetailsModal = document.getElementById('activityDetailsModal');
+  const activityModalBackdrop = document.getElementById('activityModalBackdrop');
+  const activityModalContent = document.getElementById('activityModalContent');
+  const closeActivityModalBtn = document.getElementById('closeActivityModalBtn');
+  const closeActivityModalFooterBtn = document.getElementById('closeActivityModalFooterBtn');
+
+  function openActivityDetails(btn) {
+    document.getElementById('activityModalTitle').textContent = btn.getAttribute('data-title');
+    document.getElementById('activityModalDesc').textContent = btn.getAttribute('data-desc');
+    document.getElementById('activityModalType').textContent = btn.getAttribute('data-type');
+    document.getElementById('activityModalDate').textContent = btn.getAttribute('data-date');
+
+    activityDetailsModal.classList.remove('hidden');
+    setTimeout(() => {
+      activityModalBackdrop.classList.remove('opacity-0');
+      activityModalContent.classList.remove('scale-95', 'opacity-0');
+    }, 10);
+  }
+
+  function closeActivityDetails() {
+    activityModalBackdrop.classList.add('opacity-0');
+    activityModalContent.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      activityDetailsModal.classList.add('hidden');
+    }, 300);
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.view-activity-btn');
+    if (btn) {
+      openActivityDetails(btn);
+    }
+  });
+
+  if (closeActivityModalBtn) closeActivityModalBtn.addEventListener('click', closeActivityDetails);
+  if (closeActivityModalFooterBtn) closeActivityModalFooterBtn.addEventListener('click', closeActivityDetails);
+  if (activityModalBackdrop) activityModalBackdrop.addEventListener('click', closeActivityDetails);
+
+  // 3. Activity Checkbox & Bulk Delete Logic - Dynamic Selection Mode
+  const selectActivitiesBtn = document.getElementById('select-activities-btn');
+  const cancelSelectionBtn = document.getElementById('cancel-selection-btn');
+  const bulkActionsContainer = document.getElementById('bulk-actions-container');
+  const selectAllActivities = document.getElementById('select-all-activities');
+  const bulkDeleteActivitiesBtn = document.getElementById('bulk-delete-activities-btn');
+  const table = document.querySelector('table');
+  const thead = table?.querySelector('thead tr');
+
+  function enterSelectionMode() {
+    selectActivitiesBtn.classList.add('hidden');
+    bulkActionsContainer.classList.remove('hidden');
+    
+    // Add checkbox column to header
+    if (thead) {
+      const checkboxHeader = document.createElement('th');
+      checkboxHeader.className = 'py-3 px-2 text-center';
+      checkboxHeader.innerHTML = '';
+      thead.insertBefore(checkboxHeader, thead.firstChild);
+    }
+    
+    // Add checkbox to each row
+    activityRows.forEach(row => {
+      const activityId = row.getAttribute('data-activity-id');
+      const checkboxCell = document.createElement('td');
+      checkboxCell.className = 'py-3 px-2 text-center';
+      checkboxCell.innerHTML = `<input type="checkbox" class="activity-checkbox w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" value="${activityId}" />`;
+      row.insertBefore(checkboxCell, row.firstChild);
+    });
+    
+    // Re-attach event listeners to new checkboxes
+    const activityCheckboxes = document.querySelectorAll('.activity-checkbox');
+    activityCheckboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        const allChecked = Array.from(activityCheckboxes).every(c => c.checked);
+        if (selectAllActivities) selectAllActivities.checked = allChecked;
+        updateBulkDeleteButton();
+      });
+    });
+    
+    lucide.createIcons();
+  }
+
+  function exitSelectionMode() {
+    selectActivitiesBtn.classList.remove('hidden');
+    bulkActionsContainer.classList.add('hidden');
+    
+    // Remove checkbox column from header
+    if (thead && thead.firstChild) {
+      thead.removeChild(thead.firstChild);
+    }
+    
+    // Remove checkbox from each row
+    activityRows.forEach(row => {
+      if (row.firstChild) {
+        row.removeChild(row.firstChild);
+      }
+    });
+    
+    // Reset select all and delete button
+    if (selectAllActivities) selectAllActivities.checked = false;
+    bulkDeleteActivitiesBtn.classList.add('hidden');
+    bulkDeleteActivitiesBtn.querySelector('span').textContent = 'Delete Selected';
+    
+    lucide.createIcons();
+  }
+
+  function updateBulkDeleteButton() {
+    const checkedBoxes = document.querySelectorAll('.activity-checkbox:checked');
+    if (checkedBoxes.length > 0) {
+      bulkDeleteActivitiesBtn.classList.remove('hidden');
+      bulkDeleteActivitiesBtn.querySelector('span').textContent = `Delete Selected (${checkedBoxes.length})`;
+    } else {
+      bulkDeleteActivitiesBtn.classList.add('hidden');
+    }
+  }
+
+  if (selectActivitiesBtn) {
+    selectActivitiesBtn.addEventListener('click', enterSelectionMode);
+  }
+
+  if (cancelSelectionBtn) {
+    cancelSelectionBtn.addEventListener('click', exitSelectionMode);
+  }
+
+  if (selectAllActivities) {
+    selectAllActivities.addEventListener('change', function() {
+      const activityCheckboxes = document.querySelectorAll('.activity-checkbox');
+      activityCheckboxes.forEach(cb => cb.checked = this.checked);
+      updateBulkDeleteButton();
+    });
+  }
+
+  if (bulkDeleteActivitiesBtn) {
+    bulkDeleteActivitiesBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      console.log('Delete button clicked');
+      
+      const checkedBoxes = document.querySelectorAll('.activity-checkbox:checked');
+      const ids = Array.from(checkedBoxes).map(cb => cb.value);
+
+      console.log('Selected IDs:', ids);
+
+      if (ids.length === 0) {
+        console.log('No IDs selected');
+        return;
+      }
+
+      bulkDeleteActivitiesBtn.disabled = true;
+      bulkDeleteActivitiesBtn.innerHTML = 'Deleting...';
+
+      try {
+        console.log('Sending request to /activity/bulk-delete with body:', JSON.stringify({ ids }));
+        const res = await fetch('/activity/bulk-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ ids })
+        });
+        console.log('Response status:', res.status);
+        console.log('Response ok:', res.ok);
+        
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        
+        const data = await res.json();
+        console.log('Response data:', data);
+        if (data.success) {
+          showToast(data.message, 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          showToast(data.message || 'Error deleting activities.', 'error');
+          bulkDeleteActivitiesBtn.disabled = false;
+          bulkDeleteActivitiesBtn.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Delete Selected</span>';
+          lucide.createIcons();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Connection error. Please try again.', 'error');
+        bulkDeleteActivitiesBtn.disabled = false;
+        bulkDeleteActivitiesBtn.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Delete Selected</span>';
+        lucide.createIcons();
+      }
+    });
+  }
+
+  // 4. Delete Activity Log Logic
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.delete-activity-btn');
+    if (!btn) return;
+
+    const activityId = btn.getAttribute('data-id');
+    if (!activityId) return;
+
+    try {
+      btn.disabled = true;
+      const res = await fetch(`/activity/delete/${activityId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Find row and delete/remove
+        const row = btn.closest('.activity-row');
+        if (row) {
+          row.style.opacity = '0';
+          setTimeout(() => {
+            row.remove();
+            // Recalculate row counts
+            const remainingRows = document.querySelectorAll('.activity-row');
+            if (remainingRows.length === 0 && noActivitiesRow) {
+              noActivitiesRow.style.display = '';
+            }
+          }, 300);
+        }
+        if (typeof showToast === 'function') {
+          showToast('Activity log deleted successfully.', 'success');
+        } else {
+          alert('Activity log deleted successfully.');
+        }
+      } else {
+        btn.disabled = false;
+        alert(data.message || 'Error deleting activity log.');
+      }
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      alert('Network error deleting activity log.');
+    }
+  });
+
+  // 4. Refresh Button Logic
+  const refreshBtn = document.getElementById('refresh-activity-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      // Reload page to fetch latest feed
+      window.location.reload();
+    });
+  }
+};
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  } else {
+    initDashboard();
+  }
+})();
+</script>
+
+  </main>
+</div>
+
+<%- include('partials/footer') %>

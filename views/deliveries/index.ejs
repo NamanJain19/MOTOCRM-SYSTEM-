@@ -1,0 +1,265 @@
+<%- include('../partials/head') %>
+
+<!-- Collapsible Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header / Top Navbar -->
+  <%- include('../partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-y-auto p-8 space-y-6 bg-brand-lightBg dark:bg-brand-darkBg">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Vehicle Deliveries</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Track and manage dealer vehicle delivery ledger checklists.</p>
+      </div>
+      
+      <a href="/deliveries/add" class="flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-5 py-3 rounded-2xl transition-all shadow-sm">
+        <i data-lucide="calendar-plus" class="w-4.5 h-4.5"></i>
+        <span>Schedule Delivery</span>
+      </a>
+    </div>
+
+    <!-- Quick Stats Cards Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block">Total Scheduled</span>
+        <span class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 block"><%= counts.total %></span>
+      </div>
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-sky-500">Pending</span>
+        <span class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 block"><%= counts.pending %></span>
+      </div>
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-amber-500">Preparing</span>
+        <span class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 block"><%= counts.preparing %></span>
+      </div>
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-indigo-500">Ready</span>
+        <span class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 block"><%= counts.ready %></span>
+      </div>
+      <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm">
+        <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block text-emerald-500">Delivered</span>
+        <span class="text-xl font-extrabold text-slate-900 dark:text-white mt-1 block"><%= counts.delivered %></span>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <form action="/deliveries" method="GET" id="delivery-filter-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <!-- Search bar -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Search Customer or Bike</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              name="search" 
+              placeholder="Search..." 
+              value="<%= search %>"
+              class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl pl-4 pr-10 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+            />
+            <button type="submit" class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-brand-orange transition-all">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Delivery Status</label>
+          <select 
+            name="status" 
+            onchange="document.getElementById('delivery-filter-form').submit()"
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+          >
+            <option value="All" <%= selectedStatus === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <% ['Pending', 'Preparing', 'Ready for Delivery', 'Delivered', 'Cancelled'].forEach(st => { %>
+              <option value="<%= st %>" <%= selectedStatus === st ? 'selected' : '' %>><%= st %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div>
+          <a href="/deliveries" class="w-full text-center inline-block px-4 py-2.5 text-sm font-semibold text-slate-550 hover:text-slate-850 dark:text-zinc-400 dark:hover:text-white bg-slate-100 hover:bg-slate-250 dark:bg-brand-darkBg dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder rounded-xl transition-all">
+            Reset Filters
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Deliveries Table Card -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-xs">
+          <thead>
+            <tr class="bg-slate-50/50 dark:bg-brand-darkBg/50 border-b border-slate-200 dark:border-brand-darkBorder text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-wider">
+              <th class="py-4 px-6">Customer & Bike Model</th>
+              <th class="py-4 px-4">Delivery Date</th>
+              <th class="py-4 px-4">RC / Insurance</th>
+              <th class="py-4 px-4">Accessories Checklist</th>
+              <th class="py-4 px-4">Status</th>
+              <th class="py-4 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-brand-darkBorder text-slate-700 dark:text-zinc-300 font-medium">
+            <% if (deliveries.length === 0) { %>
+              <tr>
+                <td colspan="6" class="py-12 text-center text-slate-400 dark:text-zinc-500">
+                  <i data-lucide="truck" class="w-10 h-10 mx-auto mb-3 opacity-60"></i>
+                  No vehicle deliveries scheduled yet.
+                </td>
+              </tr>
+            <% } else { %>
+              <% deliveries.forEach(dev => { 
+                // Checklist completion ratio
+                const totalChecklist = dev.accessoriesChecklist ? dev.accessoriesChecklist.length : 0;
+                const checkedChecklist = dev.accessoriesChecklist ? dev.accessoriesChecklist.filter(item => item.checked).length : 0;
+                const percent = totalChecklist > 0 ? Math.round((checkedChecklist / totalChecklist) * 100) : 0;
+
+                // Color of delivery status dot
+                let dotColor = "bg-slate-400";
+                if (dev.status === 'Delivered') dotColor = "bg-emerald-500";
+                else if (dev.status === 'Ready for Delivery') dotColor = "bg-indigo-500";
+                else if (dev.status === 'Preparing') dotColor = "bg-amber-500";
+                else if (dev.status === 'Pending') dotColor = "bg-sky-500";
+
+                // Check for overdue alerts
+                const isOverdue = new Date(dev.deliveryDate) < new Date() && dev.status !== 'Delivered' && dev.status !== 'Cancelled';
+              %>
+                <tr class="hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20">
+                  
+                  <!-- Customer Details -->
+                  <td class="py-3 px-6">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-orange-100 text-brand-orange dark:bg-orange-950/20 dark:text-orange-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="truck" class="w-4.5 h-4.5"></i>
+                      </div>
+                      <div>
+                        <h4 class="font-bold text-slate-850 dark:text-zinc-150 text-xs flex items-center gap-1.5">
+                          <%= dev.customerName %>
+                          <% if (isOverdue) { %>
+                            <span class="inline-flex items-center gap-0.5 bg-rose-50 border border-rose-200 text-rose-600 px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase animate-pulse dark:bg-rose-955/20 dark:border-rose-900/50 dark:text-rose-400">Overdue</span>
+                          <% } %>
+                        </h4>
+                        <span class="text-[10px] text-slate-500 dark:text-zinc-450 block mt-0.5"><%= dev.bikeModel %></span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Delivery Date -->
+                  <td class="py-3 px-4 text-slate-600 dark:text-zinc-400 font-semibold text-xs">
+                    <%= new Date(dev.deliveryDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                  </td>
+
+                  <!-- RC & Insurance status -->
+                  <td class="py-3 px-4 space-y-1">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[9px] text-slate-400 uppercase font-extrabold">RC:</span>
+                      <span class="text-[10px] font-bold <%= dev.rcStatus === 'Received' || dev.rcStatus === 'Approved' ? 'text-emerald-600' : 'text-slate-500' %>">
+                        <%= dev.rcStatus %>
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[9px] text-slate-400 uppercase font-extrabold">Ins:</span>
+                      <span class="text-[10px] font-bold <%= dev.insuranceStatus === 'Active' ? 'text-emerald-600' : 'text-slate-500' %>">
+                        <%= dev.insuranceStatus %>
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Accessories Checklist bar -->
+                  <td class="py-3 px-4 w-44">
+                    <div class="flex items-center justify-between text-[10px] font-bold mb-1">
+                      <span class="text-slate-500"><%= checkedChecklist %> / <%= totalChecklist %> Checked</span>
+                      <span class="text-brand-orange"><%= percent %>%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 dark:bg-brand-darkBg rounded-full overflow-hidden">
+                      <div class="h-full bg-brand-orange rounded-full" style="width: <%= percent %>%"></div>
+                    </div>
+                  </td>
+
+                  <!-- Status -->
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center gap-1.5 font-bold">
+                      <span class="w-2 h-2 rounded-full <%= dotColor %>"></span>
+                      <span><%= dev.status %></span>
+                    </span>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="py-3 px-6 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <!-- Edit delivery ledger -->
+                      <a href="/deliveries/edit/<%= dev._id %>" title="Manage Checklist & Verify" class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-200 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-400 flex items-center justify-center border border-slate-200 dark:border-brand-darkBorder transition-all">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                      </a>
+
+                      <!-- Send SMS button -->
+                      <button type="button" onclick="openSMSModal('<%= dev.customerPhone %>', '<%= dev._id %>', 'Delivery')" title="Send SMS" class="w-8 h-8 rounded-lg bg-orange-50 text-brand-orange hover:bg-brand-orange hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-transparent dark:border-brand-darkBorder">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                      </button>
+
+                      <!-- WhatsApp action -->
+                      <a href="https://wa.me/<%= dev.customerPhone.replace(/[^0-9]/g, '') %>" target="_blank" title="WhatsApp Chat" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all">
+                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                      </a>
+
+                      <!-- Delete Form -->
+                      <form action="/deliveries/delete/<%= dev._id %>" method="POST" class="inline">
+                        <button type="submit" title="Delete Schedule" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white dark:bg-brand-darkBg dark:text-rose-450 dark:hover:bg-rose-955/40 flex items-center justify-center cursor-pointer transition-all border border-transparent dark:border-brand-darkBorder">
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination footer -->
+      <% if (totalPages > 1) { %>
+        <div class="bg-slate-50/50 dark:bg-brand-darkBg/50 px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-brand-darkBorder text-xs">
+          <span class="text-slate-400 dark:text-zinc-500">
+            Showing <%= ((currentPage - 1) * 10) + 1 %> to <%= Math.min(currentPage * 10, totalCount) %> of <%= totalCount %> deliveries
+          </span>
+          <div class="flex items-center gap-1">
+            <a 
+              href="/deliveries?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %>"
+              class="w-8 h-8 rounded-lg border border-slate-200 dark:border-brand-darkBorder flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800 <%= currentPage === 1 ? 'pointer-events-none opacity-55' : '' %>"
+            >
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </a>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a 
+                href="/deliveries?page=<%= i %><%= search ? '&search=' + search : '' %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %>"
+                class="w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center transition-all <%= i === currentPage ? 'bg-brand-orange border-brand-orange text-white shadow-sm' : 'border-slate-200 dark:border-brand-darkBorder text-slate-650 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800' %>"
+              >
+                <%= i %>
+              </a>
+            <% } %>
+
+            <a 
+              href="/deliveries?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %>"
+              class="w-8 h-8 rounded-lg border border-slate-200 dark:border-brand-darkBorder flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800 <%= currentPage === totalPages ? 'pointer-events-none opacity-55' : '' %>"
+            >
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+  </main>
+</div>
+
+<%- include('../partials/footer') %>

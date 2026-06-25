@@ -1,0 +1,1305 @@
+<%- include('partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200 bg-brand-lightBg dark:bg-brand-darkBg">
+  <!-- Header -->
+  <%- include('partials/header') %>
+
+  <!-- Content Container -->
+  <% var nextDay = new Date(Date.now() + 24*3600000).toISOString().split('T')[0]; %>
+  <main class="flex-1 overflow-y-auto p-8 space-y-8">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Follow Ups</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Stay on top of your sales pipeline. Manage today's tasks and recover missed opportunities.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button id="toggleViewBtn" class="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder transition-all cursor-pointer">
+          <i id="toggleViewIcon" data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+          <span id="toggleViewText">Calendar View</span>
+        </button>
+        <a href="/leads/add" class="flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-4 py-2.5 rounded-2xl transition-all shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add New Lead</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- List View Container -->
+    <div id="listViewContainer" class="block">
+      <!-- Main Two-Column Layout Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column (Today's Queue & Recently Completed) - Spans 2/3 -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Today's Queue Section -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white">Today's Queue</h3>
+              <span class="px-2.5 py-0.5 text-xs font-bold bg-orange-50 text-brand-orange dark:bg-orange-950/40 dark:text-orange-300 rounded-full border border-orange-100 dark:border-orange-950/30">
+                <%= todayQueue.length %> Pending
+              </span>
+            </div>
+          </div>
+
+          <!-- Queue List -->
+          <div class="space-y-4">
+            <% if (todayQueue.length === 0) { %>
+              <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-8 text-center text-slate-400 dark:text-zinc-500">
+                <i data-lucide="check-circle" class="w-10 h-10 mx-auto mb-3 text-emerald-500"></i>
+                All caught up for today! No pending follow-up tasks remaining.
+              </div>
+            <% } else { %>
+              <% todayQueue.forEach(task => { 
+                // Set icons based on priority or title
+                let iconName = 'phone';
+                let iconColor = 'text-brand-orange bg-orange-50 dark:bg-orange-950/30';
+                let leftBorder = 'border-slate-200 dark:border-brand-darkBorder';
+
+                if (task.title.toLowerCase().includes('test ride') || task.title.toLowerCase().includes(' ducati') || task.title.toLowerCase().includes('street glide')) {
+                  iconName = 'bike';
+                  iconColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20';
+                } else if (task.title.toLowerCase().includes('finance') || task.title.toLowerCase().includes('document')) {
+                  iconName = 'file-text';
+                  iconColor = 'text-purple-600 bg-purple-50 dark:bg-purple-950/20';
+                }
+
+                if (task.priority === 'URGENT') {
+                  leftBorder = 'border-l-4 border-l-rose-500';
+                } else if (task.priority === 'HIGH') {
+                  leftBorder = 'border-l-4 border-l-orange-500';
+                }
+              %>
+                <!-- Task Card -->
+                <div class="task-card bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder <%= leftBorder %> rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-all">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 <%= iconColor %>">
+                      <i data-lucide="<%= iconName %>" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-slate-800 dark:text-zinc-200"><%= task.title %></h4>
+                      <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                        <%= task.description || `Customer: ${task.lead ? task.lead.name : 'Unknown'} • Due Today` %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <!-- Priority Badge -->
+                    <span class="px-2.5 py-0.5 text-[9px] font-extrabold rounded-full border mr-2 inline-block
+                      <%= task.priority === 'URGENT' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border-rose-100' : '' %>
+                      <%= task.priority === 'HIGH' ? 'bg-orange-50 text-brand-orange dark:bg-orange-950/30 dark:text-orange-400 border-orange-100' : '' %>
+                      <%= task.priority === 'NORMAL' ? 'bg-blue-50 text-sky-600 dark:bg-sky-950/30 dark:text-sky-400 border-blue-100' : '' %>
+                    ">
+                      <%= task.priority %>
+                    </span>
+
+                    <!-- Mark Done form -->
+                    <form action="/follow-ups/done/<%= task._id %>" method="POST" class="inline">
+                      <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold cursor-pointer transition-all shadow-sm">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>Mark Done</span>
+                      </button>
+                    </form>
+
+                    <!-- Quick reschedule to tomorrow -->
+                    <form action="/follow-ups/reschedule/<%= task._id %>" method="POST" class="inline">
+                      <input type="hidden" name="newDate" value="<%= nextDay %>" />
+                      <button type="submit" title="Reschedule to Tomorrow" class="p-1.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder bg-white dark:bg-brand-darkCard text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white flex items-center justify-center cursor-pointer transition-all">
+                        <i data-lucide="calendar-range" class="w-4 h-4"></i>
+                      </button>
+                    </form>
+
+                    <!-- Contact/Call action -->
+                    <% if (task.lead && task.lead.phone) { %>
+                      <a href="tel:<%= task.lead.phone %>" data-task-id="<%= task._id %>" data-lead-id="<%= task.lead._id %>" title="Call Customer" class="p-1.5 rounded-xl border border-slate-200/60 dark:border-brand-darkBorder bg-white dark:bg-brand-darkCard text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white flex items-center justify-center transition-all">
+                        <i data-lucide="phone" class="w-4 h-4"></i>
+                      </a>
+
+                      <!-- Send SMS Action -->
+                      <button type="button" onclick="openSMSModal('<%= task.lead.phone %>', '<%= task.lead._id %>', 'Lead')" title="Send SMS" class="p-1.5 rounded-xl border border-slate-200/60 dark:border-brand-darkBorder bg-white dark:bg-brand-darkCard text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white flex items-center justify-center cursor-pointer transition-all">
+                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Recently Completed Section -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+            <i data-lucide="check-check" class="w-5 h-5 text-emerald-500"></i>
+            <h3 class="font-bold text-sm uppercase tracking-wider">Recently Completed</h3>
+          </div>
+
+          <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl divide-y divide-slate-100 dark:divide-brand-darkBorder shadow-sm overflow-hidden">
+            <% if (recentlyCompleted.length === 0) { %>
+              <div class="p-6 text-center text-slate-400 dark:text-zinc-500 text-sm">
+                No tasks completed yet today.
+              </div>
+            <% } else { %>
+              <% recentlyCompleted.forEach(task => { %>
+                <div class="p-5 flex items-center justify-between gap-4 hover:bg-slate-50/40 dark:hover:bg-brand-darkCard/40 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-slate-100 dark:bg-brand-darkBg flex items-center justify-center text-slate-400 dark:text-zinc-600">
+                      <i data-lucide="check" class="w-4 h-4"></i>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-600 dark:text-zinc-400 line-through font-medium">
+                      <%= task.title %> <%= task.lead ? `(Customer: ${task.lead.name})` : '' %>
+                    </span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase">
+                    Done <%= new Date(task.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+                  </span>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (Overdue Alerts, KPIs, Suggestions) - Spans 1/3 -->
+      <div class="space-y-8">
+        
+        <!-- Overdue Tasks Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder border-t-4 border-t-rose-500 rounded-3xl p-6 shadow-sm">
+          <div class="flex justify-between items-center border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-4">
+            <div class="flex items-center gap-2 text-rose-500">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              <h3 class="font-bold text-base">Overdue (<%= overdue.length %>)</h3>
+            </div>
+            <a href="#" id="reassignAllBtn" class="text-xs font-bold text-brand-orange hover:underline">Reassign All</a>
+          </div>
+
+          <div class="space-y-5 divide-y divide-slate-100 dark:divide-brand-darkBorder">
+            <% if (overdue.length === 0) { %>
+              <p class="text-sm text-slate-400 dark:text-zinc-500 py-4 text-center">No overdue tasks. Outstanding job!</p>
+            <% } else { %>
+              <% overdue.forEach((task, idx) => { 
+                // Calculate days overdue
+                const diffTime = Math.abs(new Date() - new Date(task.dueDate));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const overdueStr = diffDays === 1 ? 'Yesterday' : `${diffDays} days ago`;
+              %>
+                <div class="overdue-item space-y-2 <%= idx > 0 ? 'pt-4 border-t border-slate-100 dark:border-brand-darkBorder' : '' %>" data-task-id="<%= task._id %>">
+                  <div class="flex justify-between items-start">
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200"><%= task.lead ? task.lead.name : 'Unknown' %> - Call Back</h4>
+                    <span class="text-[10px] font-extrabold text-rose-500 uppercase whitespace-nowrap"><%= overdueStr %></span>
+                  </div>
+                  <p class="text-xs text-slate-500 dark:text-zinc-400 italic font-medium leading-relaxed">
+                    "<%= task.description || (task.lead && task.lead.notes) || 'Waiting for follow up' %>"
+                  </p>
+                  
+                  <div class="flex items-center justify-end gap-2 pt-2">
+                    <!-- Complete action -->
+                    <form action="/follow-ups/done/<%= task._id %>" method="POST" class="inline">
+                      <button type="submit" class="p-1 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-brand-darkBg dark:text-emerald-400 dark:hover:bg-emerald-950/20 flex items-center justify-center cursor-pointer transition-all">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </form>
+                    <!-- Reschedule to tomorrow -->
+                    <form action="/follow-ups/reschedule/<%= task._id %>" method="POST" class="inline">
+                      <input type="hidden" name="newDate" value="<%= nextDay %>" />
+                      <button type="submit" class="p-1 rounded-lg bg-blue-50 text-brand-orange hover:bg-brand-orange hover:text-white dark:bg-brand-darkBg dark:text-orange-400 dark:hover:bg-orange-950/20 flex items-center justify-center cursor-pointer transition-all">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+
+          <div class="border-t border-slate-100 dark:border-brand-darkBorder mt-6 pt-4 text-center">
+            <a href="#" id="viewAllMissedBtn" class="text-xs font-bold text-brand-orange hover:underline flex items-center justify-center gap-1">
+              <span>View all missed tasks</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Daily Target -->
+          <div class="bg-gradient-to-br from-[#ff5c35] to-[#d43d18] text-white rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[120px]">
+            <div class="flex justify-between items-start">
+              <span class="text-[9px] font-extrabold uppercase tracking-widest text-orange-100">Daily Target</span>
+              <i data-lucide="trending-up" class="w-4 h-4 text-orange-100"></i>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-extrabold block"><%= metrics.dailyTarget %>%</span>
+              <span class="text-[9px] font-semibold text-orange-100 uppercase tracking-wider block mt-1">Completion rate</span>
+            </div>
+          </div>
+
+          <!-- Follow-ups Logged -->
+          <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm flex flex-col justify-between min-h-[120px]">
+            <div class="flex justify-between items-start">
+              <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-zinc-500">Logged today</span>
+              <i data-lucide="zap" class="w-4 h-4 text-brand-orange shrink-0"></i>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-extrabold text-slate-900 dark:text-white block"><%= metrics.followUpsLogged %></span>
+              <span class="text-[9px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider block mt-1">Follow-ups logged</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Suggestion Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-5 shadow-sm space-y-3">
+          <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Smart Suggestion</span>
+          <div class="bg-slate-50 dark:bg-brand-darkBg/60 rounded-xl p-4 border border-slate-100 dark:border-brand-darkBorder">
+            <p class="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-medium">
+              Leads followed up within <span class="text-brand-orange dark:text-white font-bold">5 minutes</span> of inquiry have a <span class="text-brand-orange dark:text-brand-orange font-bold">4.2x higher conversion rate</span>. Try the "Call Now" button more today!
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    </div> <!-- Close listViewContainer -->
+
+    <!-- Calendar View Container (Hidden by default) -->
+    <div id="calendarViewContainer" class="hidden transition-opacity duration-300 bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <div id="calendar"></div>
+    </div>
+
+    <!-- Event Details Modal (Overlay) -->
+    <div id="eventDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Backdrop -->
+      <div id="modalBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+      
+      <!-- Modal Content Container -->
+      <div id="modalContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="modalIconContainer" class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0">
+              <i id="modalIcon" data-lucide="phone" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span id="modalTypeBadge" class="text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Follow-Up</span>
+              <h3 id="modalTitle" class="font-extrabold text-lg text-slate-900 dark:text-white mt-0.5">Event Title</h3>
+            </div>
+          </div>
+          <button id="closeModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6 space-y-6 overflow-y-auto flex-1">
+          <!-- Date/Time info -->
+          <div class="flex items-center gap-3 text-sm font-semibold text-slate-700 dark:text-zinc-300">
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+            <span id="modalDateStr">Date & Time</span>
+          </div>
+          
+          <!-- Customer Information Card -->
+          <div class="bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-4 space-y-3">
+            <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Customer Details</h4>
+            <div class="grid grid-cols-2 gap-4 text-xs font-semibold">
+              <div>
+                <span class="text-[10px] text-slate-400 dark:text-zinc-500 block mb-0.5">Name</span>
+                <span id="modalCustName" class="text-slate-800 dark:text-zinc-200">Customer Name</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 dark:text-zinc-500 block mb-0.5">Phone</span>
+                <span id="modalCustPhone" class="text-slate-800 dark:text-zinc-200">Customer Phone</span>
+              </div>
+              <div class="col-span-2">
+                <span class="text-[10px] text-slate-400 dark:text-zinc-500 block mb-0.5">Email</span>
+                <span id="modalCustEmail" class="text-slate-800 dark:text-zinc-200">Customer Email</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Description & Salesperson info -->
+          <div class="space-y-4">
+            <div id="modalDescContainer" class="space-y-1.5">
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Description / Notes</span>
+              <p id="modalDesc" class="text-xs text-slate-600 dark:text-zinc-400 font-medium leading-relaxed italic">"Description goes here..."</p>
+            </div>
+            
+            <div id="modalSalespersonContainer" class="space-y-1.5 hidden">
+              <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Assigned Salesperson</span>
+              <span id="modalSalesperson" class="text-xs font-semibold text-slate-800 dark:text-zinc-200 block">Salesperson Name</span>
+            </div>
+          </div>
+          
+          <!-- Reschedule Section -->
+          <div id="modalRescheduleSection" class="border-t border-slate-100 dark:border-brand-darkBorder pt-5 space-y-3">
+            <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Reschedule Follow-Up</span>
+            <div class="flex items-center gap-3">
+              <div class="relative flex-1">
+                <input type="datetime-local" id="modalRescheduleDate" class="w-full text-xs font-bold bg-white dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange dark:focus:border-brand-orange transition-colors" />
+              </div>
+              <button id="modalRescheduleBtn" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-sm">
+                Reschedule
+              </button>
+            </div>
+          </div>
+
+          <!-- Reassign Section -->
+          <div id="modalReassignSection" class="border-t border-slate-100 dark:border-brand-darkBorder pt-5 space-y-3">
+            <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Reassign Task</span>
+            <div class="flex items-center gap-3">
+              <div class="relative flex-1">
+                <select id="modalReassignSelect" class="w-full text-xs font-bold bg-white dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange dark:focus:border-brand-orange transition-colors">
+                  <option value="">Select Salesperson...</option>
+                  <% users.forEach(user => { %>
+                    <option value="<%= user._id %>"><%= user.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <button id="modalReassignBtn" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-sm">
+                Reassign
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal Footer / Actions -->
+        <div id="modalFooter" class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex flex-wrap gap-2.5 items-center justify-between">
+          <!-- Phone/Call icon link -->
+          <div class="flex gap-2 font-sans">
+            <a id="modalCallBtn" href="#" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder bg-white dark:bg-brand-darkCard text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-800 text-xs font-bold transition-all">
+              <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+              <span>Call Now</span>
+            </a>
+            <button id="modalSMSBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder bg-white dark:bg-brand-darkCard text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-800 text-xs font-bold transition-all cursor-pointer">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+              <span>Send SMS</span>
+            </button>
+          </div>
+          
+          <!-- Status Actions -->
+          <div class="flex gap-2" id="modalStatusActions">
+            <button id="modalMissedBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 dark:border-rose-950/40 dark:hover:bg-rose-950/20 text-rose-500 text-xs font-bold cursor-pointer transition-all">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>Mark Missed</span>
+            </button>
+            <button id="modalCompleteBtn" class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold cursor-pointer transition-all shadow-sm">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span>Complete Follow-Up</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reassign All Modal (Overlay) -->
+    <div id="reassignAllModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Backdrop -->
+      <div id="reassignAllBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+      
+      <!-- Modal Content Container -->
+      <div id="reassignAllContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-md mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 text-brand-orange bg-orange-50 dark:bg-orange-950/30">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">Reassign All Overdue</h3>
+              <p class="text-xs text-slate-500 dark:text-zinc-400">Reassign all pending and missed overdue tasks.</p>
+            </div>
+          </div>
+          <button id="closeReassignAllBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6 space-y-4">
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block">Select New Salesperson</label>
+            <select id="reassignAllSelect" class="w-full text-xs font-bold bg-white dark:bg-brand-darkBg text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 outline-none focus:border-brand-orange dark:focus:border-brand-orange transition-colors">
+              <option value="">Select Salesperson...</option>
+              <% users.forEach(user => { %>
+                <option value="<%= user._id %>"><%= user.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex gap-2.5 items-center justify-end">
+          <button id="cancelReassignAllBtn" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 dark:text-zinc-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer">
+            Cancel
+          </button>
+          <button id="confirmReassignAllBtn" class="px-4 py-2 rounded-xl bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-sm cursor-pointer">
+            Confirm Reassign
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- View All Missed Tasks Modal (Overlay) -->
+    <div id="viewAllMissedModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Backdrop -->
+      <div id="viewAllMissedBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+      
+      <!-- Modal Content Container -->
+      <div id="viewAllMissedContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-4xl mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[85vh]">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 text-rose-500 bg-rose-50 dark:bg-rose-950/20">
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">All Missed & Overdue Tasks</h3>
+              <p class="text-xs text-slate-500 dark:text-zinc-400">Total overdue tasks: <span class="font-bold text-rose-500"><%= overdue.length %></span></p>
+            </div>
+          </div>
+          <button id="closeViewAllMissedBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6 overflow-y-auto flex-1">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-brand-darkBorder text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-zinc-500">
+                  <th class="pb-3 pl-2">Customer Name</th>
+                  <th class="pb-3">Phone Number</th>
+                  <th class="pb-3">Assigned User</th>
+                  <th class="pb-3">Due Date</th>
+                  <th class="pb-3">Status</th>
+                  <th class="pb-3 pr-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-brand-darkBorder text-xs">
+                <% if (overdue.length === 0) { %>
+                  <tr>
+                    <td colspan="6" class="py-8 text-center text-slate-400 dark:text-zinc-500 font-medium">No overdue or missed tasks.</td>
+                  </tr>
+                <% } else { %>
+                  <% overdue.forEach(task => { %>
+                    <tr class="hover:bg-slate-50/40 dark:hover:bg-brand-darkCard/40 transition-colors">
+                      <td class="py-4 pl-2 font-bold text-slate-800 dark:text-zinc-200"><%= task.lead ? task.lead.name : 'Unknown' %></td>
+                      <td class="py-4">
+                        <% if (task.lead && task.lead.phone) { %>
+                          <a href="tel:<%= task.lead.phone %>" data-task-id="<%= task._id %>" data-lead-id="<%= task.lead._id %>" class="text-brand-orange hover:underline font-semibold flex items-center gap-1">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 inline"></i>
+                            <span><%= task.lead.phone %></span>
+                          </a>
+                        <% } else { %>
+                          <span class="text-slate-400 dark:text-zinc-500">N/A</span>
+                        <% } %>
+                      </td>
+                      <td class="py-4 font-semibold text-slate-600 dark:text-zinc-400"><%= task.assignedTo ? task.assignedTo.name : 'Unassigned' %></td>
+                      <td class="py-4 text-slate-500 dark:text-zinc-500 font-medium"><%= new Date(task.dueDate).toLocaleDateString() %></td>
+                      <td class="py-4">
+                        <span class="px-2.5 py-0.5 text-[9px] font-extrabold rounded-full border bg-rose-50 text-rose-600 dark:bg-rose-950/30 dark:text-rose-400 border-rose-100">
+                          <%= task.status %>
+                        </span>
+                      </td>
+                      <td class="py-4 pr-2 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                          <!-- Complete form -->
+                          <form action="/follow-ups/done/<%= task._id %>" method="POST" class="inline">
+                            <button type="submit" title="Mark Completed" class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-brand-darkBg dark:text-emerald-400 dark:hover:bg-emerald-950/20 flex items-center justify-center cursor-pointer transition-all">
+                              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                            </button>
+                          </form>
+                          <!-- Reschedule tomorrow -->
+                          <form action="/follow-ups/reschedule/<%= task._id %>" method="POST" class="inline">
+                            <input type="hidden" name="newDate" value="<%= nextDay %>" />
+                            <button type="submit" title="Reschedule to Tomorrow" class="p-1.5 rounded-lg bg-blue-50 text-brand-orange hover:bg-brand-orange hover:text-white dark:bg-brand-darkBg dark:text-orange-400 dark:hover:bg-orange-950/20 flex items-center justify-center cursor-pointer transition-all">
+                              <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex items-center justify-end">
+          <button id="cancelViewAllMissedBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 dark:text-zinc-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load FullCalendar CSS and JS from CDN -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    
+    <style>
+      /* FullCalendar custom styling for premium light/dark mode look */
+      .fc {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.8rem;
+      }
+      .fc-theme-standard td, .fc-theme-standard th {
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+      }
+      .dark .fc-theme-standard td, .dark .fc-theme-standard th {
+        border: 1px solid rgba(36, 36, 39, 0.8) !important;
+      }
+      
+      /* Toolbar buttons custom styling */
+      .fc .fc-button {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        border-radius: 12px !important;
+        padding: 0.4rem 0.8rem !important;
+        transition: all 0.2s ease !important;
+        text-transform: capitalize !important;
+      }
+      
+      .fc .fc-button-primary {
+        background-color: #ffffff !important;
+        border-color: #e2e8f0 !important;
+        color: #334155 !important;
+      }
+      
+      .dark .fc .fc-button-primary {
+        background-color: #161619 !important;
+        border-color: #242427 !important;
+        color: #d4d4d8 !important;
+      }
+      
+      .fc .fc-button-primary:hover {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+      
+      .dark .fc .fc-button-primary:hover {
+        background-color: #242427 !important;
+        border-color: #ff5c35 !important;
+        color: #ffffff !important;
+      }
+      
+      .fc .fc-button-primary:not(:disabled).fc-button-active {
+        background-color: #ff5c35 !important;
+        border-color: #ff5c35 !important;
+        color: #ffffff !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+      }
+      
+      .fc .fc-toolbar-title {
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        letter-spacing: -0.025em !important;
+      }
+      
+      .dark .fc .fc-toolbar-title {
+        color: #ffffff !important;
+      }
+      
+      /* Daygrid cell styling */
+      .fc .fc-daygrid-day-number {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        color: #64748b !important;
+        padding: 6px 8px !important;
+      }
+      
+      .dark .fc .fc-daygrid-day-number {
+        color: #a1a1aa !important;
+      }
+      
+      .fc .fc-col-header-cell-cushion {
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        color: #475569 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        padding: 8px 0 !important;
+      }
+      
+      .dark .fc .fc-col-header-cell-cushion {
+        color: #71717a !important;
+      }
+      
+      .fc-day-today {
+        background-color: rgba(255, 92, 53, 0.04) !important;
+      }
+      
+      .dark .fc-day-today {
+        background-color: rgba(255, 92, 53, 0.06) !important;
+      }
+      
+      /* Event styling */
+      .fc-event {
+        cursor: pointer !important;
+        border-radius: 8px !important;
+        padding: 2px 6px !important;
+        margin: 2px 0 !important;
+        font-weight: 700 !important;
+        font-size: 0.7rem !important;
+        border: none !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+      }
+      
+      .fc-event:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+      }
+      
+      /* Modal Overlay CSS transitions */
+      .modal-overlay {
+        transition: opacity 0.25s ease;
+      }
+      .modal-container {
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+    </style>
+    
+    <script>
+    (function() {
+      function initFollowUps() {
+      // Elements
+      const toggleViewBtn = document.getElementById('toggleViewBtn');
+      const toggleViewText = document.getElementById('toggleViewText');
+      const toggleViewIcon = document.getElementById('toggleViewIcon');
+      const listViewContainer = document.getElementById('listViewContainer');
+      const calendarViewContainer = document.getElementById('calendarViewContainer');
+      const calendarEl = document.getElementById('calendar');
+      
+      // Modal Elements
+      const eventDetailsModal = document.getElementById('eventDetailsModal');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const modalContent = document.getElementById('modalContent');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      
+      const modalIconContainer = document.getElementById('modalIconContainer');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTypeBadge = document.getElementById('modalTypeBadge');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDateStr = document.getElementById('modalDateStr');
+      const modalCustName = document.getElementById('modalCustName');
+      const modalCustPhone = document.getElementById('modalCustPhone');
+      const modalCustEmail = document.getElementById('modalCustEmail');
+      const modalDesc = document.getElementById('modalDesc');
+      const modalDescContainer = document.getElementById('modalDescContainer');
+      const modalSalesperson = document.getElementById('modalSalesperson');
+      const modalSalespersonContainer = document.getElementById('modalSalespersonContainer');
+      const modalRescheduleDate = document.getElementById('modalRescheduleDate');
+      const modalRescheduleBtn = document.getElementById('modalRescheduleBtn');
+      const modalCallBtn = document.getElementById('modalCallBtn');
+      const modalStatusActions = document.getElementById('modalStatusActions');
+      const modalMissedBtn = document.getElementById('modalMissedBtn');
+      const modalCompleteBtn = document.getElementById('modalCompleteBtn');
+
+      const modalReassignBtn = document.getElementById('modalReassignBtn');
+      const modalReassignSelect = document.getElementById('modalReassignSelect');
+
+      let calendar = null;
+      let activeEvent = null; // Store currently selected event info
+      let currentView = localStorage.getItem('motocrm-followups-view') || 'list';
+
+      // Initialize initial view state on load
+      if (currentView === 'calendar') {
+        listViewContainer.classList.add('hidden');
+        listViewContainer.classList.remove('block');
+        calendarViewContainer.classList.remove('hidden');
+        toggleViewText.textContent = 'List View';
+        toggleViewIcon.setAttribute('data-lucide', 'list');
+        setTimeout(() => {
+          initializeCalendar();
+        }, 100);
+      }
+
+      // Toggle View Handler
+      toggleViewBtn.addEventListener('click', () => {
+        if (currentView === 'list') {
+          // Switch to Calendar
+          listViewContainer.classList.add('hidden');
+          listViewContainer.classList.remove('block');
+          calendarViewContainer.classList.remove('hidden');
+          
+          toggleViewText.textContent = 'List View';
+          toggleViewIcon.setAttribute('data-lucide', 'list');
+          if (window.lucide) window.lucide.createIcons();
+          
+          currentView = 'calendar';
+          localStorage.setItem('motocrm-followups-view', 'calendar');
+          
+          // Initialize FullCalendar if not already
+          if (!calendar) {
+            initializeCalendar();
+          } else {
+            calendar.render();
+          }
+        } else {
+          // Switch to List
+          calendarViewContainer.classList.add('hidden');
+          listViewContainer.classList.remove('hidden');
+          listViewContainer.classList.add('block');
+          
+          toggleViewText.textContent = 'Calendar View';
+          toggleViewIcon.setAttribute('data-lucide', 'calendar');
+          if (window.lucide) window.lucide.createIcons();
+          
+          currentView = 'list';
+          localStorage.setItem('motocrm-followups-view', 'list');
+        }
+      });
+
+      // Initialize FullCalendar
+      function initializeCalendar() {
+        calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          events: '/follow-ups/events',
+          eventClick: function(info) {
+            openModal(info.event);
+          },
+          loading: function(isLoading) {
+            if (isLoading) {
+              calendarViewContainer.classList.add('opacity-70');
+            } else {
+              calendarViewContainer.classList.remove('opacity-70');
+            }
+          },
+          eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            meridiem: 'short'
+          }
+        });
+        calendar.render();
+      }
+
+      // Open Modal with Event data
+      function openModal(fcEvent) {
+        activeEvent = fcEvent;
+        const props = fcEvent.extendedProps;
+        
+        // Header styling & icon based on event type
+        if (props.type === 'test_ride') {
+          modalTypeBadge.textContent = 'Test Ride';
+          modalTypeBadge.className = 'text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-100 dark:border-purple-950/30';
+          modalIconContainer.className = 'w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 text-purple-600 bg-purple-50 dark:bg-purple-950/20';
+          modalIcon.setAttribute('data-lucide', 'bike');
+          
+          // Salesperson visible, reschedule date hidden
+          modalSalespersonContainer.classList.remove('hidden');
+          modalSalesperson.textContent = props.salesperson;
+          document.getElementById('modalRescheduleSection').classList.add('hidden');
+          document.getElementById('modalReassignSection').classList.add('hidden');
+          
+          // Status actions: For test ride, hide follow up controls
+          modalStatusActions.classList.add('hidden');
+        } else {
+          modalTypeBadge.textContent = 'Follow-Up';
+          modalTypeBadge.className = 'text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider bg-orange-50 text-brand-orange dark:bg-orange-950/40 dark:text-orange-300 border border-orange-100 dark:border-orange-950/30';
+          modalIconContainer.className = 'w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 text-brand-orange bg-orange-50 dark:bg-orange-950/30';
+          modalIcon.setAttribute('data-lucide', 'phone');
+          
+          // Salesperson hidden, reschedule visible
+          modalSalespersonContainer.classList.add('hidden');
+          document.getElementById('modalRescheduleSection').classList.remove('hidden');
+          document.getElementById('modalReassignSection').classList.remove('hidden');
+
+          if (props.assignedTo) {
+            modalReassignSelect.value = props.assignedTo._id || props.assignedTo;
+          } else {
+            modalReassignSelect.value = '';
+          }
+          
+          // Status actions: show follow up controls
+          modalStatusActions.classList.remove('hidden');
+          
+          // Handle button states based on task status
+          if (props.status === 'Completed') {
+            modalCompleteBtn.disabled = true;
+            modalCompleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            modalMissedBtn.disabled = true;
+            modalMissedBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          } else {
+            modalCompleteBtn.disabled = false;
+            modalCompleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            modalMissedBtn.disabled = false;
+            modalMissedBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
+        }
+        
+        // Set title and details
+        modalTitle.textContent = fcEvent.title;
+        
+        const formattedDate = new Date(fcEvent.start).toLocaleString([], {
+          weekday: 'long',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        modalDateStr.textContent = formattedDate;
+        
+        const modalSMSBtn = document.getElementById('modalSMSBtn');
+        if (props.lead) {
+          modalCustName.textContent = props.lead.name;
+          modalCustPhone.textContent = props.lead.phone;
+          modalCustEmail.textContent = props.lead.email || 'No email provided';
+          modalCallBtn.setAttribute('href', `tel:${props.lead.phone}`);
+          modalCallBtn.classList.remove('hidden');
+          if (modalSMSBtn) {
+            modalSMSBtn.classList.remove('hidden');
+            modalSMSBtn.onclick = (e) => {
+              closeModal();
+              openSMSModal(props.lead.phone, props.lead._id, 'Lead');
+            };
+          }
+          
+          modalCallBtn.onclick = (e) => {
+            logCall(props.type === 'task' ? fcEvent.id : null, props.type === 'test_ride' ? fcEvent.id : null, props.lead._id);
+          };
+        } else {
+          modalCustName.textContent = 'N/A';
+          modalCustPhone.textContent = 'N/A';
+          modalCustEmail.textContent = 'N/A';
+          modalCallBtn.classList.add('hidden');
+          if (modalSMSBtn) modalSMSBtn.classList.add('hidden');
+        }
+        
+        if (fcEvent.description) {
+          modalDescContainer.classList.remove('hidden');
+          modalDesc.textContent = `"${fcEvent.description}"`;
+        } else {
+          modalDescContainer.classList.add('hidden');
+        }
+        
+        // Set reschedule default date-time input
+        const d = new Date(fcEvent.start);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        modalRescheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+        if (window.lucide) window.lucide.createIcons();
+
+        // Show modal container
+        eventDetailsModal.classList.remove('hidden');
+        setTimeout(() => {
+          modalBackdrop.classList.remove('opacity-0');
+          modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+      }
+
+      // Close Modal Handler
+      function closeModal() {
+        modalBackdrop.classList.add('opacity-0');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          eventDetailsModal.classList.add('hidden');
+          activeEvent = null;
+        }, 300);
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      modalBackdrop.addEventListener('click', closeModal);
+
+      // Reassign Single Task inside Event Modal
+      modalReassignBtn.addEventListener('click', async () => {
+        if (!activeEvent || activeEvent.extendedProps.type !== 'task') return;
+        const userId = modalReassignSelect.value;
+        if (!userId) {
+          showToast('Please select a salesperson.', 'error');
+          return;
+        }
+        modalReassignBtn.disabled = true;
+        modalReassignBtn.innerHTML = 'Saving...';
+        try {
+          const res = await fetch(`/follow-ups/reassign/${activeEvent.id}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(data.message, 'success');
+            if (calendar) calendar.refetchEvents();
+            closeModal();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast(data.message || 'Error reassigning task.', 'error');
+            modalReassignBtn.disabled = false;
+            modalReassignBtn.textContent = 'Reassign';
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Connection error. Please try again.', 'error');
+          modalReassignBtn.disabled = false;
+          modalReassignBtn.textContent = 'Reassign';
+        }
+      });
+
+      // Mark Completed AJAX Handler from Modal
+      modalCompleteBtn.addEventListener('click', async () => {
+        if (!activeEvent || activeEvent.extendedProps.type !== 'task') return;
+        
+        modalCompleteBtn.disabled = true;
+        modalCompleteBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Processing...`;
+        
+        try {
+          const res = await fetch(`/follow-ups/done/${activeEvent.id}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await res.json();
+          
+          if (data.success) {
+            showToast(data.message, 'success');
+            if (calendar) calendar.refetchEvents();
+            closeModal();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast(data.message || 'Error completing follow-up.', 'error');
+            resetCompleteBtn();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Connection error. Please try again.', 'error');
+          resetCompleteBtn();
+        }
+      });
+
+      function resetCompleteBtn() {
+        modalCompleteBtn.disabled = false;
+        modalCompleteBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> <span>Complete Follow-Up</span>`;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      // Mark Missed AJAX Handler from Modal
+      modalMissedBtn.addEventListener('click', async () => {
+        if (!activeEvent || activeEvent.extendedProps.type !== 'task') return;
+        
+        modalMissedBtn.disabled = true;
+        modalMissedBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></span> Processing...`;
+        
+        try {
+          const res = await fetch(`/follow-ups/missed/${activeEvent.id}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await res.json();
+          
+          if (data.success) {
+            showToast(data.message, 'success');
+            if (calendar) calendar.refetchEvents();
+            closeModal();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast(data.message || 'Error marking missed.', 'error');
+            resetMissedBtn();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Connection error. Please try again.', 'error');
+          resetMissedBtn();
+        }
+      });
+
+      function resetMissedBtn() {
+        modalMissedBtn.disabled = false;
+        modalMissedBtn.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> <span>Mark Missed</span>`;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      modalRescheduleBtn.addEventListener('click', async () => {
+        if (!activeEvent || activeEvent.extendedProps.type !== 'task') return;
+        
+        const newDateVal = modalRescheduleDate.value;
+        if (!newDateVal) {
+          showToast('Please pick a date and time.', 'error');
+          return;
+        }
+        
+        modalRescheduleBtn.disabled = true;
+        modalRescheduleBtn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Saving...`;
+        
+        try {
+          const res = await fetch(`/follow-ups/reschedule/${activeEvent.id}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              newDate: newDateVal,
+              priority: activeEvent.extendedProps.priority
+            })
+          });
+          const data = await res.json();
+          
+          if (data.success) {
+            showToast(data.message, 'success');
+            if (calendar) calendar.refetchEvents();
+            closeModal();
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast(data.message || 'Error rescheduling.', 'error');
+            resetRescheduleBtn();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Connection error. Please try again.', 'error');
+          resetRescheduleBtn();
+        }
+      });
+
+      function resetRescheduleBtn() {
+        modalRescheduleBtn.disabled = false;
+        modalRescheduleBtn.textContent = 'Reschedule';
+      }
+
+      // General logCall function
+      async function logCall(taskId, testRideId, leadId) {
+        try {
+          const res = await fetch('/follow-ups/call', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ taskId, testRideId, leadId })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(data.message, 'success');
+          } else {
+            showToast(data.message || 'Error logging call.', 'error');
+          }
+        } catch (err) {
+          console.error('Call logging error:', err);
+        }
+      }
+
+      // INTERCEPT LIST-VIEW FORMS FOR AJAX TRANSITIONS
+      document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        const action = form.getAttribute('action') || '';
+        
+        if (action.includes('/follow-ups/done/') || action.includes('/follow-ups/reschedule/')) {
+          e.preventDefault();
+          
+          const card = form.closest('.task-card, .overdue-item');
+          if (card) {
+            card.style.opacity = '0.5';
+          }
+          
+          try {
+            const formData = new FormData(form);
+            const dataObj = {};
+            formData.forEach((value, key) => {
+              dataObj[key] = value;
+            });
+            
+            const res = await fetch(action, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(dataObj)
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+              showToast(data.message, 'success');
+              
+              if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'scale(0.95)';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                  card.remove();
+                  const remainingTasks = document.querySelectorAll('#listViewContainer .task-card, #listViewContainer .overdue-item');
+                  if (remainingTasks.length === 0) {
+                    window.location.reload();
+                  }
+                }, 300);
+              } else {
+                window.location.reload();
+              }
+              
+              if (calendar) calendar.refetchEvents();
+            } else {
+              showToast(data.message || 'Action failed.', 'error');
+              if (card) card.style.opacity = '1';
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Connection error. Please try again.', 'error');
+            if (card) card.style.opacity = '1';
+          }
+        }
+      });
+
+      // Intercept all tel: links in the document for call activity logging (only for non-modal links)
+      document.addEventListener('click', (e) => {
+        const callLink = e.target.closest('a[href^="tel:"]');
+        if (callLink && !callLink.closest('#eventDetailsModal')) {
+          const taskId = callLink.getAttribute('data-task-id') || null;
+          const leadId = callLink.getAttribute('data-lead-id') || null;
+          logCall(taskId, null, leadId);
+        }
+      });
+
+      // Reassign All Modal Event Listeners
+      const reassignAllModal = document.getElementById('reassignAllModal');
+      const reassignAllBackdrop = document.getElementById('reassignAllBackdrop');
+      const reassignAllContent = document.getElementById('reassignAllContent');
+      const reassignAllBtn = document.getElementById('reassignAllBtn');
+      const closeReassignAllBtn = document.getElementById('closeReassignAllBtn');
+      const cancelReassignAllBtn = document.getElementById('cancelReassignAllBtn');
+      const confirmReassignAllBtn = document.getElementById('confirmReassignAllBtn');
+      const reassignAllSelect = document.getElementById('reassignAllSelect');
+
+      function openReassignAll(e) {
+        if (e) e.preventDefault();
+        reassignAllModal.classList.remove('hidden');
+        setTimeout(() => {
+          reassignAllBackdrop.classList.remove('opacity-0');
+          reassignAllContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+      }
+
+      function closeReassignAll() {
+        reassignAllBackdrop.classList.add('opacity-0');
+        reassignAllContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          reassignAllModal.classList.add('hidden');
+        }, 300);
+      }
+
+      if (reassignAllBtn) reassignAllBtn.addEventListener('click', openReassignAll);
+      if (closeReassignAllBtn) closeReassignAllBtn.addEventListener('click', closeReassignAll);
+      if (cancelReassignAllBtn) cancelReassignAllBtn.addEventListener('click', closeReassignAll);
+      if (reassignAllBackdrop) reassignAllBackdrop.addEventListener('click', closeReassignAll);
+
+      if (confirmReassignAllBtn) {
+        confirmReassignAllBtn.addEventListener('click', async () => {
+          const userId = reassignAllSelect.value;
+          if (!userId) {
+            showToast('Please select a salesperson.', 'error');
+            return;
+          }
+          confirmReassignAllBtn.disabled = true;
+          confirmReassignAllBtn.innerHTML = 'Processing...';
+          try {
+            const res = await fetch('/follow-ups/reassign-all', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ userId })
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast(data.message, 'success');
+              closeReassignAll();
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            } else {
+              showToast(data.message || 'Error reassigning tasks.', 'error');
+              confirmReassignAllBtn.disabled = false;
+              confirmReassignAllBtn.textContent = 'Confirm Reassign';
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Connection error. Please try again.', 'error');
+            confirmReassignAllBtn.disabled = false;
+            confirmReassignAllBtn.textContent = 'Confirm Reassign';
+          }
+        });
+      }
+
+      // View All Missed Tasks Modal Event Listeners
+      const viewAllMissedModal = document.getElementById('viewAllMissedModal');
+      const viewAllMissedBackdrop = document.getElementById('viewAllMissedBackdrop');
+      const viewAllMissedContent = document.getElementById('viewAllMissedContent');
+      const viewAllMissedBtn = document.getElementById('viewAllMissedBtn');
+      const closeViewAllMissedBtn = document.getElementById('closeViewAllMissedBtn');
+      const cancelViewAllMissedBtn = document.getElementById('cancelViewAllMissedBtn');
+
+      function openViewAllMissed(e) {
+        if (e) e.preventDefault();
+        viewAllMissedModal.classList.remove('hidden');
+        setTimeout(() => {
+          viewAllMissedBackdrop.classList.remove('opacity-0');
+          viewAllMissedContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+      }
+
+      function closeViewAllMissed() {
+        viewAllMissedBackdrop.classList.add('opacity-0');
+        viewAllMissedContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          viewAllMissedModal.classList.add('hidden');
+        }, 300);
+      }
+
+      if (viewAllMissedBtn) viewAllMissedBtn.addEventListener('click', openViewAllMissed);
+      if (closeViewAllMissedBtn) closeViewAllMissedBtn.addEventListener('click', closeViewAllMissed);
+      if (cancelViewAllMissedBtn) cancelViewAllMissedBtn.addEventListener('click', closeViewAllMissed);
+      if (viewAllMissedBackdrop) viewAllMissedBackdrop.addEventListener('click', closeViewAllMissed);
+
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFollowUps);
+      } else {
+        initFollowUps();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+<%- include('partials/footer') %>

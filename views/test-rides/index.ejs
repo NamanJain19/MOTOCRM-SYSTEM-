@@ -1,0 +1,198 @@
+<%- include('../partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header -->
+  <%- include('../partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-y-auto p-8 space-y-6 bg-brand-lightBg dark:bg-brand-darkBg">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Test Rides Management</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Coordinate and track customer test rides and salesperson assignments.</p>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column: Test Rides List (2/3 width) -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Scheduled Test Rides</h3>
+            <span class="text-xs font-bold bg-slate-100 text-slate-600 dark:bg-brand-darkBg dark:text-zinc-400 px-3 py-1 rounded-full border border-slate-200/60 dark:border-brand-darkBorder">
+              <%= testRides.length %> Active / Logged
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left text-xs">
+              <thead>
+                <tr class="bg-slate-50/50 dark:bg-brand-darkBg/50 border-b border-slate-200 dark:border-brand-darkBorder text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                  <th class="py-4 px-4">Customer</th>
+                  <th class="py-4 px-4">Bike Model</th>
+                  <th class="py-4 px-4">Date & Time</th>
+                  <th class="py-4 px-4">Salesperson</th>
+                  <th class="py-4 px-4">Status</th>
+                  <th class="py-4 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-brand-darkBorder text-slate-700 dark:text-zinc-300 font-medium">
+                <% if (testRides.length === 0) { %>
+                  <tr>
+                    <td colspan="6" class="py-8 text-center text-slate-400 dark:text-zinc-500">
+                      <i data-lucide="calendar" class="w-8 h-8 mx-auto mb-2 opacity-55 text-slate-350"></i>
+                      No test rides scheduled yet.
+                    </td>
+                  </tr>
+                <% } else { %>
+                  <% testRides.forEach(ride => { %>
+                    <tr class="hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20">
+                      <td class="py-4 px-4">
+                        <% if (ride.lead) { %>
+                          <div class="font-bold text-slate-800 dark:text-zinc-200"><%= ride.lead.name %></div>
+                          <div class="text-[10px] text-slate-400"><%= ride.lead.phone %></div>
+                        <% } else { %>
+                          <span class="text-slate-400 font-normal">Removed Lead</span>
+                        <% } %>
+                      </td>
+                      <td class="py-4 px-4">
+                        <% if (ride.lead) { %>
+                          <span class="font-semibold text-slate-800 dark:text-zinc-200"><%= ride.lead.bikeModel %></span>
+                        <% } else { %>
+                          <span class="text-slate-400">-</span>
+                        <% } %>
+                      </td>
+                      <td class="py-4 px-4">
+                        <div class="flex items-center gap-1.5 text-slate-850 dark:text-zinc-200">
+                          <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-orange"></i>
+                          <span><%= new Date(ride.date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) %></span>
+                        </div>
+                      </td>
+                      <td class="py-4 px-4 font-semibold text-slate-800 dark:text-zinc-200"><%= ride.salesperson %></td>
+                      <td class="py-4 px-4">
+                        <% if (ride.status === 'Completed') { %>
+                          <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-emerald-250 dark:border-emerald-900/50">
+                            <span class="w-1 h-1 rounded-full bg-emerald-550"></span>Completed
+                          </span>
+                        <% } else if (ride.status === 'Cancelled') { %>
+                          <span class="inline-flex items-center gap-1 bg-rose-50 text-rose-500 dark:bg-rose-950/20 dark:text-rose-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-rose-250 dark:border-rose-900/50">
+                            <span class="w-1 h-1 rounded-full bg-rose-550"></span>Cancelled
+                          </span>
+                        <% } else { %>
+                          <span class="inline-flex items-center gap-1 bg-orange-50 text-brand-orange dark:bg-orange-950/20 dark:text-orange-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-orange-250 dark:border-orange-900/50">
+                            <span class="w-1 h-1 rounded-full bg-brand-orange"></span>Scheduled
+                          </span>
+                        <% } %>
+                      </td>
+                      <td class="py-4 px-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                          <!-- Status Change Form -->
+                          <form action="/test-rides/update-status/<%= ride._id %>" method="POST" class="inline-flex items-center gap-1">
+                            <select 
+                              name="status" 
+                              onchange="this.form.submit()"
+                              class="bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-lg px-2 py-1 text-[10px] font-bold text-slate-700 dark:text-zinc-300 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+                            >
+                              <option value="Scheduled" <%= ride.status === 'Scheduled' ? 'selected' : '' %>>Scheduled</option>
+                              <option value="Completed" <%= ride.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+                              <option value="Cancelled" <%= ride.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            </select>
+                          </form>
+
+                          <!-- Delete Action -->
+                          <form action="/test-rides/delete/<%= ride._id %>" method="POST" class="inline">
+                            <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all cursor-pointer" title="Delete">
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Schedule Form (1/3 width) -->
+      <div class="space-y-6">
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+          <div class="flex items-center gap-3 border-b border-slate-100 dark:border-brand-darkBorder pb-4 mb-6">
+            <div class="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/20 text-brand-orange flex items-center justify-center">
+              <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">Schedule Test Ride</h3>
+              <p class="text-xs text-slate-400 dark:text-zinc-500">Book a test ride for an active lead.</p>
+            </div>
+          </div>
+
+          <form action="/test-rides/schedule" method="POST" class="space-y-4">
+            <!-- Select Lead -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Customer / Lead</label>
+              <select 
+                name="leadId" 
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              >
+                <option value="" disabled selected>Select a lead...</option>
+                <% leads.forEach(lead => { %>
+                  <option value="<%= lead._id %>">
+                    <%= lead.name %> - <%= lead.bikeModel %> (<%= lead.phone %>)
+                  </option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Date and Time -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Date & Time</label>
+              <input 
+                type="datetime-local" 
+                name="date" 
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- Assigned Salesperson -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Salesperson</label>
+              <input 
+                type="text" 
+                name="salesperson" 
+                placeholder="Enter salesperson name..."
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit" 
+              class="w-full mt-4 bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs py-3.5 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Book Test Ride</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<%- include('../partials/footer') %>

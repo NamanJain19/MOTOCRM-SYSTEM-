@@ -1,0 +1,716 @@
+<%- include('../partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header -->
+  <%- include('../partials/header') %>
+
+  <!-- Content Container -->
+  <main class="flex-1 overflow-y-auto p-8 space-y-6 bg-brand-lightBg dark:bg-brand-darkBg">
+    
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Leads Management</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Manage and track your sales pipeline with precision.</p>
+      </div>
+      
+      <!-- Primary Action in brand orange -->
+      <a href="/leads/add" class="flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-5 py-3 rounded-2xl transition-all shadow-sm">
+        <i data-lucide="user-plus" class="w-4 h-4"></i>
+        <span>Add New Lead</span>
+      </a>
+    </div>
+
+    <!-- Filters Row with rounded-3xl -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl p-6 shadow-sm">
+      <form action="/leads" method="GET" id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+        <!-- Keep search query if present -->
+        <% if (search) { %>
+          <input type="hidden" name="search" value="<%= search %>" />
+        <% } %>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Status</label>
+          <select 
+            name="status" 
+            onchange="document.getElementById('filter-form').submit()"
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+          >
+            <option value="All" <%= selectedStatus === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <% ['New', 'Contacted', 'Interested', 'Test Ride Booked', 'Negotiation', 'Sold', 'Delivered', 'Lost'].forEach(status => { %>
+              <option value="<%= status %>" <%= selectedStatus === status ? 'selected' : '' %>><%= status %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Source Filter -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Source</label>
+          <select 
+            name="source" 
+            onchange="document.getElementById('filter-form').submit()"
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+          >
+            <option value="All" <%= selectedSource === 'All' ? 'selected' : '' %>>All Sources</option>
+            <% ['WhatsApp', 'Facebook', 'Instagram', 'Website', 'Walk-in', 'Referral'].forEach(src => { %>
+              <option value="<%= src %>" <%= selectedSource === src ? 'selected' : '' %>><%= src %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Date Range Filter -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Date Range</label>
+          <select 
+            name="dateRange" 
+            id="dateRangeSelect"
+            onchange="handleDateRangeChange(this)"
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+          >
+            <option value="All" <%= selectedDateRange === 'All' ? 'selected' : '' %>>All Time</option>
+            <option value="7days" <%= selectedDateRange === '7days' ? 'selected' : '' %>>Last 7 Days</option>
+            <option value="30days" <%= selectedDateRange === '30days' ? 'selected' : '' %>>Last 30 Days</option>
+            <option value="3months" <%= selectedDateRange === '3months' ? 'selected' : '' %>>Last 3 Months</option>
+            <option value="6months" <%= selectedDateRange === '6months' ? 'selected' : '' %>>Last 6 Months</option>
+            <option value="12months" <%= selectedDateRange === '12months' ? 'selected' : '' %>>Last 12 Months</option>
+            <option value="custom" <%= selectedDateRange === 'custom' ? 'selected' : '' %>>Custom Date Range</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div>
+          <a href="/leads" class="w-full text-center inline-block px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-850 dark:text-zinc-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkBg dark:hover:bg-zinc-800 border border-slate-200 dark:border-brand-darkBorder rounded-xl transition-all">
+            Reset Filters
+          </a>
+        </div>
+
+        <!-- Custom Date Range Inputs (expanded only if custom is selected) -->
+        <div id="customDateInputs" class="<%= selectedDateRange === 'custom' ? 'flex' : 'hidden' %> items-center gap-3 md:col-span-4 mt-3 bg-slate-50 dark:bg-brand-darkBg/30 p-4 border border-slate-200/50 dark:border-brand-darkBorder rounded-2xl">
+          <div class="flex-1">
+            <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-1 block">Start Date</label>
+            <input type="date" name="startDate" id="startDateInput" value="<%= startDate %>" class="w-full bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange" />
+          </div>
+          <div class="flex-1">
+            <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-1 block">End Date</label>
+            <input type="date" name="endDate" id="endDateInput" value="<%= endDate %>" class="w-full bg-white dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange" />
+          </div>
+          <button type="submit" class="self-end bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">
+            Apply Custom
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Leads Table Container with rounded-3xl -->
+    <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder">
+        <button id="select-leads-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-brand-darkBorder hover:bg-slate-50 dark:hover:bg-brand-darkBg text-slate-700 dark:text-zinc-300 transition-all cursor-pointer">
+          <i data-lucide="check-square" class="w-4 h-4"></i>
+          <span>Select Leads</span>
+        </button>
+        <div id="bulk-actions-container" class="hidden flex items-center gap-2">
+          <button id="cancel-selection-btn" class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-brand-darkBg dark:border-brand-darkBorder dark:hover:bg-zinc-800 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-slate-600 dark:text-zinc-400 cursor-pointer transition-all">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span>Cancel</span>
+          </button>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" />
+            <label for="selectAllCheckbox" class="text-xs font-bold text-slate-500 dark:text-zinc-400 cursor-pointer">Select All</label>
+          </div>
+          <button id="bulkDeleteBtn" class="hidden flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 dark:bg-rose-955/20 dark:border-rose-900/50 dark:hover:bg-rose-950/30 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 cursor-pointer transition-all">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete Selected</span>
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-xs">
+          <thead>
+            <tr class="bg-slate-50/50 dark:bg-brand-darkBg/50 border-b border-slate-200 dark:border-brand-darkBorder text-[9px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+              <th class="py-4 px-4">Customer Name</th>
+              <th class="py-4 px-4">Interested Model</th>
+              <th class="py-4 px-4">Source</th>
+              <th class="py-4 px-4">Status</th>
+              <th class="py-4 px-4">Next Follow-Up</th>
+              <th class="py-4 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-brand-darkBorder text-slate-700 dark:text-zinc-300 font-medium">
+            <% if (leads.length === 0) { %>
+              <tr>
+                <td colspan="6" class="py-12 text-center text-slate-400 dark:text-zinc-500">
+                  <i data-lucide="folder-open" class="w-10 h-10 mx-auto mb-3 opacity-60"></i>
+                  No leads found matching your criteria.
+                </td>
+              </tr>
+            <% } else { %>
+              <% leads.forEach(lead => { 
+                const initials = lead.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                let avatarClass = "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400";
+                if (initials.startsWith('M')) avatarClass = "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400";
+                if (initials.startsWith('S')) avatarClass = "bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400";
+                if (initials.startsWith('L')) avatarClass = "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400";
+
+                // Map status dot colors
+                let dotColor = "bg-slate-400";
+                let statusLabel = lead.status;
+
+                if (lead.status === 'New') {
+                  dotColor = "bg-sky-500";
+                } else if (lead.status === 'Test Ride Booked') {
+                  dotColor = "bg-yellow-500";
+                  statusLabel = 'Test Ride';
+                } else if (lead.status === 'Negotiation') {
+                  dotColor = "bg-orange-500";
+                  statusLabel = 'Negotiating';
+                } else if (lead.status === 'Sold') {
+                  dotColor = "bg-emerald-500";
+                  statusLabel = 'Completed';
+                } else if (lead.status === 'Contacted') {
+                  dotColor = "bg-indigo-500";
+                } else if (lead.status === 'Interested') {
+                  dotColor = "bg-rose-500";
+                }
+              %>
+                <tr class="lead-row hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20" data-lead-id="<%= lead._id %>">
+                  <!-- Customer Details -->
+                  <td class="py-3 px-4 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 <%= avatarClass %>">
+                      <%= initials %>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-slate-800 dark:text-zinc-200 text-xs"><%= lead.name %></h4>
+                      <span class="text-[10px] text-slate-450 dark:text-zinc-500 block mt-0.5"><%= lead.email || 'No email' %></span>
+                    </div>
+                  </td>
+                  
+                  <!-- Bike model -->
+                  <td class="py-3 px-4">
+                    <span class="font-bold text-slate-850 dark:text-zinc-200"><%= lead.bikeModel %></span>
+                  </td>
+
+                  <!-- Lead Source -->
+                  <td class="py-3 px-4 text-slate-500 dark:text-zinc-400">
+                    <%= lead.leadSource %>
+                  </td>
+
+                  <!-- Status Dot Style -->
+                  <td class="py-3 px-4">
+                    <span class="flex items-center gap-1.5 font-bold">
+                      <span class="w-2.5 h-2.5 rounded-full <%= dotColor %>"></span>
+                      <span><%= statusLabel %></span>
+                    </span>
+                  </td>
+
+                  <!-- Follow up Date -->
+                  <td class="py-3 px-4 text-slate-500 dark:text-zinc-400">
+                    <%= new Date(lead.followUpDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="py-3 px-6 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <!-- View action -->
+                      <button 
+                        type="button" 
+                        title="View Lead Details" 
+                        class="view-lead-btn w-7 h-7 rounded-lg bg-slate-50 text-slate-550 hover:bg-slate-250 hover:text-slate-800 dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center border border-slate-100 dark:border-brand-darkBorder transition-all cursor-pointer"
+                        data-name="<%= lead.name %>"
+                        data-email="<%= lead.email || 'N/A' %>"
+                        data-phone="<%= lead.phone %>"
+                        data-alt-contact="<%= lead.alternativeContact || 'N/A' %>"
+                        data-address="<%= lead.homeAddress || 'N/A' %>"
+                        data-bike="<%= lead.bikeModel %>"
+                        data-color="<%= lead.preferredColor || 'N/A' %>"
+                        data-condition="<%= lead.conditionPreference %>"
+                        data-city="<%= lead.city %>"
+                        data-source="<%= lead.leadSource %>"
+                        data-status="<%= lead.status %>"
+                        data-budget="<%= lead.targetBudget %>"
+                        data-finance="<%= lead.financingInterest %>"
+                        data-contact-method="<%= lead.preferredContactMethod %>"
+                        data-follow-up="<%= new Date(lead.followUpDate).toLocaleDateString() %>"
+                        data-notes="<%= lead.notes || 'No notes provided' %>"
+                        data-delivery-status="<%= lead.delivery ? lead.delivery.status : '' %>"
+                        data-delivery-date="<%= lead.delivery ? new Date(lead.delivery.deliveryDate).toLocaleDateString() : '' %>"
+                        data-delivery-rc="<%= lead.delivery ? lead.delivery.rcStatus : '' %>"
+                        data-delivery-ins="<%= lead.delivery ? lead.delivery.insuranceStatus : '' %>"
+                        data-delivery-checklist="<%= lead.delivery ? lead.delivery.accessoriesChecklist.filter(i=>i.checked).length + '/' + lead.delivery.accessoriesChecklist.length : '' %>"
+                      >
+                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <!-- Call action -->
+                      <a href="tel:<%= lead.phone %>" title="Call Customer" class="w-7 h-7 rounded-lg bg-blue-50 text-brand-blue hover:bg-brand-blue hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all">
+                        <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                      </a>
+                      
+                      <!-- WhatsApp action -->
+                      <a href="https://wa.me/<%= lead.phone.replace(/[^0-9]/g, '') %>" target="_blank" title="WhatsApp Chat" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                      </a>
+
+                      <!-- SMS action -->
+                      <button type="button" onclick="openSMSModal('<%= lead.phone %>', '<%= lead._id %>', 'Lead')" title="Send SMS" class="w-7 h-7 rounded-lg bg-orange-50 text-brand-orange hover:bg-brand-orange hover:text-white dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-transparent dark:border-brand-darkBorder">
+                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <!-- Edit action -->
+                      <a href="/leads/edit/<%= lead._id %>" title="Edit Lead" class="w-7 h-7 rounded-lg bg-slate-50 text-slate-550 hover:bg-slate-200 dark:bg-brand-darkBg dark:text-zinc-450 dark:hover:bg-zinc-800 dark:hover:text-white flex items-center justify-center border border-slate-100 dark:border-brand-darkBorder transition-all">
+                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                      </a>
+
+                      <!-- Delete Form -->
+                      <form action="/leads/delete/<%= lead._id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this lead?')" class="inline">
+                        <button type="submit" title="Delete Lead" class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white dark:bg-brand-darkBg dark:text-rose-450 dark:hover:bg-rose-950/40 flex items-center justify-center cursor-pointer transition-all">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination footer -->
+      <% if (totalPages > 1) { %>
+        <div class="bg-slate-50/50 dark:bg-brand-darkBg/50 px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-brand-darkBorder text-xs">
+          <span class="text-slate-400 dark:text-zinc-500">
+            Showing <%= ((currentPage - 1) * 10) + 1 %> to <%= Math.min(currentPage * 10, totalLeadsCount) %> of <%= totalLeadsCount %> leads
+          </span>
+          <div class="flex items-center gap-1">
+            <!-- Prev page button -->
+            <a 
+              href="/leads?page=<%= currentPage - 1 %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %><%= selectedSource !== 'All' ? '&source=' + selectedSource : '' %><%= selectedDateRange !== 'All' ? '&dateRange=' + selectedDateRange : '' %><%= startDate ? '&startDate=' + startDate : '' %><%= endDate ? '&endDate=' + endDate : '' %><%= search ? '&search=' + search : '' %>"
+              class="w-8 h-8 rounded-lg border border-slate-200 dark:border-brand-darkBorder flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800 <%= currentPage === 1 ? 'pointer-events-none opacity-55' : '' %>"
+            >
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </a>
+
+            <!-- Page numbers loops in brand-orange -->
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a 
+                href="/leads?page=<%= i %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %><%= selectedSource !== 'All' ? '&source=' + selectedSource : '' %><%= selectedDateRange !== 'All' ? '&dateRange=' + selectedDateRange : '' %><%= startDate ? '&startDate=' + startDate : '' %><%= endDate ? '&endDate=' + endDate : '' %><%= search ? '&search=' + search : '' %>"
+                class="w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center transition-all <%= i === currentPage ? 'bg-brand-orange border-brand-orange text-white shadow-sm' : 'border-slate-200 dark:border-brand-darkBorder text-slate-650 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800' %>"
+              >
+                <%= i %>
+              </a>
+            <% } %>
+
+            <!-- Next page button -->
+            <a 
+              href="/leads?page=<%= currentPage + 1 %><%= selectedStatus !== 'All' ? '&status=' + selectedStatus : '' %><%= selectedSource !== 'All' ? '&source=' + selectedSource : '' %><%= selectedDateRange !== 'All' ? '&dateRange=' + selectedDateRange : '' %><%= startDate ? '&startDate=' + startDate : '' %><%= endDate ? '&endDate=' + endDate : '' %><%= search ? '&search=' + search : '' %>"
+              class="w-8 h-8 rounded-lg border border-slate-200 dark:border-brand-darkBorder flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800 <%= currentPage === totalPages ? 'pointer-events-none opacity-55' : '' %>"
+            >
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Floating Bulk Actions Bar -->
+    <div id="bulkActionsBar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white dark:bg-white dark:text-slate-950 px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-6 transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
+      <span class="text-xs font-bold"><span id="selectedCount">0</span> leads selected</span>
+      <div class="h-4 w-[1px] bg-slate-700 dark:bg-slate-200"></div>
+      <div class="flex items-center gap-3">
+        <button id="bulkDeleteBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all cursor-pointer">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Delete Selected</span>
+        </button>
+        <button id="deselectAllBtn" class="px-3 py-1.5 rounded-xl border border-slate-700 dark:border-slate-200 hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-bold transition-all cursor-pointer">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Lead Details Modal (Overlay) -->
+    <div id="leadDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+      <!-- Backdrop -->
+      <div id="leadModalBackdrop" class="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+      
+      <!-- Modal Content Container -->
+      <div id="leadModalContent" class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-blue-50 dark:bg-blue-950/20 text-blue-500">
+              <i data-lucide="user" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 id="detailLeadName" class="font-extrabold text-lg text-slate-900 dark:text-white">Lead Name</h3>
+              <p id="detailLeadStatus" class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Status</p>
+            </div>
+          </div>
+          <button id="closeLeadModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="px-6 py-6 space-y-6 overflow-y-auto flex-1 text-xs font-semibold text-slate-700 dark:text-zinc-300">
+          <!-- Contact Information -->
+          <div class="space-y-3">
+            <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Contact Details</h4>
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-4 font-semibold">
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Email</span>
+                <span id="detailLeadEmail" class="text-slate-800 dark:text-zinc-200">Email</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Phone</span>
+                <span id="detailLeadPhone" class="text-slate-800 dark:text-zinc-200">Phone</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Alternative Contact</span>
+                <span id="detailLeadAltContact" class="text-slate-800 dark:text-zinc-200">Alt Contact</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Preferred Contact Method</span>
+                <span id="detailLeadContactMethod" class="text-slate-800 dark:text-zinc-200">Preferred Method</span>
+              </div>
+              <div class="col-span-2">
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Home Address</span>
+                <span id="detailLeadAddress" class="text-slate-800 dark:text-zinc-200">Address</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Interest & Purchase Preferences -->
+          <div class="space-y-3">
+            <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">Purchase Preferences</h4>
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-4 font-semibold">
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Bike Model</span>
+                <span id="detailLeadBike" class="text-slate-800 dark:text-zinc-200">Bike Model</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Preferred Color</span>
+                <span id="detailLeadColor" class="text-slate-800 dark:text-zinc-200">Preferred Color</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Condition Preference</span>
+                <span id="detailLeadCondition" class="text-slate-800 dark:text-zinc-200">Condition</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Target Budget</span>
+                <span id="detailLeadBudget" class="text-slate-800 dark:text-zinc-200">Target Budget</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Financing Interest</span>
+                <span id="detailLeadFinance" class="text-slate-800 dark:text-zinc-200">Finance</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Lead Source</span>
+                <span id="detailLeadSource" class="text-slate-800 dark:text-zinc-200">Source</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">City</span>
+                <span id="detailLeadCity" class="text-slate-800 dark:text-zinc-200">City</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-400 dark:text-zinc-500 block mb-0.5">Next Follow-Up</span>
+                <span id="detailLeadFollowUp" class="text-slate-800 dark:text-zinc-200">Follow Up</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Delivery Details Section -->
+          <div id="detailLeadDeliverySection" class="space-y-3 border-t border-slate-100 dark:border-brand-darkBorder pt-4 hidden">
+            <div class="flex items-center gap-2 mb-2 text-brand-orange">
+              <i data-lucide="truck" class="w-4 h-4"></i>
+              <span class="font-bold text-xs uppercase tracking-wider">Delivery Ledger Details</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-xs font-semibold">
+              <div>
+                <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Delivery Status</span>
+                <span id="detailLeadDeliveryStatus" class="font-bold"></span>
+              </div>
+              <div>
+                <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Delivery Date</span>
+                <span id="detailLeadDeliveryDate" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+              </div>
+              <div>
+                <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">RC / Insurance Status</span>
+                <span id="detailLeadDeliveryDocStatus" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+              </div>
+              <div>
+                <span class="text-[9px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase block">Accessories Checklist</span>
+                <span id="detailLeadDeliveryChecklist" class="font-semibold text-slate-700 dark:text-zinc-300"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block">Description / Notes</span>
+            <p id="detailLeadNotes" class="text-xs text-slate-600 dark:text-zinc-400 font-medium leading-relaxed italic">"Lead notes..."</p>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 dark:border-brand-darkBorder bg-slate-50/50 dark:bg-brand-darkBg/20 flex items-center justify-between font-sans">
+          <button id="detailLeadSMSBtn" type="button" class="px-4 py-2.5 rounded-xl bg-orange-50 text-brand-orange dark:bg-orange-955/20 dark:text-orange-400 border border-orange-200/20 text-xs font-bold hover:bg-brand-orange hover:text-white transition-all cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+            <span>Send SMS</span>
+          </button>
+          <button id="closeLeadModalFooterBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-brand-darkBorder text-slate-600 dark:text-zinc-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    function handleDateRangeChange(select) {
+      const customDiv = document.getElementById('customDateInputs');
+      if (select.value === 'custom') {
+        customDiv.classList.remove('hidden');
+        customDiv.classList.add('flex');
+      } else {
+        customDiv.classList.add('hidden');
+        customDiv.classList.remove('flex');
+        document.getElementById('filter-form').submit();
+      }
+    }
+
+(function() {
+      const initLeads = () => {
+      // Dynamic checkbox selection mode
+      const selectLeadsBtn = document.getElementById('select-leads-btn');
+      const cancelSelectionBtn = document.getElementById('cancel-selection-btn');
+      const bulkActionsContainer = document.getElementById('bulk-actions-container');
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+      const table = document.querySelector('table');
+      const thead = table?.querySelector('thead tr');
+      const leadRows = document.querySelectorAll('.lead-row');
+
+      function enterSelectionMode() {
+        selectLeadsBtn.classList.add('hidden');
+        bulkActionsContainer.classList.remove('hidden');
+        
+        // Add checkbox column to header
+        if (thead) {
+          const checkboxHeader = document.createElement('th');
+          checkboxHeader.className = 'py-4 px-2 text-center w-8';
+          checkboxHeader.innerHTML = '';
+          thead.insertBefore(checkboxHeader, thead.firstChild);
+        }
+        
+        // Add checkbox to each row
+        leadRows.forEach(row => {
+          const leadId = row.getAttribute('data-lead-id');
+          const checkboxCell = document.createElement('td');
+          checkboxCell.className = 'py-3 px-2 text-center';
+          checkboxCell.innerHTML = `<input type="checkbox" class="lead-checkbox w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" value="${leadId}" />`;
+          row.insertBefore(checkboxCell, row.firstChild);
+        });
+        
+        // Re-attach event listeners to new checkboxes
+        const leadCheckboxes = document.querySelectorAll('.lead-checkbox');
+        leadCheckboxes.forEach(cb => {
+          cb.addEventListener('change', function() {
+            const allChecked = Array.from(leadCheckboxes).every(c => c.checked);
+            if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+            updateBulkDeleteButton();
+          });
+        });
+        
+        lucide.createIcons();
+      }
+
+      function exitSelectionMode() {
+        selectLeadsBtn.classList.remove('hidden');
+        bulkActionsContainer.classList.add('hidden');
+        
+        // Remove checkbox column from header
+        if (thead && thead.firstChild) {
+          thead.removeChild(thead.firstChild);
+        }
+        
+        // Remove checkbox from each row
+        leadRows.forEach(row => {
+          if (row.firstChild) {
+            row.removeChild(row.firstChild);
+          }
+        });
+        
+        // Reset select all and delete button
+        if (selectAllCheckbox) selectAllCheckbox.checked = false;
+        bulkDeleteBtn.classList.add('hidden');
+        bulkDeleteBtn.querySelector('span').textContent = 'Delete Selected';
+        
+        lucide.createIcons();
+      }
+
+      function updateBulkDeleteButton() {
+        const checkedCount = document.querySelectorAll('.lead-checkbox:checked').length;
+        if (checkedCount > 0) {
+          bulkDeleteBtn.classList.remove('hidden');
+          bulkDeleteBtn.querySelector('span').textContent = `Delete Selected (${checkedCount})`;
+        } else {
+          bulkDeleteBtn.classList.add('hidden');
+        }
+      }
+
+      if (selectLeadsBtn) {
+        selectLeadsBtn.addEventListener('click', enterSelectionMode);
+      }
+
+      if (cancelSelectionBtn) {
+        cancelSelectionBtn.addEventListener('click', exitSelectionMode);
+      }
+
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+          const leadCheckboxes = document.querySelectorAll('.lead-checkbox');
+          leadCheckboxes.forEach(cb => cb.checked = this.checked);
+          updateBulkDeleteButton();
+        });
+      }
+
+      if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', async () => {
+          const checkedBoxes = document.querySelectorAll('.lead-checkbox:checked');
+          const ids = Array.from(checkedBoxes).map(cb => cb.value);
+
+          if (ids.length === 0) return;
+
+          bulkDeleteBtn.disabled = true;
+          bulkDeleteBtn.innerHTML = 'Deleting...';
+
+          try {
+            const res = await fetch('/leads/bulk-delete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({ ids })
+            });
+            const data = await res.json();
+            if (data.success) {
+              showToast(data.message, 'success');
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            } else {
+              showToast(data.message || 'Error deleting leads.', 'error');
+              bulkDeleteBtn.disabled = false;
+              bulkDeleteBtn.innerHTML = 'Delete Selected';
+            }
+          } catch (err) {
+            console.error(err);
+            showToast('Connection error. Please try again.', 'error');
+            bulkDeleteBtn.disabled = false;
+            bulkDeleteBtn.innerHTML = 'Delete Selected';
+          }
+        });
+      }
+
+      // View details modal event listeners
+      const leadDetailsModal = document.getElementById('leadDetailsModal');
+      const leadModalBackdrop = document.getElementById('leadModalBackdrop');
+      const leadModalContent = document.getElementById('leadModalContent');
+      const closeLeadModalBtn = document.getElementById('closeLeadModalBtn');
+      const closeLeadModalFooterBtn = document.getElementById('closeLeadModalFooterBtn');
+
+      let activeDetailLeadId = '';
+      let activeDetailLeadPhone = '';
+
+      function openLeadDetails(btn) {
+        const row = btn.closest('.lead-row');
+        activeDetailLeadId = row ? row.getAttribute('data-lead-id') : '';
+        activeDetailLeadPhone = btn.getAttribute('data-phone');
+
+        document.getElementById('detailLeadName').textContent = btn.getAttribute('data-name');
+        document.getElementById('detailLeadStatus').textContent = `Status: ${btn.getAttribute('data-status')}`;
+        document.getElementById('detailLeadEmail').textContent = btn.getAttribute('data-email');
+        document.getElementById('detailLeadPhone').textContent = btn.getAttribute('data-phone');
+        document.getElementById('detailLeadAltContact').textContent = btn.getAttribute('data-alt-contact');
+        document.getElementById('detailLeadContactMethod').textContent = btn.getAttribute('data-contact-method');
+        document.getElementById('detailLeadAddress').textContent = btn.getAttribute('data-address');
+        document.getElementById('detailLeadBike').textContent = btn.getAttribute('data-bike');
+        document.getElementById('detailLeadColor').textContent = btn.getAttribute('data-color');
+        document.getElementById('detailLeadCondition').textContent = btn.getAttribute('data-condition');
+        document.getElementById('detailLeadBudget').textContent = `$${Number(btn.getAttribute('data-budget')).toLocaleString()}`;
+        document.getElementById('detailLeadFinance').textContent = btn.getAttribute('data-finance') === 'Yes' ? 'Interested' : 'No';
+        document.getElementById('detailLeadSource').textContent = btn.getAttribute('data-source');
+        document.getElementById('detailLeadCity').textContent = btn.getAttribute('data-city');
+        document.getElementById('detailLeadFollowUp').textContent = btn.getAttribute('data-follow-up');
+        document.getElementById('detailLeadNotes').textContent = `"${btn.getAttribute('data-notes')}"`;
+
+        const delStatus = btn.getAttribute('data-delivery-status');
+        const delSection = document.getElementById('detailLeadDeliverySection');
+        if (delStatus) {
+          const statusEl = document.getElementById('detailLeadDeliveryStatus');
+          statusEl.textContent = delStatus;
+          statusEl.className = 'font-bold';
+          if (delStatus === 'Delivered') statusEl.classList.add('text-emerald-500');
+          else if (delStatus === 'Ready for Delivery') statusEl.classList.add('text-indigo-500');
+          else if (delStatus === 'Preparing') statusEl.classList.add('text-amber-500');
+          else if (delStatus === 'Pending') statusEl.classList.add('text-sky-500');
+
+          document.getElementById('detailLeadDeliveryDate').textContent = btn.getAttribute('data-delivery-date');
+          document.getElementById('detailLeadDeliveryDocStatus').textContent = `RC: ${btn.getAttribute('data-delivery-rc')} | Ins: ${btn.getAttribute('data-delivery-ins')}`;
+          document.getElementById('detailLeadDeliveryChecklist').textContent = btn.getAttribute('data-delivery-checklist');
+          delSection.classList.remove('hidden');
+        } else {
+          delSection.classList.add('hidden');
+        }
+
+        leadDetailsModal.classList.remove('hidden');
+        setTimeout(() => {
+          leadModalBackdrop.classList.remove('opacity-0');
+          leadModalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+      }
+
+      function closeLeadDetails() {
+        leadModalBackdrop.classList.add('opacity-0');
+        leadModalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          leadDetailsModal.classList.add('hidden');
+        }, 300);
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.view-lead-btn');
+        if (btn) {
+          openLeadDetails(btn);
+        }
+      });
+
+      const detailLeadSMSBtn = document.getElementById('detailLeadSMSBtn');
+      if (detailLeadSMSBtn) {
+        detailLeadSMSBtn.addEventListener('click', () => {
+          closeLeadDetails();
+          openSMSModal(activeDetailLeadPhone, activeDetailLeadId, 'Lead');
+        });
+      }
+
+      if (closeLeadModalBtn) closeLeadModalBtn.addEventListener('click', closeLeadDetails);
+      if (closeLeadModalFooterBtn) closeLeadModalFooterBtn.addEventListener('click', closeLeadDetails);
+      if (leadModalBackdrop) leadModalBackdrop.addEventListener('click', closeLeadDetails);
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLeads);
+      } else {
+        initLeads();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+<%- include('../partials/footer') %>

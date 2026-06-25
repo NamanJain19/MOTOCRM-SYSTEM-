@@ -1,0 +1,245 @@
+<%- include('../partials/head') %>
+
+<!-- Collapsible Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header -->
+  <%- include('../partials/header') %>
+
+  <!-- Form Wrapper -->
+  <main class="flex-1 overflow-y-auto bg-brand-lightBg dark:bg-brand-darkBg">
+    <form action="/deliveries/add" method="POST" class="p-8 space-y-6">
+    
+    <!-- Page Header & Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Schedule Delivery</h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Book and configure a new vehicle delivery ledger, checklist, and verification task.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <a href="/deliveries" class="px-5 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all">
+          Cancel
+        </a>
+        <button type="submit" class="px-5 py-2.5 rounded-2xl text-sm font-bold bg-brand-orange hover:bg-orange-600 text-white transition-all shadow-sm cursor-pointer">
+          Schedule
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Two-Column Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column (Customer & Bike Details) - Spans 2/3 -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Link with Lead Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="link" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Link Existing CRM Lead (Optional)</h3>
+          </div>
+          <div class="p-6">
+            <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Choose Active Lead</label>
+            <select 
+              name="leadId" 
+              id="lead-link-select"
+              class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+            >
+              <option value="">-- Select Active Lead --</option>
+              <% leads.forEach(lead => { %>
+                <option 
+                  value="<%= lead._id %>"
+                  data-name="<%= lead.name %>"
+                  data-email="<%= lead.email || '' %>"
+                  data-phone="<%= lead.phone || '' %>"
+                  data-bike="<%= lead.bikeModel || '' %>"
+                >
+                  <%= lead.name %> (<%= lead.bikeModel || 'No Model Selected' %>)
+                </option>
+              <% }) %>
+            </select>
+            <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-2">Selecting an active lead will pre-fill the customer and motorcycle fields below.</p>
+          </div>
+        </div>
+
+        <!-- Customer Information Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="user" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Customer Information</h3>
+          </div>
+          
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- Customer Name -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Customer Full Name *</label>
+                <input 
+                  type="text" 
+                  name="customerName" 
+                  id="customer-name-input"
+                  required 
+                  placeholder="e.g. Jax Teller"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+
+              <!-- Customer Email -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Customer Email Address</label>
+                <input 
+                  type="email" 
+                  name="customerEmail" 
+                  id="customer-email-input"
+                  placeholder="client@example.com"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+
+              <!-- Phone Number -->
+              <div class="sm:col-span-2">
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Phone Number *</label>
+                <input 
+                  type="text" 
+                  name="customerPhone" 
+                  id="customer-phone-input"
+                  required
+                  placeholder="+91 (555) 000-0000"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bike Information Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="bike" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Motorcycle Allocation</h3>
+          </div>
+
+          <div class="p-6">
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Model Model / Variant *</label>
+              <select 
+                name="bikeModel" 
+                id="bike-model-select"
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <option value="" disabled selected>Select Bike Model</option>
+                <option value="Pan America™ 1250 Special">Pan America™ 1250 Special</option>
+                <option value="Street Glide® ST">Street Glide® ST</option>
+                <option value="Nightster™ Special">Nightster™ Special</option>
+                <option value="Road Glide® Special">Road Glide® Special</option>
+                <option value="Low Rider™ ST">Low Rider™ ST</option>
+                <option value="Low Rider™ S">Low Rider™ S</option>
+                <option value="Iron 883™">Iron 883™</option>
+                <option value="Fat Boy® 114">Fat Boy® 114</option>
+                <option value="Sportster® S">Sportster® S</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (Delivery Schedule Details) - Spans 1/3 -->
+      <div class="space-y-8">
+        
+        <!-- Schedule Settings Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="calendar" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Schedule details</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Delivery Date -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Planned Delivery Date *</label>
+              <div class="relative">
+                <input 
+                  type="date" 
+                  name="deliveryDate"
+                  required
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Initial Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Initial Status</label>
+              <select 
+                name="status"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <option value="Pending" selected>Pending (Verification)</option>
+                <option value="Preparing">Preparing (PDI / Checklist)</option>
+                <option value="Ready for Delivery">Ready for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <!-- Interaction Notes -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Delivery Ledger Notes</label>
+              <textarea 
+                name="notes" 
+                rows="4" 
+                placeholder="Specify documents needed, delivery preferences, special requests..."
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    </form>
+
+    <!-- Autopopulate script from Lead dropdown -->
+    <script>
+      (function() {
+        function initAddDelivery() {
+          const select = document.getElementById('lead-link-select');
+          if (select) {
+            select.addEventListener('change', function(e) {
+              const opt = e.target.options[e.target.selectedIndex];
+              if (opt && opt.value !== '') {
+                document.getElementById('customer-name-input').value = opt.getAttribute('data-name') || '';
+                document.getElementById('customer-email-input').value = opt.getAttribute('data-email') || '';
+                document.getElementById('customer-phone-input').value = opt.getAttribute('data-phone') || '';
+                const bike = opt.getAttribute('data-bike');
+                if (bike) {
+                  const bikeSelect = document.getElementById('bike-model-select');
+                  for (let i = 0; i < bikeSelect.options.length; i++) {
+                    if (bikeSelect.options[i].value === bike) {
+                      bikeSelect.selectedIndex = i;
+                      break;
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initAddDelivery);
+        } else {
+          initAddDelivery();
+        }
+      })();
+    </script>
+  </main>
+</div>
+
+<%- include('../partials/footer') %>

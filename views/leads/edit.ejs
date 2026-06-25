@@ -1,0 +1,424 @@
+<%- include('../partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('../partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200">
+  <!-- Header -->
+  <%- include('../partials/header') %>
+
+  <!-- Form Wrapper -->
+  <form action="/leads/edit/<%= lead._id %>" method="POST" class="flex-1 overflow-y-auto p-8 space-y-6 bg-brand-lightBg dark:bg-brand-darkBg">
+    
+    <!-- Page Header & Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-brand-darkBorder pb-5">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit Lead: <%= lead.name %></h1>
+        <p class="text-sm text-slate-500 dark:text-zinc-400 mt-1">Modify customer purchase preference details, update communication notes, or update deal pipelines.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <a href="/leads" class="px-5 py-2.5 rounded-2xl text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-brand-darkCard dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all">
+          Cancel
+        </a>
+        <button type="submit" class="px-5 py-2.5 rounded-2xl text-sm font-bold bg-brand-orange hover:bg-orange-600 text-white transition-all shadow-sm cursor-pointer">
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Two-Column Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column (Customer Info & Bike Info) - Spans 2/3 -->
+      <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Customer Information Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="user" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Customer Information</h3>
+          </div>
+          
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <!-- Full Name -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Full Name *</label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  required 
+                  value="<%= lead.name %>"
+                  placeholder="e.g. Jax Teller"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                />
+              </div>
+
+              <!-- Email Address -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  value="<%= lead.email %>"
+                  placeholder="client@example.com"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                />
+              </div>
+
+              <!-- Phone Number -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Phone Number *</label>
+                <input 
+                  type="text" 
+                  name="phone" 
+                  required
+                  value="<%= lead.phone %>"
+                  placeholder="+1 (555) 000-0000"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                />
+              </div>
+
+              <!-- Alternative Contact -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Alternative Contact</label>
+                <input 
+                  type="text" 
+                  name="alternativeContact" 
+                  value="<%= lead.alternativeContact %>"
+                  placeholder="Secondary Phone or Email"
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Home Address -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Home Address</label>
+              <input 
+                type="text" 
+                name="homeAddress" 
+                value="<%= lead.homeAddress %>"
+                placeholder="123 Chrome Street, Liberty City, NY"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- City -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">City *</label>
+              <input 
+                type="text" 
+                name="city" 
+                required
+                value="<%= lead.city %>"
+                placeholder="e.g. New York"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Bike Information Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="bike" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Bike Information</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <!-- Model Interest -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Model Interest *</label>
+                <select 
+                  name="bikeModel" 
+                  required
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                >
+                  <% ['Pan America™ 1250 Special', 'Street Glide® ST', 'Nightster™ Special', 'Road Glide® Special', 'Low Rider™ ST', 'Low Rider™ S', 'Iron 883™', 'Fat Boy® 114'].forEach(model => { %>
+                    <option value="<%= model %>" <%= lead.bikeModel === model ? 'selected' : '' %>><%= model %></option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <!-- Preferred Color -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Preferred Color</label>
+                <select 
+                  name="preferredColor" 
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                >
+                  <option value="" <%= !lead.preferredColor ? 'selected' : '' %>>Select Color</option>
+                  <% ['Vivid Black', 'Baja Orange', 'Gunship Gray', 'Redline Red', 'Sand Dune'].forEach(color => { %>
+                    <option value="<%= color %>" <%= lead.preferredColor === color ? 'selected' : '' %>><%= color %></option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <!-- Condition Preference Toggle -->
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Condition Preference</label>
+                <div class="flex bg-slate-100 dark:bg-brand-darkBg p-1 rounded-xl border border-slate-200 dark:border-brand-darkBorder">
+                  <input type="hidden" name="conditionPreference" id="condition-preference-input" value="<%= lead.conditionPreference %>" />
+                  <button 
+                    type="button" 
+                    id="cond-new"
+                    onclick="setCondition('New')"
+                    class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all <%= lead.conditionPreference === 'New' ? 'text-white bg-brand-orange shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white' %>"
+                  >
+                    New
+                  </button>
+                  <button 
+                    type="button" 
+                    id="cond-used"
+                    onclick="setCondition('Used')"
+                    class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all <%= lead.conditionPreference === 'Used' ? 'text-white bg-brand-orange shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white' %>"
+                  >
+                    Used
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trade-in Details -->
+            <div class="border-t border-slate-100 dark:border-brand-darkBorder pt-6">
+              <div class="flex items-center gap-2 mb-4 text-slate-900 dark:text-white font-bold text-sm">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-brand-orange"></i>
+                <span>Trade-in Details</span>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Current Bike model details -->
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Current Bike (Year/Make/Model)</label>
+                  <input 
+                    type="text" 
+                    name="currentBikeDetails"
+                    value="<%= lead.currentBikeDetails || '' %>"
+                    placeholder="Current Bike Year/Make/Model"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+                <!-- Trade-in Value -->
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Estimated Trade-in Value ($)</label>
+                  <input 
+                    type="number" 
+                    name="estimatedTradeValue"
+                    value="<%= lead.estimatedTradeValue || '' %>"
+                    placeholder="Estimated Trade-in Value"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (Sales Info & Next Steps) - Spans 1/3 -->
+      <div class="space-y-8">
+        
+        <!-- Sales Info Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="credit-card" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Sales Info</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Target Budget -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Target Budget ($)</label>
+              <input 
+                type="number" 
+                name="targetBudget"
+                value="<%= lead.targetBudget %>"
+                placeholder="$0.00"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- Financing Interest Cards style -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Financing Interest</label>
+              <div class="grid grid-cols-2 gap-4">
+                <input type="hidden" name="financingInterest" id="financing-interest-input" value="<%= lead.financingInterest %>" />
+                <button 
+                  type="button"
+                  id="finance-yes"
+                  onclick="setFinancing('Yes')"
+                  class="rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all <%= lead.financingInterest === 'Yes' ? 'border-2 border-brand-orange bg-white dark:bg-brand-darkCard text-brand-orange dark:text-white' : 'border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200' %>"
+                >
+                  <span class="text-sm font-bold <%= lead.financingInterest === 'Yes' ? 'text-brand-orange dark:text-white' : 'text-slate-800 dark:text-zinc-200' %>">Yes</span>
+                  <span class="text-[9px] <%= lead.financingInterest === 'Yes' ? 'text-brand-orange dark:text-zinc-400' : 'text-slate-400 dark:text-zinc-500' %> uppercase">Requires Quote</span>
+                </button>
+                <button 
+                  type="button"
+                  id="finance-no"
+                  onclick="setFinancing('No')"
+                  class="rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all <%= lead.financingInterest === 'No' ? 'border-2 border-brand-orange bg-white dark:bg-brand-darkCard text-brand-orange dark:text-white' : 'border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200' %>"
+                >
+                  <span class="text-sm font-bold <%= lead.financingInterest === 'No' ? 'text-brand-orange dark:text-white' : 'text-slate-800 dark:text-zinc-200' %>">No</span>
+                  <span class="text-[9px] <%= lead.financingInterest === 'No' ? 'text-brand-orange dark:text-zinc-400' : 'text-slate-400 dark:text-zinc-500' %> uppercase">Outright Purchase</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Lead Source -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Lead Source *</label>
+              <select 
+                name="leadSource" 
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              >
+                <% ['WhatsApp', 'Facebook', 'Instagram', 'Website', 'Walk-in', 'Referral'].forEach(src => { %>
+                  <option value="<%= src %>" <%= lead.leadSource === src ? 'selected' : '' %>><%= src %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Lead Status</label>
+              <select 
+                name="status"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              >
+                <% ['New', 'Contacted', 'Interested', 'Test Ride Booked', 'Negotiation', 'Sold', 'Delivered', 'Lost'].forEach(status => { %>
+                  <option value="<%= status %>" <%= lead.status === status ? 'selected' : '' %>><%= status %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps Card -->
+        <div class="bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <i data-lucide="check-square" class="w-5 h-5 text-brand-orange"></i>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Next Steps</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Preferred Contact Method tags -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Preferred Contact Channel</label>
+              <div class="flex flex-wrap gap-2">
+                <input type="hidden" name="preferredContactMethod" id="preferred-contact-input" value="<%= lead.preferredContactMethod %>" />
+                <% ['Email', 'Phone', 'SMS', 'WhatsApp'].forEach(method => { 
+                  const isAct = lead.preferredContactMethod === method;
+                %>
+                  <button 
+                    type="button" 
+                    id="contact-<%= method %>" 
+                    onclick="setContactMethod('<%= method %>')" 
+                    class="px-3.5 py-1.5 text-xs rounded-lg transition-all <%= isAct ? 'font-bold border-2 border-brand-orange bg-white dark:bg-brand-darkCard dark:text-white text-brand-orange' : 'font-semibold border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-400' %>"
+                  >
+                    <%= method %>
+                  </button>
+                <% }) %>
+              </div>
+            </div>
+
+            <!-- Next Follow-up Date -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Next Follow-Up Date *</label>
+              <% 
+                // Format date as YYYY-MM-DD for input element
+                const d = new Date(lead.followUpDate);
+                const yr = d.getFullYear();
+                const mo = String(d.getMonth() + 1).padStart(2, '0');
+                const dy = String(d.getDate()).padStart(2, '0');
+                const dateVal = `${yr}-${mo}-${dy}`;
+              %>
+              <input 
+                type="date" 
+                name="followUpDate"
+                value="<%= dateVal %>"
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Interaction Notes</label>
+              <textarea 
+                name="notes" 
+                rows="4" 
+                placeholder="Add any specific details from the conversation..."
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+              ><%= lead.notes %></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<!-- Scripts for Custom Forms Toggles -->
+<script>
+  function setCondition(val) {
+    document.getElementById('condition-preference-input').value = val;
+    const btnNew = document.getElementById('cond-new');
+    const btnUsed = document.getElementById('cond-used');
+
+    if (val === 'New') {
+      btnNew.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-white bg-brand-orange shadow-sm";
+      btnUsed.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white";
+    } else {
+      btnUsed.className = "flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-white bg-brand-orange shadow-sm";
+      btnNew.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white";
+    }
+  }
+
+  function setFinancing(val) {
+    document.getElementById('financing-interest-input').value = val;
+    const btnYes = document.getElementById('finance-yes');
+    const btnNo = document.getElementById('finance-no');
+
+    if (val === 'Yes') {
+      btnYes.className = "border-2 border-brand-orange bg-white dark:bg-brand-darkCard rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all";
+      btnYes.firstElementChild.className = "text-sm font-bold text-brand-orange dark:text-white";
+      btnYes.lastElementChild.className = "text-[9px] text-brand-orange dark:text-zinc-400 uppercase";
+
+      btnNo.className = "border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all";
+      btnNo.firstElementChild.className = "text-sm font-bold text-slate-800 dark:text-zinc-200";
+      btnNo.lastElementChild.className = "text-[9px] text-slate-400 dark:text-zinc-500 uppercase";
+    } else {
+      btnNo.className = "border-2 border-brand-orange bg-white dark:bg-brand-darkCard rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all";
+      btnNo.firstElementChild.className = "text-sm font-bold text-brand-orange dark:text-white";
+      btnNo.lastElementChild.className = "text-[9px] text-brand-orange dark:text-zinc-400 uppercase";
+
+      btnYes.className = "border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 rounded-xl py-3 flex flex-col items-center justify-center gap-1 cursor-pointer transition-all";
+      btnYes.firstElementChild.className = "text-sm font-bold text-slate-800 dark:text-zinc-200";
+      btnYes.lastElementChild.className = "text-[9px] text-slate-400 dark:text-zinc-500 uppercase";
+    }
+  }
+
+  function setContactMethod(val) {
+    document.getElementById('preferred-contact-input').value = val;
+    const methods = ['Email', 'Phone', 'SMS', 'WhatsApp'];
+
+    methods.forEach(m => {
+      const btn = document.getElementById(`contact-${m}`);
+      if (m === val) {
+        btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg border-2 border-brand-orange bg-white dark:bg-brand-darkCard dark:text-white transition-all text-brand-orange";
+      } else {
+        btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 dark:border-brand-darkBorder bg-slate-50 hover:bg-slate-100 dark:bg-brand-darkBg dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-400 transition-all";
+      }
+    });
+  }
+</script>
+
+<%- include('../partials/footer') %>

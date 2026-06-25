@@ -1,0 +1,2029 @@
+<%- include('partials/head') %>
+
+<!-- Narrow Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 transition-colors duration-200 bg-brand-lightBg dark:bg-brand-darkBg">
+  <!-- Header -->
+  <%- include('partials/header') %>
+
+  <!-- Content Container (Split Layout) -->
+  <main class="flex-1 overflow-y-auto p-8 flex flex-col lg:flex-row gap-8">
+    
+    <!-- Left Column (Sub-navigation tabs) -->
+    <div class="w-full lg:w-72 shrink-0 space-y-4">
+      <h2 class="text-xs font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-2">Settings Menu</h2>
+      <div class="flex flex-col gap-2">
+        <button 
+          onclick="switchTab('my-profile')" 
+          id="tab-my-profile"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white border-2 border-brand-orange rounded-2xl shadow-sm text-brand-orange font-bold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-white transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            My Profile
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 opacity-75"></i>
+        </button>
+        <button 
+          onclick="switchTab('dealership-profile')" 
+          id="tab-dealership-profile"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>
+            Dealership Profile
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('user-management')" 
+          id="tab-user-management"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
+            User Management
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('crm-configurations')" 
+          id="tab-crm-configurations"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="sliders" class="w-4 h-4 text-slate-400"></i>
+            CRM Configurations
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('notifications')" 
+          id="tab-notifications"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="bell" class="w-4 h-4 text-slate-400"></i>
+            Notifications
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('integrations')" 
+          id="tab-integrations"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="link" class="w-4 h-4 text-slate-400"></i>
+            Integrations
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('security')" 
+          id="tab-security"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="shield" class="w-4 h-4 text-slate-400"></i>
+            Security
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+        <button 
+          onclick="switchTab('theme-settings')" 
+          id="tab-theme-settings"
+          class="settings-tab flex items-center justify-between px-5 py-4 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl shadow-sm text-slate-700 font-semibold text-sm dark:bg-brand-darkCard dark:border-brand-darkBorder dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
+        >
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i>
+            Theme Settings
+          </span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column (Content Panels) -->
+    <div class="flex-1 max-w-4xl">
+      
+      <!-- Panel: My Profile -->
+      <section id="panel-my-profile" class="settings-panel bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-my-profile" action="/settings/my-profile" method="POST">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="user" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">My Profile</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Update your personal account details, contact info, and profile avatar.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Avatar Section -->
+            <div class="flex items-center gap-5 pb-4 border-b border-slate-150 dark:border-brand-darkBorder/40 font-sans">
+              <div id="profile-avatar-container" class="relative group shrink-0">
+                <% if (locals.user && locals.user.avatar) { %>
+                  <img src="<%= locals.user.avatar %>" alt="Avatar" class="w-20 h-20 rounded-full object-cover border border-slate-200 dark:border-brand-darkBorder shadow-sm" id="profile-avatar-preview" />
+                <% } else { %>
+                  <div class="w-20 h-20 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-xl flex items-center justify-center border border-slate-200 dark:border-brand-darkBorder shadow-sm animate-fade-in" id="profile-avatar-preview">
+                    <%= locals.user ? locals.user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U' %>
+                  </div>
+                <% } %>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider block">Profile Picture</label>
+                <div class="flex items-center gap-3">
+                  <button type="button" onclick="document.getElementById('my-profile-avatar-file').click()" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm">
+                    Upload New Image
+                  </button>
+                  <button type="button" onclick="clearProfileAvatar()" class="px-4 py-2.5 bg-rose-50 text-rose-600 dark:bg-rose-955/20 dark:text-rose-400 border border-rose-200/20 rounded-2xl text-xs font-bold transition-all cursor-pointer">
+                    Remove
+                  </button>
+                </div>
+                <p class="text-[10px] text-slate-400 dark:text-zinc-500 font-medium">Supports JPG, PNG, WEBP. Max file size: 2MB.</p>
+                <input 
+                  type="file" 
+                  id="my-profile-avatar-file" 
+                  accept="image/png, image/jpeg, image/webp" 
+                  class="hidden" 
+                  onchange="handleAvatarUpload(this)"
+                />
+                <input 
+                  type="hidden" 
+                  name="avatar" 
+                  id="my-profile-avatar-input" 
+                  value="<%= (locals.user && locals.user.avatar) || '' %>"
+                />
+              </div>
+            </div>
+
+            <!-- Name & Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Full Name</label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  value="<%= (locals.user && locals.user.name) || '' %>" 
+                  required
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+              
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  value="<%= (locals.user && locals.user.email) || '' %>" 
+                  required
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Phone & Role -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Phone Number</label>
+                <input 
+                  type="text" 
+                  name="phone" 
+                  value="<%= (locals.user && locals.user.phone) || '' %>" 
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  placeholder="e.g. +1 (555) 000-0000"
+                />
+              </div>
+              
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Role</label>
+                <input 
+                  type="text" 
+                  value="<%= (locals.user && locals.user.role) || '' %>" 
+                  readonly
+                  disabled
+                  class="w-full bg-slate-100 dark:bg-brand-darkBg/60 border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-450 dark:text-zinc-550 cursor-not-allowed select-none"
+                />
+                <p class="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">Access role cannot be changed manually by standard users.</p>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel A: Dealership Profile -->
+      <section id="panel-dealership-profile" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-dealership-profile" action="/settings/profile" method="POST">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="building" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Dealership Profile</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Update your dealership's public identity and operation details.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Dealership Name & Location -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Dealership Name</label>
+                <input 
+                  type="text" 
+                  name="dealershipName" 
+                  value="<%= settings.dealershipName || '' %>" 
+                  required
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+              
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Location</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-4 flex items-center text-slate-400"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                  <input 
+                    type="text" 
+                    name="dealershipLocation" 
+                    value="<%= settings.dealershipLocation || '' %>" 
+                    required
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Phone & Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+                <input 
+                  type="text" 
+                  name="dealershipPhone" 
+                  value="<%= settings.dealershipPhone || '' %>" 
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+              
+              <div>
+                <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Email Address</label>
+                <input 
+                  type="email" 
+                  name="dealershipEmail" 
+                  value="<%= settings.dealershipEmail || '' %>" 
+                  class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Operating Hours -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Operating Hours</label>
+              <div class="space-y-3">
+                <% 
+                  const defaultHours = [
+                    { days: 'Monday - Friday', hours: '09:00 AM - 07:00 PM', status: 'open' },
+                    { days: 'Saturday', hours: '10:00 AM - 05:00 PM', status: 'open' },
+                    { days: 'Sunday', hours: 'Closed', status: 'closed' }
+                  ];
+                  const hoursList = (settings.hours && settings.hours.length > 0) ? settings.hours : defaultHours;
+                %>
+                <% hoursList.forEach((hr, index) => { %>
+                  <div class="flex items-center gap-3 bg-slate-50 dark:bg-brand-darkBg border border-slate-100 dark:border-brand-darkBorder rounded-xl p-3">
+                    <div class="flex-1">
+                      <input 
+                        type="text" 
+                        name="hours[<%= index %>][days]" 
+                        value="<%= hr.days %>" 
+                        class="w-full bg-transparent border-none text-xs font-semibold text-slate-700 dark:text-zinc-300 focus:outline-none focus:ring-0"
+                        readonly
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <input 
+                        type="text" 
+                        name="hours[<%= index %>][hours]" 
+                        value="<%= hr.hours %>" 
+                        placeholder="e.g., 09:00 AM - 07:00 PM"
+                        class="w-full bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                      />
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <label class="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="hours[<%= index %>][status]" 
+                          value="open" 
+                          <%= hr.status === 'open' ? 'checked' : '' %>
+                          class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                        />
+                        <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Open</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="hours[<%= index %>][status]" 
+                          value="closed" 
+                          <%= hr.status === 'closed' ? 'checked' : '' %>
+                          class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                        />
+                        <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Closed</span>
+                      </label>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel B: User Management -->
+      <section id="panel-user-management" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+          <div class="flex items-center gap-3">
+            <i data-lucide="users" class="w-5 h-5 text-brand-orange"></i>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">User Management</h3>
+              <p class="text-xs text-slate-400 dark:text-zinc-500">Manage team access and role-specific permissions.</p>
+            </div>
+          </div>
+          <button onclick="openInviteModal()" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all flex items-center gap-2">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            Invite Member
+          </button>
+        </div>
+
+        <div class="p-6 flex gap-6">
+          <!-- Left: Users Table -->
+          <div class="flex-1 overflow-x-auto">
+            <div class="flex items-center justify-between mb-4">
+              <button id="select-users-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-brand-darkBorder hover:bg-slate-50 dark:hover:bg-brand-darkBg text-slate-700 dark:text-zinc-300 transition-all cursor-pointer">
+                <i data-lucide="check-square" class="w-4 h-4"></i>
+                <span>Select Users</span>
+              </button>
+              <div id="bulk-actions-container" class="hidden flex items-center gap-2">
+                <button id="cancel-selection-btn" class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-brand-darkBg dark:border-brand-darkBorder dark:hover:bg-zinc-800 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-slate-600 dark:text-zinc-400 cursor-pointer transition-all">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  <span>Cancel</span>
+                </button>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="select-all-users" class="w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" />
+                  <label for="select-all-users" class="text-xs font-bold text-slate-500 dark:text-zinc-400 cursor-pointer">Select All</label>
+                </div>
+                <button id="bulk-delete-users-btn" class="hidden flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 dark:bg-rose-955/20 dark:border-rose-900/50 dark:hover:bg-rose-950/30 rounded-full px-3.5 py-1.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 cursor-pointer transition-all">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  <span>Delete Selected</span>
+                </button>
+              </div>
+            </div>
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-slate-100 dark:border-brand-darkBorder text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider pb-3">
+                  <th class="py-3">Member</th>
+                  <th class="py-3">Role</th>
+                  <th class="py-3">Status</th>
+                  <th class="py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-50 dark:divide-brand-darkBorder text-slate-700 dark:text-zinc-300">
+                <% (users || []).forEach(usr => { %>
+                  <tr class="hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20 user-row" data-user-id="<%= usr._id %>">
+                    <td class="py-4 flex items-center gap-3">
+                      <% if (usr.avatar) { %>
+                        <img src="<%= usr.avatar %>" alt="Avatar" class="w-8 h-8 rounded-full object-cover shrink-0 border border-slate-200 dark:border-brand-darkBorder shadow-sm" />
+                      <% } else { %>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs <%= usr.avatarBg %> shrink-0">
+                          <%= usr.initials %>
+                        </div>
+                      <% } %>
+                      <div>
+                        <h4 class="font-bold text-slate-800 dark:text-zinc-200"><%= usr.name %></h4>
+                        <span class="text-xs text-slate-400 dark:text-zinc-500"><%= usr.email %></span>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <span class="px-2 py-0.5 text-xs font-bold rounded bg-slate-100 text-slate-700 dark:bg-brand-darkBg dark:text-zinc-400"><%= usr.role %></span>
+                    </td>
+                    <td class="py-4">
+                      <span class="flex items-center gap-1.5 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full <%= usr.status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
+                        <%= usr.status %>
+                      </span>
+                    </td>
+                    <td class="py-4 text-right relative pr-6">
+                      <button onclick="toggleUserDropdown(event, '<%= usr._id %>')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer focus:outline-none">
+                        <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                      </button>
+                      
+                      <!-- Dropdown Menu -->
+                      <div id="dropdown-<%= usr._id %>" class="user-dropdown hidden absolute right-6 top-10 w-44 bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-2xl shadow-xl z-30 p-2 text-left font-semibold font-sans">
+                        <button onclick="showUserDetailsPanel('<%= usr._id %>', '<%= usr.name.replace(/'/g, '\\\'') %>', '<%= usr.email %>', '<%= (usr.phone || '').replace(/'/g, '\\\'') %>', '<%= usr.role %>', '<%= usr.status %>', '<%= usr.avatar || '' %>')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-brand-darkBg cursor-pointer">
+                          <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-400"></i> View Details
+                        </button>
+                        <button onclick="showEditUserPanel('<%= usr._id %>', '<%= usr.name.replace(/'/g, '\\\'') %>', '<%= (usr.phone || '').replace(/'/g, '\\\'') %>')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-brand-darkBg cursor-pointer">
+                          <i data-lucide="edit" class="w-3.5 h-3.5 text-slate-400"></i> Edit Profile
+                        </button>
+                        <button onclick="changeRole('<%= usr._id %>', '<%= usr.name.replace(/'/g, '\\\'') %>', '<%= usr.role %>')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-brand-darkBg cursor-pointer">
+                          <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-400"></i> Change Role
+                        </button>
+                        <button onclick="toggleStatus('<%= usr._id %>', '<%= usr.name.replace(/'/g, '\\\'') %>', '<%= usr.status %>')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-brand-darkBg cursor-pointer">
+                          <i data-lucide="<%= usr.status === 'Active' ? 'user-minus' : 'user-check' %>" class="w-3.5 h-3.5 text-slate-400"></i>
+                          <span><%= usr.status === 'Active' ? 'Deactivate' : 'Activate' %></span>
+                        </button>
+                        <hr class="border-slate-100 dark:border-brand-darkBorder my-1" />
+                        <button onclick="deleteUser('<%= usr._id %>', '<%= usr.name.replace(/'/g, '\\\'') %>')" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 cursor-pointer">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Member
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Right: User Details Panel -->
+          <div id="user-details-panel" class="hidden w-80 shrink-0 bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-2xl p-4 order-last">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white">User Details</h4>
+              <button onclick="closeUserDetailsPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div id="user-details-content" class="space-y-3">
+              <!-- Content will be dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel C: CRM Configurations -->
+      <section id="panel-crm-configurations" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-crm-config" action="/settings/crm-config" method="POST">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="sliders" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">CRM Configurations</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Modify global CRM workflows, pipeline settings, and custom configurations.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Pipeline Stages Configuration -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Pipeline Stages / Lead Statuses (comma-separated)</label>
+              <input 
+                type="text" 
+                name="pipelineStages" 
+                value="<%= (settings.crmConfig && settings.crmConfig.pipelineStages) ? settings.crmConfig.pipelineStages.join(', ') : 'New, Contacted, Interested, Test Ride Booked, Negotiation, Sold, Lost' %>"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                placeholder="e.g. New, Contacted, Interested, Test Ride Booked, Negotiation, Sold, Lost"
+              />
+              <p class="text-[11px] text-slate-400 dark:text-zinc-500 mt-1">Specify custom stages. This updates the Kanban board columns and lead statuses.</p>
+            </div>
+
+            <!-- Default Lead Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Default Lead Status</label>
+              <select 
+                name="defaultLeadStatus" 
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              >
+                <% 
+                  const defaultStages = ['New', 'Contacted', 'Interested', 'Test Ride Booked', 'Negotiation', 'Sold', 'Lost'];
+                  const currentStages = (settings.crmConfig && settings.crmConfig.pipelineStages && settings.crmConfig.pipelineStages.length > 0) 
+                    ? settings.crmConfig.pipelineStages 
+                    : defaultStages;
+                  currentStages.forEach(stg => {
+                %>
+                  <option value="<%= stg %>" <%= (settings.crmConfig && settings.crmConfig.defaultLeadStatus === stg) ? 'selected' : '' %>><%= stg %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Lead Assignment Method -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Lead Assignment Method</label>
+              <select 
+                name="leadAssignmentMethod" 
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              >
+                <option value="Round Robin" <%= (settings.crmConfig && settings.crmConfig.leadAssignmentMethod === 'Round Robin') ? 'selected' : '' %>>Round Robin (Equal Distribution)</option>
+                <option value="Manual" <%= (settings.crmConfig && settings.crmConfig.leadAssignmentMethod === 'Manual') ? 'selected' : '' %>>Manual (Assigned by Admin/Manager)</option>
+                <option value="Load Balanced" <%= (settings.crmConfig && settings.crmConfig.leadAssignmentMethod === 'Load Balanced') ? 'selected' : '' %>>Load Balanced (Based on Active Lead Count)</option>
+              </select>
+            </div>
+
+            <!-- Auto Assign Leads -->
+            <div class="flex items-center justify-between border-t border-slate-50 dark:border-brand-darkBorder pt-4">
+              <div>
+                <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Auto-Assign Leads</h4>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Automatically assign new leads to available sales executives.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="autoAssignLeads" 
+                    value="true" 
+                    <%= (settings.crmConfig && settings.crmConfig.autoAssignLeads) ? 'checked' : '' %>
+                    class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                  />
+                  <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Yes</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="autoAssignLeads" 
+                    value="false" 
+                    <%= (!settings.crmConfig || !settings.crmConfig.autoAssignLeads) ? 'checked' : '' %>
+                    class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                  />
+                  <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">No</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Follow-up Reminder Days -->
+            <div class="border-t border-slate-50 dark:border-brand-darkBorder pt-4">
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider mb-2 block">Follow-up Reminder Days</label>
+              <input 
+                type="number" 
+                name="followUpReminderDays" 
+                value="<%= (settings.crmConfig && settings.crmConfig.followUpReminderDays) || 3 %>" 
+                min="1"
+                max="30"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel D: Notification Preferences -->
+      <section id="panel-notifications" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-notifications" action="/settings/notifications" method="POST">
+          <input type="hidden" name="email" id="input-notifications-email" value="<%= (settings.notifications && settings.notifications.email) ? 'true' : 'false' %>">
+          <input type="hidden" name="sms" id="input-notifications-sms" value="<%= (settings.notifications && settings.notifications.sms) ? 'true' : 'false' %>">
+          <input type="hidden" name="pushNotifications" id="input-notifications-pushNotifications" value="<%= (settings.notifications && settings.notifications.pushNotifications) ? 'true' : 'false' %>">
+          <input type="hidden" name="newLeads" id="input-notifications-newLeads" value="<%= (settings.notifications && settings.notifications.newLeads) ? 'true' : 'false' %>">
+          <input type="hidden" name="followUpReminders" id="input-notifications-followUpReminders" value="<%= (settings.notifications && settings.notifications.followUpReminders) ? 'true' : 'false' %>">
+          <input type="hidden" name="testRideAlerts" id="input-notifications-testRideAlerts" value="<%= (settings.notifications && settings.notifications.testRideAlerts) ? 'true' : 'false' %>">
+          <input type="hidden" name="systemNotifications" id="input-notifications-systemNotifications" value="<%= (settings.notifications && settings.notifications.systemNotifications) ? 'true' : 'false' %>">
+
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="bell" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Notification Preferences</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Configure email, SMS, and real-time alerts.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            
+            <!-- Channels Section -->
+            <div class="space-y-4">
+              <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider block">Notification Channels</h4>
+              
+              <!-- Email Notifications -->
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 dark:border-brand-darkBorder pb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="mail" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Email Notifications</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Receive summary of daily leads and pending tasks.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-email" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.email) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-email')"
+                    id="btn-notifications-email"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.email) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-email" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.email) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- SMS Notifications -->
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 dark:border-brand-darkBorder pb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="message-square" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">SMS Notifications</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Instant alerts for urgent updates directly on your phone.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-sms" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.sms) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-sms')"
+                    id="btn-notifications-sms"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.sms) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-sms" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.sms) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Push Notifications -->
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="bell-ring" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Push Notifications</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Real-time alerts displayed inside the web browser.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-pushNotifications" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.pushNotifications) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-pushNotifications')"
+                    id="btn-notifications-pushNotifications"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.pushNotifications) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-pushNotifications" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.pushNotifications) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alert Categories Section -->
+            <div class="space-y-4 pt-4 border-t border-slate-100 dark:border-brand-darkBorder">
+              <h4 class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-555 uppercase tracking-wider block">Alert Events (Real-Time Alerts)</h4>
+
+              <!-- New Leads Alert -->
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 dark:border-brand-darkBorder pb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="user-plus" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">New Leads</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Get notified immediately when a new lead enters the system.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-newLeads" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.newLeads) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-newLeads')"
+                    id="btn-notifications-newLeads"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.newLeads) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-newLeads" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.newLeads) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Follow-up Reminders Alert -->
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 dark:border-brand-darkBorder pb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="clock" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Follow-up Reminders</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Alerts for scheduled follow-ups and customer touchpoints.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-followUpReminders" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.followUpReminders) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-followUpReminders')"
+                    id="btn-notifications-followUpReminders"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.followUpReminders) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-followUpReminders" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.followUpReminders) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Test Ride Alerts -->
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 dark:border-brand-darkBorder pb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="bike" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Test Ride Alerts</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Alerts when a test ride is booked, rescheduled, or cancelled.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-testRideAlerts" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.testRideAlerts) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-testRideAlerts')"
+                    id="btn-notifications-testRideAlerts"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.testRideAlerts) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-testRideAlerts" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.testRideAlerts) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- System Notifications Alert -->
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-50/55 dark:bg-brand-darkBg flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="settings" class="w-4.5 h-4.5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">System Notifications</h4>
+                    <p class="text-xs text-slate-400 dark:text-zinc-500">Important system updates, backup status, and security alerts.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="text-notifications-systemNotifications" class="text-xs font-bold text-slate-500 dark:text-zinc-400"><%= (settings.notifications && settings.notifications.systemNotifications) ? 'Enabled' : 'Disabled' %></span>
+                  <button 
+                    type="button" 
+                    onclick="toggleSwitch('notifications-systemNotifications')"
+                    id="btn-notifications-systemNotifications"
+                    class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors <%= (settings.notifications && settings.notifications.systemNotifications) ? 'bg-brand-orange' : 'bg-slate-200 dark:bg-zinc-700' %>"
+                  >
+                    <div id="dot-notifications-systemNotifications" class="w-4 h-4 bg-white rounded-full transition-transform <%= (settings.notifications && settings.notifications.systemNotifications) ? 'translate-x-4' : 'translate-x-0' %>"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </section>
+
+
+      <!-- Panel E: Third-Party Integrations -->
+      <section id="panel-integrations" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-integrations" action="/settings/integrations" method="POST">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="link" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Third-Party Integrations</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Manage connections with external calendars, services, and APIs.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Google Calendar Integration -->
+            <div class="border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-5">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-orange-50/50 dark:bg-brand-darkCard flex items-center justify-center text-brand-orange shrink-0"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Google Calendar</h4>
+                    <p class="text-[11px] text-slate-400 dark:text-zinc-500 leading-snug mt-0.5">Sync test rides, deliveries, and appointments to Google Calendar.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      name="googleCalendar[enabled]" 
+                      value="true" 
+                      <%= (settings.integrations && settings.integrations.googleCalendar && settings.integrations.googleCalendar.enabled) ? 'checked' : '' %>
+                      class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                    />
+                    <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Enable</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-brand-darkBorder">
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Calendar ID</label>
+                  <input 
+                    type="text" 
+                    name="googleCalendar[calendarId]" 
+                    value="<%= (settings.integrations && settings.integrations.googleCalendar && settings.integrations.googleCalendar.calendarId) || 'primary' %>" 
+                    placeholder="primary"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                  <p class="text-[11px] text-slate-400 dark:text-zinc-500 mt-1">Use 'primary' for your main calendar or enter a specific calendar ID.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Integration -->
+            <div class="border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-5">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-brand-darkCard flex items-center justify-center text-emerald-500 shrink-0"><i data-lucide="message-square" class="w-5 h-5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">WhatsApp Business API</h4>
+                    <p class="text-[11px] text-slate-400 dark:text-zinc-500 leading-snug mt-0.5">Send automated messages for follow-ups, deliveries, and test rides.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      name="whatsapp[enabled]" 
+                      value="true" 
+                      <%= (settings.integrations && settings.integrations.whatsapp && settings.integrations.whatsapp.enabled) ? 'checked' : '' %>
+                      class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                    />
+                    <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Enable</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-brand-darkBorder">
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">API Key</label>
+                  <input 
+                    type="password" 
+                    name="whatsapp[apiKey]" 
+                    value="<%= (settings.integrations && settings.integrations.whatsapp && settings.integrations.whatsapp.apiKey) || '' %>" 
+                    placeholder="Enter your WhatsApp API key"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Phone Number ID</label>
+                  <input 
+                    type="text" 
+                    name="whatsapp[phoneNumberId]" 
+                    value="<%= (settings.integrations && settings.integrations.whatsapp && settings.integrations.whatsapp.phoneNumberId) || '' %>" 
+                    placeholder="Enter your WhatsApp Phone Number ID"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- SMS Integration -->
+            <div class="border border-slate-100 dark:border-brand-darkBorder rounded-2xl p-5">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-brand-darkCard flex items-center justify-center text-blue-500 shrink-0"><i data-lucide="message-square" class="w-5 h-5"></i></div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">SMS (Twilio)</h4>
+                    <p class="text-[11px] text-slate-400 dark:text-zinc-500 leading-snug mt-0.5">Send SMS notifications for OTPs, reminders, and updates.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      name="sms[enabled]" 
+                      value="true" 
+                      <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.enabled) ? 'checked' : '' %>
+                      class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                    />
+                    <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Enable</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-brand-darkBorder">
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Account SID</label>
+                  <input 
+                    type="text" 
+                    name="sms[accountSid]" 
+                    value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.accountSid) || '' %>" 
+                    placeholder="Enter your Twilio Account SID"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Auth Token</label>
+                  <input 
+                    type="password" 
+                    name="sms[authToken]" 
+                    value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.authToken) || '' %>" 
+                    placeholder="Enter your Twilio Auth Token"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+                <div>
+                  <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Twilio Phone Number</label>
+                  <input 
+                    type="text" 
+                    name="sms[phoneNumber]" 
+                    value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.phoneNumber) || '' %>" 
+                    placeholder="+1234567890"
+                    class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel F: Security Settings -->
+      <section id="panel-security" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <form id="form-security" action="/settings/security" method="POST">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center justify-between bg-slate-50/50 dark:bg-brand-darkBg/50">
+            <div class="flex items-center gap-3">
+              <i data-lucide="shield" class="w-5 h-5 text-brand-orange"></i>
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Security Settings</h3>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Manage authentication and session security preferences.</p>
+              </div>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-2xl text-xs font-bold bg-brand-orange hover:bg-orange-600 text-white cursor-pointer transition-all">
+              Save Changes
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Two-Factor Authentication -->
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-slate-800 dark:text-zinc-200">Two-Factor Authentication</h4>
+                <p class="text-xs text-slate-400 dark:text-zinc-500">Add an extra layer of security to your account.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="twoFactorEnabled" 
+                    value="true" 
+                    <%= settings.twoFactorEnabled ? 'checked' : '' %>
+                    class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                  />
+                  <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Enabled</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="twoFactorEnabled" 
+                    value="false" 
+                    <%= !settings.twoFactorEnabled ? 'checked' : '' %>
+                    class="w-4 h-4 text-brand-orange focus:ring-brand-orange"
+                  />
+                  <span class="text-xs font-semibold text-slate-700 dark:text-zinc-300">Disabled</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Session Timeout -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Session Timeout (minutes)</label>
+              <input 
+                type="number" 
+                name="sessionTimeout" 
+                value="<%= (settings.sessionTimeout / 60) || 60 %>" 
+                min="5"
+                max="480"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+              <p class="text-xs text-slate-400 dark:text-zinc-500 mt-1">Auto-logout after inactivity period.</p>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel G: Theme Settings -->
+      <section id="panel-theme-settings" class="settings-panel hidden bg-white dark:bg-brand-darkCard border border-slate-200/60 dark:border-brand-darkBorder rounded-3xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-brand-darkBorder flex items-center gap-3 bg-slate-50/50 dark:bg-brand-darkBg/50">
+          <i data-lucide="palette" class="w-5 h-5 text-brand-orange"></i>
+          <div>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Theme Settings</h3>
+            <p class="text-xs text-slate-400 dark:text-zinc-500">Customize your interface appearance and color scheme.</p>
+          </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Theme Selection -->
+          <div>
+            <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-3 block">Select Theme</label>
+            <div class="grid grid-cols-2 gap-4">
+              <button 
+                onclick="updateTheme('light')"
+                id="theme-btn-light"
+                class="flex flex-col items-center gap-3 p-4 border-2 <%= settings.theme === 'light' ? 'border-brand-orange bg-orange-50 dark:bg-orange-950/20' : 'border-slate-200 dark:border-brand-darkBorder' %> rounded-2xl transition-all hover:border-brand-orange"
+              >
+                <div class="w-12 h-8 bg-white border border-slate-200 rounded-lg shadow-sm"></div>
+                <span class="text-xs font-bold text-slate-700 dark:text-zinc-300">Light Mode</span>
+              </button>
+              <button 
+                onclick="updateTheme('dark')"
+                id="theme-btn-dark"
+                class="flex flex-col items-center gap-3 p-4 border-2 <%= settings.theme === 'dark' ? 'border-brand-orange bg-orange-50 dark:bg-orange-950/20' : 'border-slate-200 dark:border-brand-darkBorder' %> rounded-2xl transition-all hover:border-brand-orange"
+              >
+                <div class="w-12 h-8 bg-slate-900 border border-slate-700 rounded-lg shadow-sm"></div>
+                <span class="text-xs font-bold text-slate-700 dark:text-zinc-300">Dark Mode</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+<!-- Scripts for tab switching and dynamic controls -->
+<script>
+  // Avatar preview functionality
+  function updateAvatarPreview(url) {
+    const container = document.getElementById('profile-avatar-container');
+    if (!container) return;
+    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/'))) {
+      container.innerHTML = `<img src="${url}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-brand-darkBorder shadow-sm" id="profile-avatar-preview" />`;
+    } else {
+      const nameInput = document.querySelector('input[name="name"]');
+      const name = nameInput ? nameInput.value : 'User';
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+      container.innerHTML = `<div class="w-16 h-16 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-lg flex items-center justify-center border border-slate-200 dark:border-brand-darkBorder shadow-sm animate-fade-in" id="profile-avatar-preview">${initials}</div>`;
+    }
+  }
+
+  // Tab switching functionality
+  function switchTab(tabId) {
+    // Hide all panels
+    document.querySelectorAll('.settings-panel').forEach(panel => {
+      panel.classList.add('hidden');
+    });
+    
+    // Show selected panel
+    const selectedPanel = document.getElementById(`panel-${tabId}`);
+    if (selectedPanel) {
+      selectedPanel.classList.remove('hidden');
+    }
+    
+    // Update tab button styles
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.classList.remove('bg-white', 'border-2', 'border-brand-orange', 'text-brand-orange', 'dark:text-white');
+      tab.classList.add('bg-white', 'hover:bg-slate-50', 'border', 'border-slate-200/60', 'text-slate-700', 'dark:text-zinc-300');
+    });
+    
+    const selectedTab = document.getElementById(`tab-${tabId}`);
+    if (selectedTab) {
+      selectedTab.classList.remove('bg-white', 'hover:bg-slate-50', 'border', 'border-slate-200/60', 'text-slate-700', 'dark:text-zinc-300');
+      selectedTab.classList.add('bg-white', 'border-2', 'border-brand-orange', 'text-brand-orange', 'dark:text-white');
+    }
+    
+    // Update URL without page reload
+    history.pushState(null, '', `?tab=${tabId}`);
+  }
+  
+  // Initialize tab from URL or default
+  (function() {
+    function initSettingsTab() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialTab = urlParams.get('tab') || 'my-profile';
+      switchTab(initialTab);
+
+      // Show success/error messages if present
+      const urlParams2 = new URLSearchParams(window.location.search);
+      if (urlParams2.get('success')) {
+        const successType = urlParams2.get('success');
+        let message = 'Settings saved successfully!';
+        if (successType === 'profile') message = 'Dealership profile updated successfully!';
+        if (successType === 'profile_updated') message = 'Your profile has been updated successfully!';
+        if (successType === 'crm') message = 'CRM configuration updated successfully!';
+        if (successType === 'security') message = 'Security settings updated successfully!';
+        showToast(message, 'success');
+        // Clean URL
+        history.replaceState(null, '', '/settings?tab=' + initialTab);
+      }
+      if (urlParams2.get('error')) {
+        const errorType = urlParams2.get('error');
+        let message = 'Error saving settings. Please try again.';
+        if (errorType === 'validation') message = 'Please check your input and try again.';
+        if (errorType === 'profile') message = 'Error updating dealership profile. Please try again.';
+        if (errorType === 'profile_failed') message = 'Error updating your profile. Please try again.';
+        if (errorType === 'exists') message = 'Email address is already in use by another user.';
+        if (errorType === 'crm') message = 'Error updating CRM configuration. Please try again.';
+        if (errorType === 'security') message = 'Error updating security settings. Please try again.';
+        showToast(message, 'error');
+        // Clean URL
+        history.replaceState(null, '', '/settings?tab=' + initialTab);
+      }
+
+      // Sync pipelineStages input changes with Default Lead Status select options
+      const stagesInput = document.querySelector('input[name="pipelineStages"]');
+      const statusSelect = document.querySelector('select[name="defaultLeadStatus"]');
+      
+      if (stagesInput && statusSelect) {
+        stagesInput.addEventListener('input', () => {
+          const val = stagesInput.value;
+          const stages = val.split(',').map(s => s.trim()).filter(Boolean);
+          const currentSelected = statusSelect.value;
+          statusSelect.innerHTML = '';
+          
+          stages.forEach(stg => {
+            const opt = document.createElement('option');
+            opt.value = stg;
+            opt.textContent = stg;
+            if (stg === currentSelected) {
+              opt.selected = true;
+            }
+            statusSelect.appendChild(opt);
+          });
+          
+          if (!statusSelect.value && stages.length > 0) {
+            statusSelect.value = stages[0];
+          }
+        });
+      }
+
+      // Re-initialize Lucide icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+
+      // AJAX Form Submission for all settings forms
+      const forms = ['form-my-profile', 'form-dealership-profile', 'form-crm-config', 'form-security', 'form-notifications'];
+      forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const searchParams = new URLSearchParams(formData);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+              const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Accept': 'application/json'
+                },
+                body: searchParams.toString()
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                showToast(data.message || 'Settings saved successfully!', 'success');
+              } else if (data.errors) {
+                // Handle validation errors
+                const errorMessages = data.errors.map(err => err.message).join(', ');
+                showToast(errorMessages || 'Please check your input and try again.', 'error');
+              } else {
+                showToast(data.message || 'Error saving settings. Please try again.', 'error');
+              }
+            } catch (error) {
+              console.error('Form submission error:', error);
+              showToast('Error saving settings. Please try again.', 'error');
+            } finally {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+            }
+          });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSettingsTab);
+    } else {
+      initSettingsTab();
+    }
+  })();
+  
+  async function toggleConfig(category, name) {
+    try {
+      const response = await fetch(`/settings/${category}/${name}`, { method: 'POST' });
+      const data = await response.json();
+      
+      if (data.success) {
+        if (category === 'notifications') {
+          const isEnabled = data.notifications[name];
+          const statusText = document.getElementById(`${name}-status-text`);
+          const toggleDot = document.getElementById(`${name}-toggle-dot`);
+          const toggleBtn = toggleDot.parentElement;
+
+          statusText.innerText = isEnabled ? 'Enabled' : 'Disabled';
+          
+          if (isEnabled) {
+            toggleBtn.className = "w-10 h-6 rounded-full p-1 cursor-pointer transition-colors bg-brand-orange";
+            toggleDot.className = "w-4 h-4 bg-white rounded-full transition-transform translate-x-4";
+          } else {
+            toggleBtn.className = "w-10 h-6 rounded-full p-1 cursor-pointer transition-colors bg-slate-200 dark:bg-zinc-700";
+            toggleDot.className = "w-4 h-4 bg-white rounded-full transition-transform translate-x-0";
+          }
+          showToast('Notification preference updated', 'success');
+        } else if (category === 'integrations') {
+          const isEnabled = data.integrations[name];
+          const badge = document.getElementById(`${name}-badge`);
+          
+          if (name === 'googleCalendar') {
+            const btn = badge.nextElementSibling;
+            if (isEnabled) {
+              badge.className = "px-2 py-0.5 text-[9px] font-extrabold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 rounded uppercase tracking-wider";
+              badge.innerText = "CONNECTED";
+              btn.innerText = "Disconnect";
+            } else {
+              badge.className = "px-2 py-0.5 text-[9px] font-extrabold bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 rounded uppercase tracking-wider";
+              badge.innerText = "DISCONNECTED";
+              btn.innerText = "Connect";
+            }
+          } else if (name === 'whatsapp') {
+            const btn = document.getElementById('whatsapp-connect-btn');
+            if (isEnabled) {
+              badge.className = "px-2 py-0.5 text-[9px] font-extrabold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400 rounded uppercase tracking-wider";
+              badge.innerText = "CONNECTED";
+              btn.className = "text-xs text-slate-400 hover:text-slate-600 dark:hover:text-white font-semibold cursor-pointer underline";
+              btn.innerText = "Disconnect";
+            } else {
+              badge.className = "px-2 py-0.5 text-[9px] font-extrabold bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 rounded uppercase tracking-wider";
+              badge.innerText = "DISCONNECTED";
+              btn.className = "text-xs text-brand-orange hover:underline font-bold cursor-pointer";
+              btn.innerText = "Connect";
+            }
+          }
+          showToast('Integration status updated', 'success');
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling config:', err.message);
+      showToast('Error updating setting', 'error');
+    }
+  }
+
+  function toggleSwitch(id) {
+    const input = document.getElementById(`input-${id}`);
+    const btn = document.getElementById(`btn-${id}`);
+    const dot = document.getElementById(`dot-${id}`);
+    const textSpan = document.getElementById(`text-${id}`);
+    
+    if (input.value === 'true') {
+      input.value = 'false';
+      btn.className = "w-10 h-6 rounded-full p-1 cursor-pointer transition-all duration-300 ease-in-out bg-slate-200 dark:bg-zinc-700";
+      dot.className = "w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out translate-x-0";
+      if (textSpan) textSpan.innerText = 'Disabled';
+    } else {
+      input.value = 'true';
+      btn.className = "w-10 h-6 rounded-full p-1 cursor-pointer transition-all duration-300 ease-in-out bg-brand-orange";
+      dot.className = "w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out translate-x-4";
+      if (textSpan) textSpan.innerText = 'Enabled';
+    }
+  }
+
+  function toggleUserDropdown(event, userId) {
+    event.stopPropagation();
+    const dropdown = document.getElementById(`dropdown-${userId}`);
+    const isHidden = dropdown.classList.contains('hidden');
+    // Hide all first
+    document.querySelectorAll('.user-dropdown').forEach(d => d.classList.add('hidden'));
+    if (isHidden) {
+      dropdown.classList.remove('hidden');
+    }
+  }
+
+  // Close user dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('button[onclick^="toggleUserDropdown"]')) {
+      document.querySelectorAll('.user-dropdown').forEach(d => d.classList.add('hidden'));
+    }
+  });
+
+  // --- USER MANAGEMENT FUNCTIONS ---
+  function openInviteModal() {
+    const modal = document.getElementById('invite-user-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeInviteModal() {
+    const modal = document.getElementById('invite-user-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('form-invite-user').reset();
+  }
+
+  function showUserDetailsPanel(userId, name, email, phone, role, status, avatar) {
+    const panel = document.getElementById('user-details-panel');
+    const content = document.getElementById('user-details-content');
+    
+    panel.classList.remove('hidden');
+    
+    const avatarHtml = avatar 
+      ? `<img src="${avatar}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-slate-200 dark:border-brand-darkBorder shadow-sm" />`
+      : `<div class="w-16 h-16 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-lg flex items-center justify-center">${name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)}</div>`;
+    
+    content.innerHTML = `
+      <div class="flex flex-col items-center pb-4 border-b border-slate-100 dark:border-brand-darkBorder mb-3">
+        ${avatarHtml}
+        <h4 class="font-extrabold text-sm text-slate-900 dark:text-white mt-2">${name}</h4>
+        <span class="px-2 py-0.5 text-xs font-bold rounded bg-slate-100 text-slate-700 dark:bg-brand-darkBg dark:text-zinc-400 mt-1">${role}</span>
+      </div>
+      <div class="space-y-2 text-xs">
+        <div class="flex justify-between">
+          <span class="text-slate-400 dark:text-zinc-500">Email</span>
+          <span class="text-slate-800 dark:text-zinc-200 font-medium">${email}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400 dark:text-zinc-500">Phone</span>
+          <span class="text-slate-800 dark:text-zinc-200 font-medium">${phone || 'N/A'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400 dark:text-zinc-500">Status</span>
+          <span class="flex items-center gap-1.5 text-slate-800 dark:text-zinc-200 font-medium">
+            <span class="w-2 h-2 rounded-full ${status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+            ${status}
+          </span>
+        </div>
+      </div>
+    `;
+    
+    lucide.createIcons();
+  }
+
+  function closeUserDetailsPanel() {
+    const panel = document.getElementById('user-details-panel');
+    panel.classList.add('hidden');
+  }
+
+  function showEditUserPanel(userId, name, phone) {
+    const panel = document.getElementById('user-details-panel');
+    const content = document.getElementById('user-details-content');
+    
+    panel.classList.remove('hidden');
+    
+    content.innerHTML = `
+      <form id="form-edit-user-inline" action="/settings/user/${userId}/edit" method="POST" class="space-y-3">
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-1 block">Full Name</label>
+          <input type="text" name="name" value="${name}" required class="w-full bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange" />
+        </div>
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-1 block">Phone Number</label>
+          <input type="text" name="phone" value="${phone || ''}" class="w-full bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange" />
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeUserDetailsPanel()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 border border-slate-200 dark:border-brand-darkBorder bg-transparent hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer">Cancel</button>
+          <button type="submit" class="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-brand-orange hover:bg-orange-600 transition-all cursor-pointer">Save</button>
+        </div>
+      </form>
+    `;
+  }
+
+  // User checkbox and bulk delete functionality
+  (function() {
+    const selectUsersBtn = document.getElementById('select-users-btn');
+    const cancelSelectionBtn = document.getElementById('cancel-selection-btn');
+    const bulkActionsContainer = document.getElementById('bulk-actions-container');
+    const selectAllUsers = document.getElementById('select-all-users');
+    const bulkDeleteUsersBtn = document.getElementById('bulk-delete-users-btn');
+    const table = document.querySelector('table');
+    const thead = table?.querySelector('thead tr');
+    const tbody = table?.querySelector('tbody');
+    const userRows = document.querySelectorAll('.user-row');
+
+    function enterSelectionMode() {
+      selectUsersBtn.classList.add('hidden');
+      bulkActionsContainer.classList.remove('hidden');
+      
+      // Add checkbox column to header
+      if (thead) {
+        const checkboxHeader = document.createElement('th');
+        checkboxHeader.className = 'py-3 px-2 text-center w-12';
+        checkboxHeader.innerHTML = '';
+        thead.insertBefore(checkboxHeader, thead.firstChild);
+      }
+      
+      // Add checkbox to each row
+      userRows.forEach(row => {
+        const userId = row.getAttribute('data-user-id');
+        const checkboxCell = document.createElement('td');
+        checkboxCell.className = 'py-4 text-center';
+        checkboxCell.innerHTML = `<input type="checkbox" class="user-checkbox w-4 h-4 rounded border-slate-300 dark:border-brand-darkBorder text-brand-orange focus:ring-brand-orange bg-slate-50 dark:bg-brand-darkBg cursor-pointer accent-brand-orange" value="${userId}" />`;
+        row.insertBefore(checkboxCell, row.firstChild);
+      });
+      
+      // Re-attach event listeners to new checkboxes
+      const userCheckboxes = document.querySelectorAll('.user-checkbox');
+      userCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+          const allChecked = Array.from(userCheckboxes).every(c => c.checked);
+          if (selectAllUsers) selectAllUsers.checked = allChecked;
+          updateBulkDeleteButton();
+        });
+      });
+      
+      lucide.createIcons();
+    }
+
+    function exitSelectionMode() {
+      selectUsersBtn.classList.remove('hidden');
+      bulkActionsContainer.classList.add('hidden');
+      
+      // Remove checkbox column from header
+      if (thead && thead.firstChild) {
+        thead.removeChild(thead.firstChild);
+      }
+      
+      // Remove checkbox from each row
+      userRows.forEach(row => {
+        if (row.firstChild) {
+          row.removeChild(row.firstChild);
+        }
+      });
+      
+      // Reset select all and delete button
+      if (selectAllUsers) selectAllUsers.checked = false;
+      bulkDeleteUsersBtn.classList.add('hidden');
+      bulkDeleteUsersBtn.querySelector('span').textContent = 'Delete Selected';
+      
+      lucide.createIcons();
+    }
+
+    function updateBulkDeleteButton() {
+      const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+      if (checkedCount > 0) {
+        bulkDeleteUsersBtn.classList.remove('hidden');
+        bulkDeleteUsersBtn.querySelector('span').textContent = `Delete Selected (${checkedCount})`;
+      } else {
+        bulkDeleteUsersBtn.classList.add('hidden');
+      }
+    }
+
+    if (selectUsersBtn) {
+      selectUsersBtn.addEventListener('click', enterSelectionMode);
+    }
+
+    if (cancelSelectionBtn) {
+      cancelSelectionBtn.addEventListener('click', exitSelectionMode);
+    }
+
+    if (selectAllUsers) {
+      selectAllUsers.addEventListener('change', function() {
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        userCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkDeleteButton();
+      });
+    }
+
+    if (bulkDeleteUsersBtn) {
+      bulkDeleteUsersBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+
+        if (ids.length === 0) return;
+
+        bulkDeleteUsersBtn.disabled = true;
+        bulkDeleteUsersBtn.innerHTML = 'Deleting...';
+
+        try {
+          const res = await fetch('/settings/users/bulk-delete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ ids })
+          });
+          
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errorText}`);
+          }
+          
+          const data = await res.json();
+          if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            showToast(data.message || 'Error deleting users.', 'error');
+            bulkDeleteUsersBtn.disabled = false;
+            bulkDeleteUsersBtn.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Delete Selected</span>';
+            lucide.createIcons();
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('Connection error. Please try again.', 'error');
+          bulkDeleteUsersBtn.disabled = false;
+          bulkDeleteUsersBtn.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Delete Selected</span>';
+          lucide.createIcons();
+        }
+      });
+    }
+  })();
+
+  function handleAvatarUpload(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPG, PNG and WEBP file formats are allowed.');
+        input.value = '';
+        return;
+      }
+
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        alert('Profile image size must be less than 2MB.');
+        input.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Str = e.target.result;
+        document.getElementById('my-profile-avatar-input').value = base64Str;
+        
+        const previewContainer = document.getElementById('profile-avatar-container');
+        previewContainer.innerHTML = `<img src="${base64Str}" alt="Avatar" class="w-20 h-20 rounded-full object-cover border border-slate-200 dark:border-brand-darkBorder shadow-sm" id="profile-avatar-preview" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function clearProfileAvatar() {
+    document.getElementById('my-profile-avatar-input').value = '';
+    document.getElementById('my-profile-avatar-file').value = '';
+    
+    const userName = "<%= locals.user ? locals.user.name : '' %>";
+    const initials = userName ? userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U';
+    
+    const previewContainer = document.getElementById('profile-avatar-container');
+    previewContainer.innerHTML = `
+      <div class="w-20 h-20 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-xl flex items-center justify-center border border-slate-200 dark:border-brand-darkBorder shadow-sm animate-fade-in" id="profile-avatar-preview">
+        ${initials}
+      </div>
+    `;
+  }
+
+  function viewUser(id, name, email, phone, role, status, avatar) {
+    const modal = document.getElementById('view-user-modal');
+    document.getElementById('view-user-name').textContent = name;
+    document.getElementById('view-user-email').textContent = email;
+    document.getElementById('view-user-phone').textContent = phone || 'N/A';
+    document.getElementById('view-user-role-badge').textContent = role;
+    
+    const statusSpan = document.getElementById('view-user-status');
+    const colorBg = status === 'Active' ? 'bg-emerald-500' : 'bg-rose-500';
+    statusSpan.innerHTML = `<span class="w-2 h-2 rounded-full ${colorBg}"></span> ${status}`;
+    
+    const avatarEl = document.getElementById('view-user-avatar');
+    if (avatar && avatar.trim() !== '') {
+      avatarEl.innerHTML = `<img src="${avatar}" alt="Avatar" class="w-full h-full rounded-full object-cover" />`;
+      avatarEl.className = "w-16 h-16 rounded-full border border-slate-200 dark:border-brand-darkBorder shadow-sm mb-2.5 overflow-hidden";
+    } else {
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      avatarEl.textContent = initials;
+      avatarEl.className = "w-16 h-16 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-lg flex items-center justify-center mb-2.5";
+    }
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  
+  function closeViewUserModal() {
+    const modal = document.getElementById('view-user-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function editUser(id, name, phone) {
+    const modal = document.getElementById('edit-user-modal');
+    const form = document.getElementById('form-edit-user');
+    form.action = `/settings/users/edit/${id}`;
+    
+    document.getElementById('edit-user-name-input').value = name;
+    document.getElementById('edit-user-phone-input').value = phone || '';
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  
+  function closeEditUserModal() {
+    const modal = document.getElementById('edit-user-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function changeRole(id, name, role) {
+    const modal = document.getElementById('change-role-modal');
+    const form = document.getElementById('form-change-role');
+    form.action = `/settings/users/change-role/${id}`;
+    
+    document.getElementById('change-role-user-name').textContent = `Configure access level for ${name}.`;
+    document.getElementById('change-role-select').value = role;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  
+  function closeChangeRoleModal() {
+    const modal = document.getElementById('change-role-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function toggleStatus(id, name, currentStatus) {
+    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+    showConfirmModal(`Are you sure you want to change the status of ${name} to ${newStatus}?`, async () => {
+      try {
+        const response = await fetch(`/settings/users/toggle-status/${id}`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast(data.message, 'success');
+          setTimeout(() => {
+            window.location.href = '/settings?tab=user-management';
+          }, 1000);
+        } else {
+          showToast(data.message || 'Error updating status', 'error');
+        }
+      } catch (err) {
+        console.error('Toggle status error:', err);
+        showToast('Error updating status', 'error');
+      }
+    });
+  }
+
+  function deleteUser(id, name) {
+    try {
+      const response = fetch(`/settings/users/delete/${id}`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        }
+      });
+      response.then(res => res.json()).then(data => {
+        if (data.success) {
+          showToast(data.message, 'success');
+          // Remove the row from DOM without page reload
+          const row = document.querySelector(`button[onclick*="deleteUser('${id}'"]`).closest('tr');
+          if (row) {
+            row.remove();
+          }
+          // Close dropdown
+          closeAllUserDropdowns();
+        } else {
+          showToast(data.message || 'Error deleting user', 'error');
+        }
+      }).catch(err => {
+        console.error('Delete user error:', err);
+        showToast('Error deleting user', 'error');
+      });
+    } catch (err) {
+      console.error('Delete user error:', err);
+      showToast('Error deleting user', 'error');
+    }
+  }
+
+  // --- AJAX User Form Submissions ---
+  (function() {
+    function initSettingsUserForms() {
+      // Invite member form submit
+      const inviteForm = document.getElementById('form-invite-user');
+      if (inviteForm) {
+        inviteForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(inviteForm);
+          const searchParams = new URLSearchParams(formData);
+          const submitBtn = inviteForm.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Inviting...';
+          submitBtn.disabled = true;
+
+          try {
+            const response = await fetch(inviteForm.action, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+              },
+              body: searchParams.toString()
+            });
+
+            const data = await response.json();
+            if (data.success) {
+              closeInviteModal();
+              showToast(data.message || 'Member invited successfully!', 'success');
+              setTimeout(() => {
+                window.location.href = '/settings?tab=user-management';
+              }, 1000);
+            } else {
+              showToast(data.message || 'Error inviting member. Please try again.', 'error');
+            }
+          } catch (error) {
+            console.error('Invite error:', error);
+            showToast('Error inviting member. Please try again.', 'error');
+          } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+      }
+
+      // Edit and Change Role form submits
+      ['form-edit-user', 'form-change-role'].forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const searchParams = new URLSearchParams(formData);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+              const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Accept': 'application/json'
+                },
+                body: searchParams.toString()
+              });
+
+              const data = await response.json();
+              if (data.success) {
+                if (formId === 'form-edit-user') closeEditUserModal();
+                if (formId === 'form-change-role') closeChangeRoleModal();
+                showToast(data.message || 'Updated successfully!', 'success');
+                setTimeout(() => {
+                  window.location.href = '/settings?tab=user-management';
+                }, 1000);
+              } else {
+                showToast(data.message || 'Error saving changes. Please try again.', 'error');
+              }
+            } catch (error) {
+              console.error('Error saving user change:', error);
+              showToast('Error saving changes. Please try again.', 'error');
+            } finally {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+            }
+          });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSettingsUserForms);
+    } else {
+      initSettingsUserForms();
+    }
+  })();
+</script>
+
+<!-- Modals for User Management -->
+<!-- Invite User Modal -->
+<div id="invite-user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all duration-200">
+  <div class="bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-3xl shadow-2xl p-6 max-w-md w-full mx-4 transform transition-all duration-200 scale-100">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3 text-brand-orange">
+        <div class="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
+          <i data-lucide="user-plus" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white font-sans">Invite New Member</h3>
+          <p class="text-xs text-slate-400 dark:text-zinc-500 font-medium">Create a new user account with role access.</p>
+        </div>
+      </div>
+      <button onclick="closeInviteModal()" class="text-slate-400 hover:text-slate-655 dark:hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    
+    <form id="form-invite-user" action="/settings/users/invite" method="POST" class="space-y-4">
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Full Name</label>
+        <input 
+          type="text" 
+          name="name" 
+          required 
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+          placeholder="e.g. Jane Doe"
+        />
+      </div>
+
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Email Address</label>
+        <input 
+          type="email" 
+          name="email" 
+          required 
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+          placeholder="e.g. jane@dealership.com"
+        />
+      </div>
+
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Temporary Password (min 6 chars)</label>
+        <input 
+          type="password" 
+          name="password" 
+          required 
+          minlength="6"
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Role</label>
+          <select 
+            name="role" 
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+          >
+            <option value="Sales Executive">Sales Executive</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Phone Number</label>
+          <input 
+            type="text" 
+            name="phone" 
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+            placeholder="e.g. +1 555-0199"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-brand-darkBorder mt-6">
+        <button type="button" onclick="closeInviteModal()" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white border border-slate-200 dark:border-brand-darkBorder bg-transparent hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer font-sans">
+          Cancel
+        </button>
+        <button type="submit" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-brand-orange hover:bg-orange-600 transition-all cursor-pointer shadow-sm font-sans">
+          Send Invitation
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View User Modal -->
+<div id="view-user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-end z-50 hidden transition-all duration-200">
+  <div class="bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-3xl shadow-2xl p-6 max-w-sm w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3 text-brand-orange">
+        <div class="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
+          <i data-lucide="eye" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white font-sans">User Details</h3>
+      </div>
+      <button onclick="closeViewUserModal()" class="text-slate-400 hover:text-slate-655 dark:hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="space-y-4 text-sm font-medium">
+      <div class="flex flex-col items-center pb-4 border-b border-slate-100 dark:border-brand-darkBorder mb-2">
+        <div id="view-user-avatar" class="w-16 h-16 rounded-full bg-slate-900 text-white dark:bg-brand-orange font-bold text-lg flex items-center justify-center mb-2.5">
+          U
+        </div>
+        <h4 id="view-user-name" class="font-extrabold text-base text-slate-900 dark:text-white">John Doe</h4>
+        <span id="view-user-role-badge" class="px-2.5 py-0.5 text-xs font-bold rounded bg-slate-100 text-slate-700 dark:bg-brand-darkBg dark:text-zinc-400 mt-1">Sales Executive</span>
+      </div>
+      <div class="space-y-3">
+        <div class="flex justify-between border-b border-slate-50 dark:border-brand-darkBorder pb-2">
+          <span class="text-slate-400 dark:text-zinc-500 font-sans">Email Address</span>
+          <span id="view-user-email" class="text-slate-800 dark:text-zinc-200 select-all font-sans font-bold">john@dealership.com</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-50 dark:border-brand-darkBorder pb-2">
+          <span class="text-slate-400 dark:text-zinc-500 font-sans">Phone Number</span>
+          <span id="view-user-phone" class="text-slate-800 dark:text-zinc-200 font-sans font-bold">+1 555-0199</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400 dark:text-zinc-500 font-sans">Account Status</span>
+          <span id="view-user-status" class="flex items-center gap-1.5 text-slate-800 dark:text-zinc-200 font-sans font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Active
+          </span>
+        </div>
+      </div>
+    </div>
+    <button onclick="closeViewUserModal()" class="w-full mt-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-950 rounded-xl text-xs font-bold hover:opacity-90 transition-all cursor-pointer font-sans">
+      Close Window
+    </button>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-end z-50 hidden transition-all duration-200">
+  <div class="bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-3xl shadow-2xl p-6 max-w-sm w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3 text-brand-orange">
+        <div class="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
+          <i data-lucide="edit" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white font-sans">Edit Profile</h3>
+      </div>
+      <button onclick="closeEditUserModal()" class="text-slate-400 hover:text-slate-655 dark:hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="form-edit-user" action="" method="POST" class="space-y-4">
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Full Name</label>
+        <input 
+          type="text" 
+          name="name" 
+          id="edit-user-name-input"
+          required 
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+        />
+      </div>
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Phone Number</label>
+        <input 
+          type="text" 
+          name="phone" 
+          id="edit-user-phone-input"
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+        />
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-brand-darkBorder mt-6">
+        <button type="button" onclick="closeEditUserModal()" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white border border-slate-200 dark:border-brand-darkBorder bg-transparent hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer font-sans">
+          Cancel
+        </button>
+        <button type="submit" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-brand-orange hover:bg-orange-600 transition-all cursor-pointer shadow-sm font-sans">
+          Save Profile
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Change Role Modal -->
+<div id="change-role-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all duration-200">
+  <div class="bg-white dark:bg-brand-darkCard border border-slate-200 dark:border-brand-darkBorder rounded-3xl shadow-2xl p-6 max-w-sm w-full mx-4">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3 text-brand-orange">
+        <div class="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white font-sans">Change User Role</h3>
+          <p id="change-role-user-name" class="text-xs text-slate-400 dark:text-zinc-500 font-medium font-sans">Configure access level for this user.</p>
+        </div>
+      </div>
+      <button onclick="closeChangeRoleModal()" class="text-slate-400 hover:text-slate-655 dark:hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="form-change-role" action="" method="POST" class="space-y-4">
+      <div>
+        <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block font-sans">Select Role</label>
+        <select 
+          name="role" 
+          id="change-role-select"
+          class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all font-sans"
+        >
+          <option value="Sales Executive">Sales Executive</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-brand-darkBorder mt-6">
+        <button type="button" onclick="closeChangeRoleModal()" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-white border border-slate-200 dark:border-brand-darkBorder bg-transparent hover:bg-slate-50 dark:hover:bg-brand-darkBg transition-all cursor-pointer font-sans">
+          Cancel
+        </button>
+        <button type="submit" class="px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-brand-orange hover:bg-orange-600 transition-all cursor-pointer shadow-sm font-sans">
+          Update Role
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    </div>
+  </main>
+</div>
+
+<%- include('partials/footer') %>
+
