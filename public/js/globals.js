@@ -325,11 +325,13 @@ function toggleSidebar() {
   }, 310);
 }
 
-// Update theme and persist
+// Update theme and persist with smooth transitions
 function updateTheme(theme) {
   const root = document.documentElement;
   
-  // Instant theme switch - no animation delay
+  // Add transitioning class for smooth mode toggle
+  root.classList.add('theme-transitioning');
+  
   if (theme === 'dark') {
     root.classList.add('dark');
     localStorage.setItem('motocrm-theme', 'dark');
@@ -345,43 +347,50 @@ function updateTheme(theme) {
   
   // Persist to server (non-blocking)
   persistThemeToServer(theme);
+  
+  // Clean up transitioning class after transition completes
+  setTimeout(() => {
+    root.classList.remove('theme-transitioning');
+  }, 400);
 }
 
 // Update theme button states
 function updateThemeButtons(theme) {
-  const lightBtn = document.getElementById('theme-btn-light');
-  const darkBtn = document.getElementById('theme-btn-dark');
+  // Header theme buttons
+  const headerLightBtn = document.querySelector('header #theme-btn-light') || document.getElementById('theme-btn-light');
+  const headerDarkBtn = document.querySelector('header #theme-btn-dark') || document.getElementById('theme-btn-dark');
   
-  if (lightBtn && darkBtn) {
-    // Check if these are settings page buttons (have different styling)
-    const isSettingsPage = lightBtn.closest('.settings-panel');
-    
-    if (isSettingsPage) {
-      // Settings page styling
-      if (theme === 'light') {
-        lightBtn.classList.add('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
-        lightBtn.classList.remove('border-slate-200', 'dark:border-brand-darkBorder');
-        darkBtn.classList.remove('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
-        darkBtn.classList.add('border-slate-200', 'dark:border-brand-darkBorder');
-      } else {
-        darkBtn.classList.add('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
-        darkBtn.classList.remove('border-slate-200', 'dark:border-brand-darkBorder');
-        lightBtn.classList.remove('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
-        lightBtn.classList.add('border-slate-200', 'dark:border-brand-darkBorder');
-      }
+  // Settings theme buttons
+  const settingsLightBtn = document.getElementById('settings-theme-btn-light');
+  const settingsDarkBtn = document.getElementById('settings-theme-btn-dark');
+  
+  // Header styling
+  if (headerLightBtn && headerDarkBtn) {
+    if (theme === 'light') {
+      headerLightBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-sm');
+      headerLightBtn.classList.remove('bg-transparent', 'text-slate-400', 'dark:text-zinc-550');
+      headerDarkBtn.classList.remove('bg-brand-orange', 'text-white', 'shadow-sm');
+      headerDarkBtn.classList.add('bg-transparent', 'text-slate-400', 'dark:text-zinc-550');
     } else {
-      // Header button styling
-      if (theme === 'light') {
-        lightBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-sm');
-        lightBtn.classList.remove('bg-transparent', 'text-slate-400', 'dark:text-zinc-550');
-        darkBtn.classList.remove('bg-brand-orange', 'text-white', 'shadow-sm');
-        darkBtn.classList.add('bg-transparent', 'text-slate-400', 'dark:text-zinc-550');
-      } else {
-        darkBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-sm');
-        darkBtn.classList.remove('bg-transparent', 'text-slate-400');
-        lightBtn.classList.remove('bg-brand-orange', 'text-white', 'shadow-sm');
-        lightBtn.classList.add('bg-transparent', 'text-slate-400');
-      }
+      headerDarkBtn.classList.add('bg-brand-orange', 'text-white', 'shadow-sm');
+      headerDarkBtn.classList.remove('bg-transparent', 'text-slate-400');
+      headerLightBtn.classList.remove('bg-brand-orange', 'text-white', 'shadow-sm');
+      headerLightBtn.classList.add('bg-transparent', 'text-slate-400');
+    }
+  }
+  
+  // Settings panel styling
+  if (settingsLightBtn && settingsDarkBtn) {
+    if (theme === 'light') {
+      settingsLightBtn.classList.add('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
+      settingsLightBtn.classList.remove('border-slate-200', 'dark:border-brand-darkBorder');
+      settingsDarkBtn.classList.remove('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
+      settingsDarkBtn.classList.add('border-slate-200', 'dark:border-brand-darkBorder');
+    } else {
+      settingsDarkBtn.classList.add('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
+      settingsDarkBtn.classList.remove('border-slate-200', 'dark:border-brand-darkBorder');
+      settingsLightBtn.classList.remove('border-brand-orange', 'bg-orange-50', 'dark:bg-orange-950/20');
+      settingsLightBtn.classList.add('border-slate-200', 'dark:border-brand-darkBorder');
     }
   }
 }

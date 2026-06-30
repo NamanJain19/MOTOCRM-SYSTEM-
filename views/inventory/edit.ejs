@@ -45,6 +45,31 @@
           />
         </div>
 
+        <!-- Bike Colors -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Available Colors (comma-separated)</label>
+          <input 
+            type="text" 
+            name="colors" 
+            value="<%= item.colors ? item.colors.join(', ') : '' %>"
+            placeholder="e.g. Black, Red, Grey"
+            required
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+          />
+        </div>
+
+        <!-- Model Status -->
+        <div>
+          <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Status</label>
+          <select 
+            name="status"
+            class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+          >
+            <option value="Active" <%= item.status === 'Active' ? 'selected' : '' %>>Active</option>
+            <option value="Inactive" <%= item.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
+        </div>
+
         <!-- Counts row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>

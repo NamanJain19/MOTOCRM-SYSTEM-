@@ -31,6 +31,16 @@ const InventorySchema = new mongoose.Schema({
     min: 0,
     default: 2
   },
+  colors: {
+    type: [String],
+    default: []
+  },
+  status: {
+    type: String,
+    enum: ['Active', 'Inactive'],
+    default: 'Active',
+    index: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

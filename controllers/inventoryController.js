@@ -43,7 +43,7 @@ exports.getInventory = async (req, res) => {
 // Create a new inventory item
 exports.createInventory = async (req, res) => {
   try {
-    const { bikeModel, stockQuantity, reservedBikes, soldBikes, lowStockThreshold } = req.body;
+    const { bikeModel, stockQuantity, reservedBikes, soldBikes, lowStockThreshold, colors, status } = req.body;
 
     // Check if model already exists
     const existing = await Inventory.findOne({ bikeModel: bikeModel.trim() });
@@ -78,12 +78,18 @@ exports.createInventory = async (req, res) => {
       });
     }
 
+    const colorsList = colors
+      ? Array.from(new Set(colors.split(',').map(c => c.trim()).filter(c => c !== ''))).sort((a, b) => a.localeCompare(b))
+      : [];
+
     const newItem = new Inventory({
       bikeModel: bikeModel.trim(),
       stockQuantity: Number(stockQuantity) || 0,
       reservedBikes: Number(reservedBikes) || 0,
       soldBikes: Number(soldBikes) || 0,
-      lowStockThreshold: Number(lowStockThreshold) || 2
+      lowStockThreshold: Number(lowStockThreshold) || 2,
+      colors: colorsList,
+      status: status || 'Active'
     });
 
     await newItem.save();
@@ -127,7 +133,7 @@ exports.getEditInventory = async (req, res) => {
 exports.updateInventory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { bikeModel, stockQuantity, reservedBikes, soldBikes, lowStockThreshold } = req.body;
+    const { bikeModel, stockQuantity, reservedBikes, soldBikes, lowStockThreshold, colors, status } = req.body;
 
     // Check if model name already exists on another item
     const existing = await Inventory.findOne({ bikeModel: bikeModel.trim(), _id: { $ne: id } });
@@ -148,11 +154,17 @@ exports.updateInventory = async (req, res) => {
     // Determine if sold quantity increased
     const soldDiff = (Number(soldBikes) || 0) - item.soldBikes;
 
+    const colorsList = colors
+      ? Array.from(new Set(colors.split(',').map(c => c.trim()).filter(c => c !== ''))).sort((a, b) => a.localeCompare(b))
+      : [];
+
     item.bikeModel = bikeModel.trim();
     item.stockQuantity = Number(stockQuantity) || 0;
     item.reservedBikes = Number(reservedBikes) || 0;
     item.soldBikes = Number(soldBikes) || 0;
     item.lowStockThreshold = Number(lowStockThreshold) || 2;
+    item.colors = colorsList;
+    item.status = status || 'Active';
 
     await item.save();
 

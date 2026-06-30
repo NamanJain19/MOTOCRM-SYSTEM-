@@ -130,18 +130,18 @@
                 <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Model Interest *</label>
                 <select 
                   name="bikeModel" 
+                  id="bike-model-select"
                   required
                   class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
                 >
                   <option value="" disabled selected>Select Model</option>
-                  <option value="Pan America™ 1250 Special">Pan America™ 1250 Special</option>
-                  <option value="Street Glide® ST">Street Glide® ST</option>
-                  <option value="Nightster™ Special">Nightster™ Special</option>
-                  <option value="Road Glide® Special">Road Glide® Special</option>
-                  <option value="Low Rider™ ST">Low Rider™ ST</option>
-                  <option value="Low Rider™ S">Low Rider™ S</option>
-                  <option value="Iron 883™">Iron 883™</option>
-                  <option value="Fat Boy® 114">Fat Boy® 114</option>
+                  <% if (locals.inventory && locals.inventory.length > 0) { %>
+                    <% locals.inventory.forEach(item => { %>
+                      <option value="<%= item.bikeModel %>"><%= item.bikeModel %></option>
+                    <% }) %>
+                  <% } else { %>
+                    <option value="" disabled>No bike models available.</option>
+                  <% } %>
                 </select>
               </div>
 
@@ -150,14 +150,10 @@
                 <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Preferred Color</label>
                 <select 
                   name="preferredColor" 
+                  id="preferred-color-select"
                   class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
                 >
                   <option value="" disabled selected>Select Color</option>
-                  <option value="Vivid Black">Vivid Black</option>
-                  <option value="Baja Orange">Baja Orange</option>
-                  <option value="Gunship Gray">Gunship Gray</option>
-                  <option value="Redline Red">Redline Red</option>
-                  <option value="Sand Dune">Sand Dune</option>
                 </select>
               </div>
 
@@ -407,6 +403,40 @@
       }
     });
   }
+</script>
+
+<!-- Dynamic Color Dropdown Script -->
+<script>
+  (function() {
+    const inventoryData = <%- JSON.stringify(locals.inventory || []) %>;
+    const bikeSelect = document.getElementById('bike-model-select');
+    const colorSelect = document.getElementById('preferred-color-select');
+
+    function updateColors(modelName) {
+      colorSelect.innerHTML = '<option value="" disabled selected>Select Color</option>';
+      const model = inventoryData.find(item => item.bikeModel === modelName);
+      if (model && model.colors && model.colors.length > 0) {
+        model.colors.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          colorSelect.appendChild(opt);
+        });
+      } else {
+        const opt = document.createElement('option');
+        opt.value = "";
+        opt.disabled = true;
+        opt.textContent = "No colors available";
+        colorSelect.appendChild(opt);
+      }
+    }
+
+    if (bikeSelect && colorSelect) {
+      bikeSelect.addEventListener('change', function() {
+        updateColors(this.value);
+      });
+    }
+  })();
 </script>
 
 <%- include('../partials/footer') %>

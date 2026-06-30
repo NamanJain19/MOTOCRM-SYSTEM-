@@ -136,12 +136,24 @@
                 <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Model Interest *</label>
                 <select 
                   name="bikeModel" 
+                  id="bike-model-select"
                   required
                   class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
                 >
-                  <% ['Pan America™ 1250 Special', 'Street Glide® ST', 'Nightster™ Special', 'Road Glide® Special', 'Low Rider™ ST', 'Low Rider™ S', 'Iron 883™', 'Fat Boy® 114'].forEach(model => { %>
-                    <option value="<%= model %>" <%= lead.bikeModel === model ? 'selected' : '' %>><%= model %></option>
-                  <% }) %>
+                  <% if (locals.inventory && inventory.length > 0) { %>
+                    <% let modelInInventory = inventory.some(item => item.bikeModel === lead.bikeModel); %>
+                    <% if (!modelInInventory && lead.bikeModel) { %>
+                      <option value="<%= lead.bikeModel %>" selected><%= lead.bikeModel %> (Inactive)</option>
+                    <% } %>
+                    <% inventory.forEach(item => { %>
+                      <option value="<%= item.bikeModel %>" <%= lead.bikeModel === item.bikeModel ? 'selected' : '' %>><%= item.bikeModel %></option>
+                    <% }) %>
+                  <% } else { %>
+                    <% if (lead.bikeModel) { %>
+                      <option value="<%= lead.bikeModel %>" selected><%= lead.bikeModel %> (Inactive)</option>
+                    <% } %>
+                    <option value="" disabled>No bike models available.</option>
+                  <% } %>
                 </select>
               </div>
 
@@ -150,12 +162,10 @@
                 <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Preferred Color</label>
                 <select 
                   name="preferredColor" 
+                  id="preferred-color-select"
                   class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
                 >
                   <option value="" <%= !lead.preferredColor ? 'selected' : '' %>>Select Color</option>
-                  <% ['Vivid Black', 'Baja Orange', 'Gunship Gray', 'Redline Red', 'Sand Dune'].forEach(color => { %>
-                    <option value="<%= color %>" <%= lead.preferredColor === color ? 'selected' : '' %>><%= color %></option>
-                  <% }) %>
                 </select>
               </div>
 
@@ -419,6 +429,64 @@
       }
     });
   }
+</script>
+
+<!-- Dynamic Color Dropdown Script -->
+<script>
+  (function() {
+    const inventoryData = <%- JSON.stringify(locals.inventory || []) %>;
+    const initialColor = "<%= lead.preferredColor || '' %>";
+    const bikeSelect = document.getElementById('bike-model-select');
+    const colorSelect = document.getElementById('preferred-color-select');
+
+    function updateColors(modelName, selectColorVal) {
+      colorSelect.innerHTML = '<option value="">Select Color</option>';
+      
+      const model = inventoryData.find(item => item.bikeModel === modelName);
+      let foundSelected = false;
+
+      if (model && model.colors && model.colors.length > 0) {
+        model.colors.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c;
+          if (c === selectColorVal) {
+            opt.selected = true;
+            foundSelected = true;
+          }
+          colorSelect.appendChild(opt);
+        });
+      }
+
+      // Handle fallback/inactive color gracefully if preselected
+      if (selectColorVal && !foundSelected) {
+        const opt = document.createElement('option');
+        opt.value = selectColorVal;
+        opt.textContent = selectColorVal + ' (Inactive)';
+        opt.selected = true;
+        colorSelect.appendChild(opt);
+      }
+
+      if (!model || !model.colors || model.colors.length === 0) {
+        if (!selectColorVal) {
+          const opt = document.createElement('option');
+          opt.value = "";
+          opt.disabled = true;
+          opt.textContent = "No colors available";
+          colorSelect.appendChild(opt);
+        }
+      }
+    }
+
+    if (bikeSelect && colorSelect) {
+      // Initialize with lead's current values
+      updateColors(bikeSelect.value, initialColor);
+
+      bikeSelect.addEventListener('change', function() {
+        updateColors(this.value, '');
+      });
+    }
+  })();
 </script>
 
 <%- include('../partials/footer') %>

@@ -45,4 +45,7 @@ const TaskSchema = new mongoose.Schema({
   }
 });
 
+TaskSchema.index({ status: 1, dueDate: 1 });
+
 module.exports = mongoose.model('Task', TaskSchema);
+

@@ -3,6 +3,7 @@ const Lead = require('../models/Lead');
 const Activity = require('../models/Activity');
 const Task = require('../models/Task');
 const Settings = require('../models/Settings');
+const Inventory = require('../models/Inventory');
 const googleCalendarService = require('../services/googleCalendarService');
 const whatsappService = require('../services/whatsappService');
 const smsService = require('../services/smsService');
@@ -74,7 +75,9 @@ exports.getAddDelivery = async (req, res) => {
   try {
     // Fetch active leads to optionally link
     const leads = await Lead.find({ status: { $ne: 'Lost' } }).sort({ name: 1 }).lean();
-    res.render('deliveries/add', { title: 'Schedule Delivery', leads });
+    // Fetch active inventory models from DB (only active/in-stock)
+    const inventory = await Inventory.find({ stockQuantity: { $gt: 0 } }).sort({ bikeModel: 1 }).lean();
+    res.render('deliveries/add', { title: 'Schedule Delivery', leads, inventory });
   } catch (error) {
     console.error('Error loading add delivery form:', error);
     res.status(500).send('Internal Server Error');
@@ -84,7 +87,7 @@ exports.getAddDelivery = async (req, res) => {
 // POST Create Delivery
 exports.createDelivery = async (req, res) => {
   try {
-    const { leadId, customerName, customerEmail, customerPhone, bikeModel, deliveryDate, status, notes } = req.body;
+    const { leadId, customerName, customerEmail, customerPhone, bikeModel, bikeColor, deliveryDate, status, notes } = req.body;
     const salesExecutive = req.session.userName || 'Sales Executive';
 
     // Build default checklist items
@@ -102,6 +105,7 @@ exports.createDelivery = async (req, res) => {
       customerEmail: customerEmail || '',
       customerPhone,
       bikeModel,
+      bikeColor: bikeColor || '',
       deliveryDate: new Date(deliveryDate),
       status: status || 'Pending',
       accessoriesChecklist: checklistItems,

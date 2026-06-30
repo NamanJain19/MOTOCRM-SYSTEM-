@@ -16,32 +16,11 @@ exports.getDashboard = async (req, res) => {
     const endOfLastMonth = new Date(startOfCurrentMonth);
     endOfLastMonth.setMilliseconds(-1);
 
-    // Dynamic 6 months leads trend calculation
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthlyLeads = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(1);
-      d.setMonth(d.getMonth() - i);
-      const startOfMonth = new Date(d.getFullYear(), d.getMonth(), 1);
-      const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
-      
-      const count = await Lead.countDocuments({
-        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
-      });
-      const soldCount = await Lead.countDocuments({
-        status: { $in: ['Sold', 'Delivered'] },
-        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
-      });
-      const convRate = count > 0 ? parseFloat((soldCount / count * 100).toFixed(1)) : 0;
-      monthlyLeads.push({
-        _id: { year: d.getFullYear(), month: d.getMonth() + 1 },
-        count,
-        convRate
-      });
-    }
+    // Dynamic 6 months leads range
+    const startOfRange = new Date(startOfCurrentMonth);
+    startOfRange.setMonth(startOfRange.getMonth() - 5);
 
-    // Run remaining queries in parallel
+    // Run all queries in parallel
     const [
       metrics,
       sourceCounts,
@@ -55,7 +34,8 @@ exports.getDashboard = async (req, res) => {
       currNewLeads,
       prevNewLeads,
       currSoldLeads,
-      prevSoldLeads
+      prevSoldLeads,
+      monthlyStatsRaw
     ] = await Promise.all([
       // 1. Metrics aggregation
       Lead.aggregate([
@@ -117,8 +97,53 @@ exports.getDashboard = async (req, res) => {
       Lead.countDocuments({ status: 'New', createdAt: { $gte: startOfCurrentMonth } }),
       Lead.countDocuments({ status: 'New', createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
       Lead.countDocuments({ status: 'Sold', createdAt: { $gte: startOfCurrentMonth } }),
-      Lead.countDocuments({ status: 'Sold', createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } })
+      Lead.countDocuments({ status: 'Sold', createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } }),
+      
+      // 8. 6 Months Leads Stats Aggregation (replaces 12 separate counts in loop)
+      Lead.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startOfRange }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$createdAt' },
+              month: { $month: '$createdAt' }
+            },
+            count: { $sum: 1 },
+            soldCount: {
+              $sum: {
+                $cond: [{ $in: ['$status', ['Sold', 'Delivered']] }, 1, 0]
+              }
+            }
+          }
+        }
+      ]).catch(err => {
+        console.warn('Could not aggregate monthly lead stats:', err.message);
+        return [];
+      })
     ]);
+
+    // Build monthlyLeads array dynamically from aggregated results
+    const monthlyLeads = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(1);
+      d.setMonth(d.getMonth() - i);
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1;
+
+      const match = (monthlyStatsRaw || []).find(s => s._id.year === year && s._id.month === month) || { count: 0, soldCount: 0 };
+      const convRate = match.count > 0 ? parseFloat((match.soldCount / match.count * 100).toFixed(1)) : 0;
+
+      monthlyLeads.push({
+        _id: { year, month },
+        count: match.count,
+        convRate
+      });
+    }
 
     const metricsData = metrics[0] || {
       totalLeads: 0,

@@ -1,6 +1,7 @@
 const Lead = require('../models/Lead');
 const Activity = require('../models/Activity');
 const Task = require('../models/Task');
+const Inventory = require('../models/Inventory');
 
 exports.getLeads = async (req, res) => {
   try {
@@ -122,8 +123,14 @@ exports.getLeads = async (req, res) => {
   }
 };
 
-exports.getAddLead = (req, res) => {
-  res.render('leads/add', { title: 'Add New Lead' });
+exports.getAddLead = async (req, res) => {
+  try {
+    const inventory = await Inventory.find({ status: 'Active', stockQuantity: { $gt: 0 } }).sort({ bikeModel: 1 }).lean();
+    res.render('leads/add', { title: 'Add New Lead', inventory });
+  } catch (error) {
+    console.error('Error loading add lead form:', error);
+    res.status(500).send('Internal Server Error');
+  }
 };
 
 exports.createLead = async (req, res) => {
@@ -203,9 +210,12 @@ exports.getEditLead = async (req, res) => {
       return res.status(404).send('Lead not found');
     }
 
+    const inventory = await Inventory.find({ status: 'Active', stockQuantity: { $gt: 0 } }).sort({ bikeModel: 1 }).lean();
+
     res.render('leads/edit', {
       title: 'Edit Lead',
-      lead
+      lead,
+      inventory
     });
   } catch (error) {
     console.error(error);

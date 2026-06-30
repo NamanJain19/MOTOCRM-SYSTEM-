@@ -4,7 +4,8 @@ const TestRideSchema = new mongoose.Schema({
   lead: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Lead',
-    required: true
+    required: true,
+    index: true
   },
   date: {
     type: Date,

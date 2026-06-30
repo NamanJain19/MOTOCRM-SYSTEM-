@@ -69,13 +69,42 @@ exports.getReports = async (req, res) => {
     const endOfLastMonth = new Date(startOfCurrentMonth);
     endOfLastMonth.setMilliseconds(-1);
 
-    // Queries for main counts
-    const totalLeadsCount = await Lead.countDocuments(query);
-    const soldCount = await Lead.countDocuments({ ...query, status: { $in: ['Sold', 'Delivered'] } });
-    const contactedCount = await Lead.countDocuments({ ...query, status: 'Contacted' });
-    const testRideCount = await Lead.countDocuments({ ...query, status: 'Test Ride Booked' });
-    const negotiationCount = await Lead.countDocuments({ ...query, status: 'Negotiation' });
-    const interestedCount = await Lead.countDocuments({ ...query, status: 'Interested' });
+    // Queries for main counts & revenue using a single status aggregation pipeline
+    const statusCounts = await Lead.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          totalBudget: { 
+            $sum: { 
+              $cond: [
+                { $in: ['$status', ['Sold', 'Delivered']] },
+                { $ifNull: ['$targetBudget', 28500] },
+                0
+              ]
+            } 
+          }
+        }
+      }
+    ]);
+
+    const statusMap = {
+      'New': 0, 'Contacted': 0, 'Interested': 0, 'Test Ride Booked': 0, 
+      'Negotiation': 0, 'Sold': 0, 'Delivered': 0, 'Lost': 0
+    };
+    let revenueVal = 0;
+    statusCounts.forEach(item => {
+      statusMap[item._id] = item.count;
+      revenueVal += item.totalBudget;
+    });
+
+    const totalLeadsCount = Object.values(statusMap).reduce((sum, c) => sum + c, 0);
+    const soldCount = statusMap['Sold'] + statusMap['Delivered'];
+    const contactedCount = statusMap['Contacted'];
+    const testRideCount = statusMap['Test Ride Booked'];
+    const negotiationCount = statusMap['Negotiation'];
+    const interestedCount = statusMap['Interested'];
 
     // Compute Delivery Stats
     let totalDeliveries = 0;
@@ -133,9 +162,7 @@ exports.getReports = async (req, res) => {
       monthlyCounts
     };
 
-    // Calculate revenue dynamically from Sold/Delivered leads targetBudget
-    const soldLeadsForRevenue = await Lead.find({ ...query, status: { $in: ['Sold', 'Delivered'] } }).select('targetBudget').lean();
-    const revenueVal = soldLeadsForRevenue.reduce((sum, lead) => sum + (lead.targetBudget || 28500), 0);
+    // Calculate revenue dynamically from status aggregation
     const revenueStr = `$${(revenueVal / 1000000).toFixed(2)}M`;
 
     // Dynamic calculations for MoM comparison
@@ -208,13 +235,13 @@ exports.getReports = async (req, res) => {
       daysChange
     };
 
-    // Cumulative Funnel steps calculation
+    // Cumulative Funnel steps calculation (reuses statusMap to avoid DB queries!)
     const funnel = {
       leads: totalLeadsCount,
-      contacted: await Lead.countDocuments({ ...query, status: { $in: ['Contacted', 'Interested', 'Test Ride Booked', 'Negotiation', 'Sold', 'Delivered'] } }),
-      testRide: await Lead.countDocuments({ ...query, status: { $in: ['Test Ride Booked', 'Negotiation', 'Sold', 'Delivered'] } }),
-      quote: await Lead.countDocuments({ ...query, status: { $in: ['Negotiation', 'Sold', 'Delivered'] } }),
-      sold: await Lead.countDocuments({ ...query, status: { $in: ['Sold', 'Delivered'] } })
+      contacted: totalLeadsCount - statusMap['New'] - statusMap['Lost'],
+      testRide: statusMap['Test Ride Booked'] + statusMap['Negotiation'] + statusMap['Sold'] + statusMap['Delivered'],
+      quote: statusMap['Negotiation'] + statusMap['Sold'] + statusMap['Delivered'],
+      sold: statusMap['Sold'] + statusMap['Delivered']
     };
 
     funnel.contactedPct = funnel.leads > 0 ? ((funnel.contacted / funnel.leads) * 100).toFixed(1) + '%' : '0.0%';
@@ -222,20 +249,64 @@ exports.getReports = async (req, res) => {
     funnel.quotePct = funnel.testRide > 0 ? ((funnel.quote / funnel.testRide) * 100).toFixed(1) + '%' : '0.0%';
     funnel.soldPct = funnel.quote > 0 ? ((funnel.sold / funnel.quote) * 100).toFixed(1) + '%' : '0.0%';
 
-    // Lead efficiency progress rows
+    // Lead efficiency progress rows (optimized to 1 aggregate query instead of 12)
     const sourcesList = ['WhatsApp', 'Facebook', 'Instagram', 'Website', 'Walk-in', 'Referral'];
-    const leadEfficiency = await Promise.all(sourcesList.map(async (src) => {
-      const totalForSource = await Lead.countDocuments({ ...query, leadSource: src });
-      const soldForSource = await Lead.countDocuments({ ...query, leadSource: src, status: { $in: ['Sold', 'Delivered'] } });
-      const convRate = totalForSource > 0 ? Math.round((soldForSource / totalForSource) * 100) : 0;
-      return { channel: src, convRate };
-    }));
+    const sourceStats = await Lead.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: { 
+            source: '$leadSource', 
+            isSold: { $in: ['$status', ['Sold', 'Delivered']] } 
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    const sourceMap = {};
+    sourcesList.forEach(src => {
+      sourceMap[src] = { total: 0, sold: 0 };
+    });
+    (sourceStats || []).forEach(stat => {
+      const src = stat._id.source;
+      if (sourceMap[src]) {
+        sourceMap[src].total += stat.count;
+        if (stat._id.isSold) {
+          sourceMap[src].sold += stat.count;
+        }
+      }
+    });
 
-    // Bike demand ranking from inventory + enquiries
+    const leadEfficiency = sourcesList.map(src => {
+      const data = sourceMap[src];
+      const convRate = data.total > 0 ? Math.round((data.sold / data.total) * 100) : 0;
+      return { channel: src, convRate };
+    });
+
+    // Bike demand ranking from inventory + enquiries (optimized to 1 aggregate query instead of N)
     const inventory = await Inventory.find().lean();
     const bikeModels = inventory.length > 0 ? inventory.map(i => i.bikeModel) : ['Low Rider™ ST', 'Street Glide™', 'Iron 883™', 'Fat Boy™ 114'];
-    const bikeDemand = await Promise.all(bikeModels.map(async (model) => {
-      const enquiries = await Lead.countDocuments({ ...query, bikeModel: model });
+    
+    const bikeEnquiriesStats = await Lead.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: '$bikeModel',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    const bikeEnquiriesMap = {};
+    (bikeEnquiriesStats || []).forEach(stat => {
+      if (stat._id) {
+        bikeEnquiriesMap[stat._id] = stat.count;
+      }
+    });
+
+    const bikeDemand = bikeModels.map(model => {
+      const enquiries = bikeEnquiriesMap[model] || 0;
       let status = 'LOW';
       let demandClass = 'low';
       if (enquiries >= 5) {
@@ -249,7 +320,7 @@ exports.getReports = async (req, res) => {
         demandClass = 'moderate';
       }
       return { model, enquiries, status, demandClass };
-    }));
+    });
     bikeDemand.sort((a, b) => b.enquiries - a.enquiries);
 
     // Chart Data for Line Chart (Dynamic last 6 months)

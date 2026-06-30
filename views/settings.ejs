@@ -9,7 +9,7 @@
   <%- include('partials/header') %>
 
   <!-- Content Container (Split Layout) -->
-  <main class="flex-1 overflow-y-auto p-8 flex flex-col lg:flex-row gap-8">
+  <main class="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-[18rem_1fr] gap-8">
     
     <!-- Left Column (Sub-navigation tabs) -->
     <div class="w-full lg:w-72 shrink-0 space-y-4">
@@ -364,7 +364,7 @@
           </button>
         </div>
 
-        <div class="p-6 flex gap-6">
+        <div class="p-6 flex flex-col xl:flex-row gap-6">
           <!-- Left: Users Table -->
           <div class="flex-1 overflow-x-auto">
             <div class="flex items-center justify-between mb-4">
@@ -1017,7 +1017,7 @@
             <div class="grid grid-cols-2 gap-4">
               <button 
                 onclick="updateTheme('light')"
-                id="theme-btn-light"
+                id="settings-theme-btn-light"
                 class="flex flex-col items-center gap-3 p-4 border-2 <%= settings.theme === 'light' ? 'border-brand-orange bg-orange-50 dark:bg-orange-950/20' : 'border-slate-200 dark:border-brand-darkBorder' %> rounded-2xl transition-all hover:border-brand-orange"
               >
                 <div class="w-12 h-8 bg-white border border-slate-200 rounded-lg shadow-sm"></div>
@@ -1025,7 +1025,7 @@
               </button>
               <button 
                 onclick="updateTheme('dark')"
-                id="theme-btn-dark"
+                id="settings-theme-btn-dark"
                 class="flex flex-col items-center gap-3 p-4 border-2 <%= settings.theme === 'dark' ? 'border-brand-orange bg-orange-50 dark:bg-orange-950/20' : 'border-slate-200 dark:border-brand-darkBorder' %> rounded-2xl transition-all hover:border-brand-orange"
               >
                 <div class="w-12 h-8 bg-slate-900 border border-slate-700 rounded-lg shadow-sm"></div>
@@ -1053,17 +1053,25 @@
     }
   }
 
-  // Tab switching functionality
+  // Tab switching functionality with smooth transitions
   function switchTab(tabId) {
     // Hide all panels
     document.querySelectorAll('.settings-panel').forEach(panel => {
       panel.classList.add('hidden');
+      panel.classList.remove('transition-all', 'duration-300', 'ease-out', 'opacity-100', 'translate-y-0', 'opacity-0', 'translate-y-2');
     });
     
-    // Show selected panel
+    // Show selected panel with smooth transition
     const selectedPanel = document.getElementById(`panel-${tabId}`);
     if (selectedPanel) {
+      selectedPanel.classList.add('opacity-0', 'translate-y-2');
       selectedPanel.classList.remove('hidden');
+      
+      // Force repaint to register initial state
+      selectedPanel.offsetHeight;
+      
+      selectedPanel.classList.add('transition-all', 'duration-300', 'ease-out', 'opacity-100', 'translate-y-0');
+      selectedPanel.classList.remove('opacity-0', 'translate-y-2');
     }
     
     // Update tab button styles

@@ -138,23 +138,30 @@
                     <tr class="hover:bg-slate-50/20 dark:hover:bg-brand-darkBg/20">
                       <td class="py-4 px-6">
                         <div class="font-extrabold text-slate-800 dark:text-zinc-150"><%= item.bikeModel %></div>
-                        <div class="text-[10px] text-slate-400">Created: <%= new Date(item.createdAt).toLocaleDateString() %></div>
+                        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1.5 flex-wrap">
+                          <% if (item.colors && item.colors.length > 0) { %>
+                            <% item.colors.forEach((c, idx) => { %>
+                              <span><%= c %></span>
+                              <% if (idx < item.colors.length - 1) { %>
+                                <span class="text-slate-300 dark:text-zinc-650">•</span>
+                              <% } %>
+                            <% }) %>
+                          <% } else { %>
+                            <span class="italic text-slate-400">No colors</span>
+                          <% } %>
+                        </div>
                       </td>
                       <td class="py-4 px-4 text-center font-bold text-slate-900 dark:text-white"><%= item.stockQuantity %></td>
                       <td class="py-4 px-4 text-center text-slate-500"><%= item.reservedBikes %></td>
                       <td class="py-4 px-4 text-center text-emerald-600 dark:text-emerald-400"><%= item.soldBikes %></td>
                       <td class="py-4 px-4">
-                        <% if (item.stockQuantity === 0) { %>
-                          <span class="inline-flex items-center gap-1 bg-rose-50 text-rose-500 dark:bg-rose-950/20 dark:text-rose-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-rose-250 dark:border-rose-900/50">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rose-550"></span>Out of Stock
-                          </span>
-                        <% } else if (item.stockQuantity <= item.lowStockThreshold) { %>
-                          <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-amber-250 dark:border-amber-900/50">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-550"></span>Low Stock
+                        <% if (item.status === 'Inactive') { %>
+                          <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-slate-200 dark:border-zinc-700">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Inactive
                           </span>
                         <% } else { %>
                           <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400 px-2.5 py-1 rounded-full text-[10px] font-bold border border-emerald-250 dark:border-emerald-900/50">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-550"></span>In Stock
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-550"></span>Active
                           </span>
                         <% } %>
                       </td>
@@ -200,10 +207,34 @@
               <input 
                 type="text" 
                 name="bikeModel" 
-                placeholder="e.g. Low Rider® S"
+                placeholder="e.g. Cruiser Model"
                 required
                 class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
               />
+            </div>
+
+            <!-- Bike Colors -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Available Colors (comma-separated)</label>
+              <input 
+                type="text" 
+                name="colors" 
+                placeholder="e.g. Black, Red, Grey"
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all"
+              />
+            </div>
+
+            <!-- Model Status -->
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Status</label>
+              <select 
+                name="status"
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <option value="Active" selected>Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
             </div>
 
             <!-- Counts row -->

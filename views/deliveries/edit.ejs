@@ -50,7 +50,7 @@
             </div>
             <div>
               <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Allocated Motorcycle</span>
-              <span class="font-bold text-slate-800 dark:text-zinc-200"><%= delivery.bikeModel %></span>
+              <span class="font-bold text-slate-800 dark:text-zinc-200"><%= delivery.bikeModel %><%= delivery.bikeColor ? ' • ' + delivery.bikeColor : '' %></span>
             </div>
             <div>
               <span class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-550 uppercase tracking-widest block mb-1">Phone Number</span>

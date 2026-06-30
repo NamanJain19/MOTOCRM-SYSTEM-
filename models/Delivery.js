@@ -4,7 +4,8 @@ const DeliverySchema = new mongoose.Schema({
   lead: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Lead',
-    required: false
+    required: false,
+    index: true
   },
   customerName: {
     type: String,
@@ -25,6 +26,11 @@ const DeliverySchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
+  },
+  bikeColor: {
+    type: String,
+    trim: true,
+    default: ''
   },
   deliveryDate: {
     type: Date,
@@ -66,5 +72,7 @@ const DeliverySchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+DeliverySchema.index({ status: 1, deliveryDate: 1 });
 
 module.exports = mongoose.model('Delivery', DeliverySchema);

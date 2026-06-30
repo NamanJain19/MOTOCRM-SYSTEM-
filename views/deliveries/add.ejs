@@ -57,6 +57,7 @@
                   data-email="<%= lead.email || '' %>"
                   data-phone="<%= lead.phone || '' %>"
                   data-bike="<%= lead.bikeModel || '' %>"
+                  data-color="<%= lead.preferredColor || '' %>"
                 >
                   <%= lead.name %> (<%= lead.bikeModel || 'No Model Selected' %>)
                 </option>
@@ -123,9 +124,9 @@
             <h3 class="font-bold text-base text-slate-900 dark:text-white">Motorcycle Allocation</h3>
           </div>
 
-          <div class="p-6">
+          <div class="p-6 space-y-4">
             <div>
-              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Model Model / Variant *</label>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Motorcycle Model Interest *</label>
               <select 
                 name="bikeModel" 
                 id="bike-model-select"
@@ -133,15 +134,25 @@
                 class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
               >
                 <option value="" disabled selected>Select Bike Model</option>
-                <option value="Pan America™ 1250 Special">Pan America™ 1250 Special</option>
-                <option value="Street Glide® ST">Street Glide® ST</option>
-                <option value="Nightster™ Special">Nightster™ Special</option>
-                <option value="Road Glide® Special">Road Glide® Special</option>
-                <option value="Low Rider™ ST">Low Rider™ ST</option>
-                <option value="Low Rider™ S">Low Rider™ S</option>
-                <option value="Iron 883™">Iron 883™</option>
-                <option value="Fat Boy® 114">Fat Boy® 114</option>
-                <option value="Sportster® S">Sportster® S</option>
+                <% if (locals.inventory && locals.inventory.length > 0) { %>
+                  <% locals.inventory.forEach(item => { %>
+                    <option value="<%= item.bikeModel %>"><%= item.bikeModel %></option>
+                  <% }) %>
+                <% } else { %>
+                  <option value="" disabled>No bike models available.</option>
+                <% } %>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[10px] font-extrabold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block">Bike Color *</label>
+              <select 
+                name="bikeColor" 
+                id="bike-color-select"
+                required
+                class="w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-brand-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-brand-orange transition-all cursor-pointer"
+              >
+                <option value="" disabled selected>Select Color</option>
               </select>
             </div>
           </div>
@@ -206,32 +217,87 @@
     </div>
     </form>
 
-    <!-- Autopopulate script from Lead dropdown -->
+    <!-- Autopopulate and dynamic color dropdown script -->
     <script>
       (function() {
+        const inventoryData = <%- JSON.stringify(locals.inventory || []) %>;
+        const bikeSelect = document.getElementById('bike-model-select');
+        const colorSelect = document.getElementById('bike-color-select');
+        const leadLinkSelect = document.getElementById('lead-link-select');
+
+        function updateColors(modelName, selectColorVal) {
+          colorSelect.innerHTML = '<option value="" disabled selected>Select Color</option>';
+          const model = inventoryData.find(item => item.bikeModel === modelName);
+          let foundSelected = false;
+
+          if (model && model.colors && model.colors.length > 0) {
+            model.colors.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c;
+              opt.textContent = c;
+              if (c === selectColorVal) {
+                opt.selected = true;
+                foundSelected = true;
+              }
+              colorSelect.appendChild(opt);
+            });
+          }
+
+          // If preselected color is not in the list (e.g. inactive/custom), add it as selected
+          if (selectColorVal && !foundSelected) {
+            const opt = document.createElement('option');
+            opt.value = selectColorVal;
+            opt.textContent = selectColorVal + ' (Inactive)';
+            opt.selected = true;
+            colorSelect.appendChild(opt);
+          }
+
+          if (!model || !model.colors || model.colors.length === 0) {
+            if (!selectColorVal) {
+              const opt = document.createElement('option');
+              opt.value = "";
+              opt.disabled = true;
+              opt.textContent = "No colors available";
+              colorSelect.appendChild(opt);
+            }
+          }
+        }
+
         function initAddDelivery() {
-          const select = document.getElementById('lead-link-select');
-          if (select) {
-            select.addEventListener('change', function(e) {
+          if (bikeSelect && colorSelect) {
+            bikeSelect.addEventListener('change', function() {
+              updateColors(this.value, '');
+            });
+          }
+
+          if (leadLinkSelect) {
+            leadLinkSelect.addEventListener('change', function(e) {
               const opt = e.target.options[e.target.selectedIndex];
               if (opt && opt.value !== '') {
                 document.getElementById('customer-name-input').value = opt.getAttribute('data-name') || '';
                 document.getElementById('customer-email-input').value = opt.getAttribute('data-email') || '';
                 document.getElementById('customer-phone-input').value = opt.getAttribute('data-phone') || '';
+                
                 const bike = opt.getAttribute('data-bike');
+                const color = opt.getAttribute('data-color');
+                
                 if (bike) {
-                  const bikeSelect = document.getElementById('bike-model-select');
                   for (let i = 0; i < bikeSelect.options.length; i++) {
                     if (bikeSelect.options[i].value === bike) {
                       bikeSelect.selectedIndex = i;
+                      updateColors(bike, color);
                       break;
                     }
                   }
+                } else {
+                  bikeSelect.selectedIndex = 0;
+                  colorSelect.innerHTML = '<option value="" disabled selected>Select Color</option>';
                 }
               }
             });
           }
         }
+
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', initAddDelivery);
         } else {
